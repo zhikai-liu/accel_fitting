@@ -1,0 +1,14 @@
+[A,si,~] = abfload('ZL170511_fish01b_0017.abf');
+T = si*1e-6;
+Fs = 1/T;
+[L,~] = size(A);
+t = (0:L-1)*T;
+Y = fft(A(:,1));
+P2 = abs(Y/L);
+P1 = P2(1:L/2+1);
+P1(2:end-1) = 2*P1(2:end-1);
+f = Fs*(0:(L/2))/L;
+figure;
+l = 10:20000;
+plot(f(l),P1(l));
+%plot(f(10:end),P1(10:end));
