@@ -1,4 +1,4 @@
-file = 'ZL170131_e01_0010.abf';
+file = 'ZL170518_fish01a_0010.abf';
 [W,si,~] = abfload(file);
 %% define parameters for analysis
 amp_thre = 6;  %threshold for ESPC amplitudes
@@ -26,6 +26,7 @@ unit_UI = uicontrol('Style', 'popup',... % add a popup menu for choosing the uni
     'Callback',{@SetTime,si});     % si is the sampling rate, which is needed to set the unit of time
 addlistener(slider,'Value','PostSet',@traceScroll); % add a listener to the slider to enable real-time slider control
 %addlistener(unit_UI,'Value','PreSet',@(source,event)setTime(source,event,si));
+data_s = smooth(W(:,1));
 plot(data_s); % plot the original trace
 counter = getappdata(F,'counter');    
 hold on
