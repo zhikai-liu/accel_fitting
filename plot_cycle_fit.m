@@ -1,4 +1,4 @@
-function plot_cycle_fit(Data,event_index,amps,poi,fit_model,S_period,si)
+function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model,S_period,si)
         F2 = gcf;
         t_per_cycle = round(2*pi/fit_model.b1);
         cycle_num = round(length(S_period)/t_per_cycle);
