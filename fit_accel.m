@@ -1,5 +1,4 @@
-function [S_period,fit_model,accel_axis]=fit_accel(f_name,poi,if_plot_figures)
-    [Data,si,~] = abfload(f_name);
+function [S_period,fit_model,accel_axis]=fit_accel(Data,si,f_name,poi,if_plot_figures)
     [~,D_y] = size(Data);
     [~,doi_y] = size(poi);
     S_period = cell(1,doi_y);
