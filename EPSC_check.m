@@ -1,4 +1,4 @@
-file = 'ZL170518_fish01a_0010.abf';
+file = 'ZL170517_fish03a_0016.abf';
 [W,si,~] = abfload(file);
 %% define parameters for analysis
 amp_thre = 6;  %threshold for ESPC amplitudes
