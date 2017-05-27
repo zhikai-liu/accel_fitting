@@ -1,0 +1,11 @@
+f_abf = dir('ZL170526_fish*.abf');
+%f_name = 'ZL170517_fish03a_0016.abf';
+%[Data,si,~] = abfload(f_name);
+%filename = sprintf('ZL170511_fish01b_%.4d.abf',file_number);
+if_fit = 0;
+%poi = repmat({{1:750000}},length(f_abf),1);
+%poi = {1:750000};
+F = figure('KeyPressFcn',{@file_move_by_key,f_abf,if_fit});
+setappdata(F,'f_num',1);
+%if_plot=0;
+%[S_period,fit_model,accel_axis]= fit_accel(Data,si,f_name,poi,if_plot);
