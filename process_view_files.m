@@ -1,4 +1,4 @@
-f_abf = dir('ZL170526_fish*.abf');
+f_abf = dir('ZL170526_fish06*.abf');
 %f_name = 'ZL170517_fish03a_0016.abf';
 %[Data,si,~] = abfload(f_name);
 %filename = sprintf('ZL170511_fish01b_%.4d.abf',file_number);

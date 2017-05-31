@@ -1,5 +1,5 @@
 %f_abf = dir('ZL170517_fish03a_0011.abf');
-f_name = 'ZL170517_fish03a_0016.abf';
+f_name = 'ZL170517_fish03a_0013.abf';
 [Data,si,~] = abfload(f_name);
 %filename = sprintf('ZL170511_fish01b_%.4d.abf',file_number);
 if_fit = 0;
@@ -17,5 +17,5 @@ title(F1.Children(end),[f_name ' period ' num2str(1) ' of ' num2str(1)],'interpr
 F2 = figure;
 [cycle_index,amps_cycle] = plot_cycle_fit(Data,event_index,amps,poi{1},fit_model{1},S_period{1},si);
 F3 = figure;
-circ_plot(cycle_index,'hist');
+circ_plot(cycle_index,'pretty');
 
