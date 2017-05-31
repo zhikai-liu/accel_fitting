@@ -6,8 +6,8 @@ function file_move_by_key(varargin)
     update_file_index(varargin{2}.Key,f_size);
     f_num = getappdata(F1,'f_num');
     header = show_data(F1,f_abf(f_num).name);
-    poi_x = varargin{5};
     if if_fit && header.nADCNumChannels~=1
+        poi_x = varargin{5};
         fit_accel(f_abf(f_num).name,poi_x{f_num});
     end
 end
