@@ -23,7 +23,7 @@ end
 %% calculate amplitude for each events detected
 raw_index = sort([r_index;extra_index]);
 raw_l = length(raw_index);
-amp_raw = zeros(1,raw_l);
+amp_raw = zeros(raw_l,1);
 for i = 1:raw_l
     if i == raw_l
         duration = 32; % the last EPSC duration is 640us

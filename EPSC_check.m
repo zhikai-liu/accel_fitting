@@ -1,20 +1,30 @@
-file = 'ZL170517_fish03a_0016.abf';
-[W,si,~] = abfload(file);
-%% define parameters for analysis
-amp_thre = 6;  %threshold for ESPC amplitudes
-diff_gap = 240; % gap for taking the difference, 240us in this case
-diff_thre = -8; % threshold for difference to detect event
-
-[event_index, amps] = EPSC_detection(W,si,amp_thre,diff_gap,diff_thre);
+% file = 'ZL170517_fish03a_0016.abf';
+% [Data,si,~] = abfload(file);
+% %% define parameters for analysis
+% amp_thre = 6;  %threshold for ESPC amplitudes
+% diff_gap = 240; % gap for taking the difference, 240us in this case
+% diff_thre = -8; % threshold for difference to detect event
+% 
+% [event_index, amps] = EPSC_detection(Data,si,amp_thre,diff_gap,diff_thre);
+% save('test.mat','Data','si','event_index','amps')
 %% plot the data and detection results
+function EPSC_check(datafile,event_num)
+S = load(datafile);
+Data = S.Data; si = S.si; event_index = S.event_index;
+if isfield(S,'Tag')
+    Tag = S.Tag;
+else
+    Tag = ones(1,length(event_index));
+end
 F = figure('Units','normal',...
     'Position',[0 .025 1 .95],...
     'Visible', 'on',...
-    'KeyPressFcn',{@CheckEPSC,event_index}); % Key press to enable 'keyboard mode' for manually checking EPSCs detected
-setappdata(F,'counter',1); % set counter for which event is being checked at the moment
+    'KeyPressFcn',@CheckEPSC); % Key press to enable 'keyboard mode' for manually checking EPSCs detected
+setappdata(F,'counter',event_num); % set counter for which event is being checked at the moment
 setappdata(F,'keyboardMode',0); % set a global for which mode it is in. keyboard = 0 or 1
-Tag = ones(1,length(event_index));
 setappdata(F,'CheckTag',Tag); % set a checktag to record manual checking result. -1 for excluded and 1 for pass
+setappdata(F,'filename',datafile);
+setappdata(F,'event_index',event_index);
 slider = uicontrol(F,'Style','slider',...
     'Units','normal',...
     'Position', [0 .01 1 .015],...
@@ -24,15 +34,21 @@ unit_UI = uicontrol('Style', 'popup',... % add a popup menu for choosing the uni
     'Units','normal',...
     'Position', [0.92 0.2 0.07 0.1],...
     'Callback',{@SetTime,si});     % si is the sampling rate, which is needed to set the unit of time
+save_UI = uicontrol('Style','pushbutton',...
+    'String','save tag',...
+    'Units','normal',...
+    'Position',[0.92 0.1 0.07 0.03],...
+    'Callback',@saveTag);
 addlistener(slider,'Value','PostSet',@traceScroll); % add a listener to the slider to enable real-time slider control
 %addlistener(unit_UI,'Value','PreSet',@(source,event)setTime(source,event,si));
-data_s = smooth(W(:,1));
+data_s = smooth(Data(:,1));
 plot(data_s); % plot the original trace
 counter = getappdata(F,'counter');    
 hold on
 scatter(event_index,data_s(event_index),20,'filled'); % plot the start point of each event
 scatter(event_index(counter),data_s(event_index(counter)),20,'*','g'); % plot a '*' on the graph for knowing which event is being checked
 
+end
 %% callback function for slider control
 function traceScroll(~,event)
     A = get(gcf,'Children');
@@ -54,12 +70,12 @@ end
 function SetTime(source,~,si)
     A = get(gcf,'Children');
     switch length(A)
-        case 3
+        case 4
             AxesNum = 1;
-        case 5
+        case 6
             AxesNum = 2; 
         otherwise
-          lastwarn('wrong axes number'); 
+          error('wrong axes number'); 
     end
     for i = 1:AxesNum
         XLabel = get(A(length(A)+1-i),'XLabel');
@@ -86,6 +102,7 @@ function SetTime(source,~,si)
                     set(XLabel,'String','second')
             end
         end
+        CheckEPSC();
     end
  
 end
@@ -96,10 +113,11 @@ function CheckEPSC(varargin)
     kids = get(A(length(A)),'Children');
 	%% get the data from the figure first for later use
     YData = kids(length(kids)).YData;
-    event = varargin{3};
     index = getappdata(F,'counter');
     XData = kids(length(kids)).XData;
+    event = getappdata(F,'event_index');
     %% identify keyboard input 'k' for entering the 'keyboard mode' and 'q' for exiting the 'keyboard mode'
+    if ~isempty(varargin)
     switch varargin{2}.Character
         case 'k'
             if getappdata(F,'keyboardMode') == 0
@@ -108,7 +126,7 @@ function CheckEPSC(varargin)
                 setappdata(F,'keyboardMode',1)
                 %% changing the size of original plot to a smaller one
                 set(A(length(A)),'Units','normal','Position', [0.5 .15 .4 .35],...
-                'xlim',[XData(event(index)-100) XData(event(index)+200)]);
+                'xlim',[XData(max(event(index)-100,1)) XData(min(event(index)+200,length(XData)))]);
                 hold off;
                 %% add two new plots, A2 is the same as A and A3 is showing the CheckTag information
                 A2 = subplot(4,1,1);
@@ -119,7 +137,7 @@ function CheckEPSC(varargin)
                 scatter(index,CheckTag(index),20,'*','g');
                 hold off;
                 set(A2,'Units','normal','Position', [0.1 .6 .8 .2],...
-                    'xlim',[XData(event(index)-1000) XData(event(index)+2000)]);
+                    'xlim',[XData(max(event(index)-1000,1)) XData(min(event(index)+2000,length(XData)))]);
                 set(A3,'Units','normal','Position', [0.1 .86 .8 .08],...
                     'xlim',[1 length(CheckTag)],...
                     'ylim',[-1.5 1.5]);
@@ -137,8 +155,10 @@ function CheckEPSC(varargin)
                 delete(A(length(A)-2));
             end
     end
+    end
     %% when the figure is in 'keyboard mode', use 'rightarrow', 'leftarrow','uparrow' to control the check each EPSC event
     if getappdata(F,'keyboardMode') == 1
+        if ~isempty(varargin)
         switch varargin{2}.Key
         case 'rightarrow'
             if index < length(event)
@@ -162,14 +182,15 @@ function CheckEPSC(varargin)
             setappdata(F,'CheckTag',CheckTag);
             set(A(length(A)-2).Children,'YData',CheckTag);
         end
+        end
         %% moving the window to the next/previous event on both A and A2
         A = get(gcf,'Children');
         new_index= getappdata(F,'counter');
         Y_range = YData(event(new_index)-100:event(new_index)+200);
         Y_scale = max(Y_range)-min(Y_range);
-        set(A(length(A)),'xlim',[XData(event(new_index)-100) XData(event(new_index)+200)],...
+        set(A(length(A)),'xlim',[XData(max(event(new_index)-100,1)) XData(min(event(new_index)+200,length(XData)))],...
             'ylim',[min(Y_range)-0.2*Y_scale max(Y_range)+0.2*Y_scale]);
-        set(A(length(A)-1),'xlim',[XData(event(new_index)-1000) XData(event(new_index)+2000)],...
+        set(A(length(A)-1),'xlim',[XData(max(event(new_index)-1000,1)) XData(min(event(new_index)+2000,length(XData)))],...
             'ylim',[-inf inf])
         %% Moving the '*' to track which event is under checking
         SSkids = A(length(A)+1-3).Children;
@@ -192,4 +213,11 @@ function CheckEPSC(varargin)
         end
         
     end
+end
+
+function saveTag(varargin)
+     F =gcf;
+     Tag = getappdata(F,'CheckTag');
+     datafile = getappdata(F,'filename');
+     save(datafile,'Tag','-append');
 end
