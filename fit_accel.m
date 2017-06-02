@@ -40,7 +40,6 @@ function [S_period,fit_model,accel_axis]=fit_accel(Data,si,f_name,poi,if_plot_fi
                 title(F1.Children(end),[f_name ' period ' num2str(k) ' of ' num2str(doi_y)],'interpreter','none');
                 figure;
                 plot_cycle_fit_subp2(Data,poi_k,fit_model{k},S_period{k},si);
-            else
             end
         end      
 end
