@@ -186,7 +186,7 @@ function CheckEPSC(varargin)
         %% moving the window to the next/previous event on both A and A2
         A = get(gcf,'Children');
         new_index= getappdata(F,'counter');
-        Y_range = YData(event(new_index)-100:event(new_index)+200);
+        Y_range = YData(max(event(new_index)-100,1):min(event(new_index)+200,length(YData)));
         Y_scale = max(Y_range)-min(Y_range);
         set(A(length(A)),'xlim',[XData(max(event(new_index)-100,1)) XData(min(event(new_index)+200,length(XData)))],...
             'ylim',[min(Y_range)-0.2*Y_scale max(Y_range)+0.2*Y_scale]);
