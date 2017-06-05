@@ -1,19 +1,10 @@
 function [S_period,fit_model,accel_axis]=fit_accel(Data,si,f_name,poi,if_plot_figures)
     [~,D_y] = size(Data);
-    [~,doi_y] = size(poi);
-    S_period = cell(1,doi_y);
-    fit_model = cell(1,doi_y);
-        for k = 1:doi_y
+    [~,poi_y] = size(poi);
+    S_period = cell(1,poi_y);
+    fit_model = cell(1,poi_y);
+        for k = 1:poi_y
             poi_k = poi{k};
-%         if doi_x == 1
-%             doi_p = doi{k};
-%         else
-%             if doi_y == 1
-%             doi_p = doi{f_num};
-%             else
-%             doi_p = doi{f_num}{k};
-%             end
-%         end
         %% smoothing data
         for i = 1:D_y
             Data(poi_k,i) = smooth(Data(poi_k,i));
@@ -37,7 +28,7 @@ function [S_period,fit_model,accel_axis]=fit_accel(Data,si,f_name,poi,if_plot_fi
             if if_plot_figures
                 F1 = figure;
                 plot_accel_fit(Data,poi_k,fit_model{k},S_period{k},accel_axis,si);
-                title(F1.Children(end),[f_name ' period ' num2str(k) ' of ' num2str(doi_y)],'interpreter','none');
+                title(F1.Children(end),[f_name ' period ' num2str(k) ' of ' num2str(poi_y)],'interpreter','none');
                 figure;
                 plot_cycle_fit_subp2(Data,poi_k,fit_model{k},S_period{k},si);
             end
