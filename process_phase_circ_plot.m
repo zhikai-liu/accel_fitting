@@ -7,7 +7,7 @@ for i = 1:f_num
     c_phase = S.Trials(i).Phase(S.Trials(i).Amps>amp_range(1)&S.Trials(i).Amps<amp_range(end));
     A = circ_plot(c_phase,'pretty');
     set(A,'Visible','off')
-    set(A.Children(end-1),'LineWidth',2);
+    set(A.Children(end),'LineWidth',2);
     set(A.Children(end-4),'LineWidth',4);
     text(-0.8,1.3, [S.Trials(i).Filename ' Freq: ' num2str(S.Trials(i).S_freq) ' Amp: ' num2str(S.Trials(i).S_amp)],...
     'interpreter','none',...

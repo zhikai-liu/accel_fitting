@@ -1,5 +1,5 @@
 function process_gather(filename_h)
-f_abf = dir([filename_h '*.mat']);
+f_abf = dir([filename_h '_0*.mat']);
 f_num = length(f_abf);
 Amp_all = struct();
 Trials = struct();

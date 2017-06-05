@@ -1,5 +1,6 @@
 function process_fit(filename_h)
-f_mat = dir([filename_h '_00*.mat']);
+%filename_h = 'ZL170518_fish01a'
+f_mat = dir([filename_h '_0*.mat']);
 for i =1:length(f_mat)
     clearvars name S poi S_period fit_model accel_axis
     S = load(f_mat(i).name);
@@ -8,9 +9,9 @@ for i =1:length(f_mat)
     %poi = repmat({{1:750000}},length(f_abf),1);
     poi = cell(1,length(S.poi));
     for j = 1:length(S.poi)
-        poi_start = S.poi{i}(1)*1e6/S.si;
-        poi_end = S.poi{i}(end)*1e6/S.si;
-        poi{i} = poi_start:poi_end;
+        poi_start = S.poi{j}(1)*1e6/S.si;
+        poi_end = S.poi{j}(end)*1e6/S.si;
+        poi{j} = poi_start:poi_end;
     end
     %F = figure('KeyPressFcn',{@file_move_by_key,f_abf,if_fit,poi,if_plot=1});
     %setappdata(F,'f_num',1);
