@@ -3,11 +3,16 @@ function [event_index, amps] = EPSC_detection(W,si,amp_thre,diff_gap,diff_thre)
 diff_gap = diff_gap/si;
 data_s = smooth(W(:,1));  %smooth the data 
 diff_ = data_s(1+diff_gap:end)-data_s(1:end-diff_gap)-diff_thre; % caculate the difference between 240us
-crossing_ = diff_(1:end-1).*diff_(2:end)<=0;% find the crossing for -8pA
+crossing_ = diff_(1:end-1).*diff_(2:end)<0;% find the crossing for -8pA
 r_index = find(crossing_.*(diff_(1:end-1)>0)); % find the on-rise crossing point
 f_index = find(crossing_.*(diff_(1:end-1)<0)); % find the on-fall crossing point
 if length(r_index) ~= length(f_index)
     warning('rising and falling not match')
+    if length(r_index) == length(f_index)+1
+        r_index(end)=[];
+    elseif length(f_index) == length(r_index)+1
+        f_index(1)=[];
+    end
 end
 
 %% calculate 2nd derivative and find zero crossing between diff_crossing pair
