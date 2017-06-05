@@ -6,9 +6,12 @@ for i =1:length(f_mat)
     %filename = sprintf('ZL170511_fish01b_%.4d.abf',file_number);
     %if_fit = 0;
     %poi = repmat({{1:750000}},length(f_abf),1);
-    poi_start = S.poi{1}(1)*1e6/S.si;
-    poi_end = S.poi{1}(end)*1e6/S.si;
-    poi = {poi_start:poi_end};
+    poi = cell(1,length(S.poi));
+    for j = 1:length(S.poi)
+        poi_start = S.poi{i}(1)*1e6/S.si;
+        poi_end = S.poi{i}(end)*1e6/S.si;
+        poi{i} = poi_start:poi_end;
+    end
     %F = figure('KeyPressFcn',{@file_move_by_key,f_abf,if_fit,poi,if_plot=1});
     %setappdata(F,'f_num',1);
     if_plot=0;
