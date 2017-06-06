@@ -1,10 +1,11 @@
 % view files 
 %process_view_files('ZL170517_fish03a');
-filename_h = 'ZL170518_fish01a';
+filename_h = 'ZL170518_fish03a';
 process_EPSC_detect(filename_h);
 process_fit(filename_h);
 %Plot fitting results for all
 process_plot_fit(filename_h);
+process_plot_each_cycle(filename_h);
 close all
 %Gather amplitudes and phase information together for further analysis
 % .mat file will be generated (Amps.mat and trials.mat)
@@ -14,8 +15,8 @@ num_plot_per_figure = 4;
 process_amps_hist_plot(filename_h,num_plot_per_figure);
 close all
 %phase plot
-Amp_range1 = -80:-50;
-Amp_range2 = -30:-15;
-%process_phase_hist_plot('ZL170517_fish03a',num_plot_per_fig,Amp_range);
+Amp_range1 = -120:-50;
+% Amp_range2 = -30:-15;
+% %process_phase_hist_plot('ZL170517_fish03a',num_plot_per_fig,Amp_range);
 process_phase_circ_plot(filename_h,Amp_range1);
-process_phase_circ_plot(filename_h,Amp_range2);
+% process_phase_circ_plot(filename_h,Amp_range2);
