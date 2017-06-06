@@ -1,5 +1,4 @@
 function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model,S_period,si)
-        F2 = gcf;
         t_per_cycle = round(2*pi/fit_model.b1);
         cycle_num = round(length(S_period)/t_per_cycle);
         t_unit = 2*pi/t_per_cycle;
@@ -32,6 +31,5 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
             hold off;
             xlim([0 360]);
         samexaxis('abc','xmt','on','ytac','join','yld',1);
-        fit_freq = fit_model.b1/(si*1e-6)/2/pi;
-        title(F2.Children(end),['Sin: Freq ' num2str(fit_freq) '  Amp ' num2str(fit_model.a1) 'g'])    
+        fit_freq = fit_model.b1/(si*1e-6)/2/pi;   
 end
