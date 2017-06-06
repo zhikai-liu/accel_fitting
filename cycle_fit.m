@@ -1,7 +1,7 @@
 function [period_index,cycle_num] = cycle_fit(event_index,amps,fit_model,S_period)
     N = length(fit_model);
     period_index = struct();
-    cycle_num = cell(N,1);
+    cycle_num = cell(1,N);
     for i =1:length(fit_model)
         t_per_cycle = round(2*pi/fit_model{i}.b1);
         cycle_num{i} = round(length(S_period{i})/t_per_cycle);
