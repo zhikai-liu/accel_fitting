@@ -1,5 +1,5 @@
 function process_phase_circ_plot(filename_h, amp_range)
-S = load([filename_h '_trials.mat']);
+S = load(['Trials_' filename_h '.mat']);
 f_num = length(S.Trials);
 for i = 1:f_num
     clearvars c_phase
@@ -22,7 +22,7 @@ for i = 1:f_num
     text(-1.2,1,['STD: ' num2str(rad2deg(circ_std(c_phase))) ' degree'],...
     'FontWeight','bold',...
     'FontSize',12)
-    print([S.Trials(i).Filename '_' num2str(round(S.Trials(i).S_freq,1)) 'Hz_' num2str(round(S.Trials(i).S_amp,2)) 'g.pdf'],'-fillpage','-dpdf')
+    print([S.Trials(i).Filename '_' num2str(round(S.Trials(i).S_freq,1)) 'Hz_' num2str(round(S.Trials(i).S_amp,2)) 'g(' num2str(amp_range(1)) 'to' num2str(amp_range(end)) 'pA).pdf'],'-fillpage','-dpdf')
 end
 close all
 end

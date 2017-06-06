@@ -1,5 +1,5 @@
 function process_gather(filename_h)
-f_abf = dir([filename_h '_0*.mat']);
+f_abf = dir([filename_h '*.mat']);
 f_num = length(f_abf);
 Amp_all = struct();
 Trials = struct();
@@ -17,6 +17,6 @@ for i =1:f_num
         counter = counter+1;
     end
 end
-save([filename_h '_Amps.mat'],'Amp_all');
-save([filename_h '_trials.mat'],'Trials');
+save(['Amps_' filename_h '.mat'],'Amp_all');
+save(['Trials_' filename_h '.mat'],'Trials');
 end

@@ -1,6 +1,6 @@
 function process_fit(filename_h)
 %filename_h = 'ZL170518_fish01a'
-f_mat = dir([filename_h '_0*.mat']);
+f_mat = dir([filename_h '*.mat']);
 for i =1:length(f_mat)
     clearvars name S poi S_period fit_model accel_axis
     S = load(f_mat(i).name);
