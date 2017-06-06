@@ -1,4 +1,4 @@
-function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model,S_period,si)
+function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model,S_period)
         t_per_cycle = round(2*pi/fit_model.b1);
         cycle_num = round(length(S_period)/t_per_cycle);
         t_unit = 2*pi/t_per_cycle;
@@ -13,6 +13,7 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
                 hold off;
             end
             xlim([0 360]);
+            ylabel('pA','Rotation',0);
         subplot(3,1,2);
             color = {'r','g','b'};
             for i = 1:cycle_num
@@ -23,6 +24,7 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
                 end
             end
             xlim([0 360]);
+            ylabel('g','Rotation',0);
         subplot(3,1,3);
             for i = 1:length(event_index)
                 hold on;
@@ -30,6 +32,7 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
             end
             hold off;
             xlim([0 360]);
-        samexaxis('abc','xmt','on','ytac','join','yld',1);
-        fit_freq = fit_model.b1/(si*1e-6)/2/pi;   
+            ylabel('pA','Rotation',0);
+            xlabel('degree');
+        samexaxis('abc','xmt','on','ytac','join','yld',1);  
 end
