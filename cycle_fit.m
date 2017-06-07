@@ -17,6 +17,7 @@ function [period_index,cycle_num] = cycle_fit(event_index,amps,fit_model,S_perio
 %%
         %For each period, we select only the EPSC events happned during that period.
         %first colunm is the event index of each EPSC
+        if ~isempty(event_index)
         period_index(i).event_index = event_index(event_index>=S_period{i}(1)&event_index<S_period{i}(end));
         %second column is the angle calculated based on the modelling,
         %which is the phase information
@@ -25,6 +26,7 @@ function [period_index,cycle_num] = cycle_fit(event_index,amps,fit_model,S_perio
         period_index(i).phase = mod(period_index(i).angle_raw,2*pi);
         %fourth column is the amplitude of ESPC
         period_index(i).amp = amps(event_index>=S_period{i}(1)&event_index<S_period{i}(end));
+        end
     end
 end
         
