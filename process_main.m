@@ -1,6 +1,6 @@
 % view files 
 %process_view_files('ZL170517_fish03a');
-filename_h = 'ZL170518_fish03a';
+filename_h = 'ZL170517_fish03a';
 process_EPSC_detect(filename_h);
 process_fit(filename_h);
 %Plot fitting results for all

@@ -17,13 +17,22 @@ for i =1:length(f_mat)
     %setappdata(F,'f_num',1);
     if_plot=0;
     [S_period,fit_model,accel_axis]= fit_accel(S.Data,S.si,S.name,poi,if_plot);
-    [period_index,cycle_num] = cycle_fit(S.event_index,S.amps,fit_model,S_period);
     fit_freq = cell(1,length(fit_model)); fit_amp = fit_freq;
     for j = 1:length(fit_model)
         fit_amp{j} = fit_model{j}.a1;
         fit_freq{j} = fit_model{j}.b1*1e6/S.si/2/pi;
     end
-    save([S.name '.mat'],'S_period','fit_model','accel_axis','fit_amp','fit_freq','period_index','cycle_num','-append')
+    if isfield(S,'event_index')
+        [period_index,cycle_num] = cycle_fit(S.event_index,S.amps,fit_model,S_period);
+    else
+        [period_index,cycle_num] = cycle_fit([],[],fit_model,S_period);
+    end
+    if strcmp(S.type,'voltage clamp+accel')
+        prefix = 'VC_accel_';
+    elseif strcmp(S.type,'current clamp+accel')
+        prefix = 'CC_accel_';
+    end
+        save([prefix S.name '.mat'],'S_period','fit_model','accel_axis','fit_amp','fit_freq','period_index','cycle_num','-append')
 end
 end
 % amp_thre = 6; diff_gap = 240; diff_thre =-8;
