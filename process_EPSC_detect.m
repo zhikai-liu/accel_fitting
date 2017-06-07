@@ -7,17 +7,24 @@ for i = 1:length(poi_table.file_num)
     poi_all{poi_table.file_num(i)+1}= eval(poi_table.poi{i});
 end
 for i =1:length(f_abf)
-    clearvars name Data si event_index amps poi type
+    clearvars name Data si header event_index amps poi type
     [~,name,~] = fileparts(f_abf(i).name);
     [Data,si,header] = abfload(f_abf(i).name);
     poi = poi_all{str2double(name(end-3:end))+1};
     if isVC_accelrecording(header) && ~isempty(poi)
-        type = 'EPSC';
+        type = 'voltage clamp+accel';
         [event_index,amps] = EPSC_detection(Data,si,amp_thre,diff_gap,diff_thre);
-        save([name '.mat'],'name','type','Data','si','header','event_index','amps','poi');
+        save(['VC_accel_' name '.mat'],'name','type','Data','si','header','event_index','amps','poi');
+    end
+    if isCC_accelrecording(header) && ~isempty(poi)
+        type = 'current clamp+accel';
+        save(['CC_accel_' name '.mat'],'name','type','Data','si','header','poi');
     end
 end
 end
 function isEPSC = isVC_accelrecording(h)
     isEPSC = (h.nADCNumChannels == 4)&(strcmp(h.recChUnits{1},'pA'));
+end
+function isEPSP = isCC_accelrecording(h)
+    isEPSP = (h.nADCNumChannels == 4)&(strcmp(h.recChUnits{1},'mV'));
 end
