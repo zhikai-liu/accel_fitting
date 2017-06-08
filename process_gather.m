@@ -11,9 +11,11 @@ for i =1:f_num
     for j = 1:length(S.fit_model)
         Trials(counter).S_freq = S.fit_freq{j};
         Trials(counter).S_amp = S.fit_amp{j};
-        Trials(counter).Phase = S.period_index(j).phase;
-        Trials(counter).Amps = S.period_index(j).amp;
+        Trials(counter).S_cycle = S.cycle_num{j};
         Trials(counter).Filename = S.name;
+        Trials(counter).FR_cycle = S.fit_freq{j}*length(S.period_index(j).phase)/S.cycle_num{j};
+        Trials(counter).period_index = S.period_index(j);
+        Trials(counter).per_cycle_index = S.per_cycle_index(j,:);
         counter = counter+1;
     end
 end

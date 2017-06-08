@@ -23,16 +23,16 @@ for i =1:length(f_mat)
         fit_freq{j} = fit_model{j}.b1*1e6/S.si/2/pi;
     end
     if isfield(S,'event_index')
-        [period_index,cycle_num] = cycle_fit(S.event_index,S.amps,fit_model,S_period);
+        [period_index,cycle_num,per_cycle_index] = cycle_fit(S.event_index,S.amps,fit_model,S_period);
     else
-        [period_index,cycle_num] = cycle_fit([],[],fit_model,S_period);
+        [period_index,cycle_num,per_cycle_index] = cycle_fit([],[],fit_model,S_period);
     end
     if strcmp(S.type,'voltage clamp+accel')
         prefix = 'VC_accel_';
     elseif strcmp(S.type,'current clamp+accel')
         prefix = 'CC_accel_';
     end
-        save([prefix S.name '.mat'],'S_period','fit_model','accel_axis','fit_amp','fit_freq','period_index','cycle_num','-append')
+        save([prefix S.name '.mat'],'S_period','fit_model','accel_axis','fit_amp','fit_freq','period_index','cycle_num','per_cycle_index','-append')
 end
 end
 % amp_thre = 6; diff_gap = 240; diff_thre =-8;

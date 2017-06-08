@@ -1,5 +1,6 @@
 function process_phase_circ_subplot(filename_h, amp_range,plot_order)
 S = load(['Trials_' filename_h '.mat']);
+max_FR = max([S.Trials.FR_cycle]);
 plot_order = plot_order';
 [m,n] = size(plot_order);
 plot_num = m*n;
@@ -16,13 +17,14 @@ for j = 1:plot_num
     end
     A = circ_plot(c_phase,'pretty');
     set(A,'Visible','off')
-    set(A.Children(end),'MarkerSize',4,'LineWidth',1);
-    set(A.Children(end-4),'LineWidth',2);
 %         text(0,-0.1,['Mean direction: ' num2str(rad2deg(circ_mean(c_phase))) '^o'],...
 %                     'FontWeight','bold',...
 %                     'FontSize',12)
     if i == 0
         set(A.Children(1:end),'Visible','off');
+    else
+        set(A.Children(end),'MarkerSize',4,'LineWidth',1);
+        set(A.Children(end-4),'LineWidth',8*S.Trials(i).FR_cycle/max_FR);
     end
     if j<=m
             text(-0.3,2,[num2str(j*0.02) 'g'],...
