@@ -1,6 +1,5 @@
 function process_EPSC_detect(filename_h)
 f_abf = dir([filename_h '*.abf']);
-amp_thre = 6; diff_gap = 240; diff_thre =-8;
 poi_all = cell(length(f_abf),1);
 poi_table = readtable([filename_h '_poi.xlsx']);
 for i = 1:length(poi_table.file_num)
@@ -13,12 +12,15 @@ for i =1:length(f_abf)
     poi = poi_all{str2double(name(end-3:end))+1};
     if isVC_accelrecording(header) && ~isempty(poi)
         type = 'voltage clamp+accel';
-        [event_index,amps] = EPSC_detection(Data,si,amp_thre,diff_gap,diff_thre);
+        amp_thre = 6; diff_gap = 240; diff_thre =-8;if_2der=1;event_duration = 640;
+        [event_index,amps] = EPSC_detection(Data,si,amp_thre,if_2der,diff_gap,diff_thre,event_duration);
         save(['VC_accel_' name '.mat'],'name','type','Data','si','header','event_index','amps','poi');
     end
     if isCC_accelrecording(header) && ~isempty(poi)
         type = 'current clamp+accel';
-        save(['CC_accel_' name '.mat'],'name','type','Data','si','header','poi');
+        amp_thre = 3; diff_gap = 140; diff_thre =6;if_2der=0;event_duration =1200;
+        [event_index,amps] = EPSC_detection(Data,si,amp_thre,if_2der,diff_gap,diff_thre,event_duration);
+        save(['CC_accel_' name '.mat'],'name','type','Data','si','header','event_index','amps','poi');
     end
 end
 end
