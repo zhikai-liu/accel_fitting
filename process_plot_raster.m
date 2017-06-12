@@ -19,8 +19,9 @@ for i =1:length(f_abf)
         %plotSpikeRaster(raster,'TimePerBin',0.1,'PlotType','vertline');
         timePerBin = 0.1;
         plotRaster(raster,timePerBin)
-        Title = {[T.Trials(j).Filename ' Total cycle ' num2str(T.Trials(j).S_cycle)], [' Sin: Freq ' num2str(T.Trials(j).S_freq) '  Amp ' num2str(T.Trials(j).S_amp) 'g ' ]};
-        title(Title,'interpreter','none');
+        %Title = {[T.Trials(j).Filename ' Total cycle ' num2str(T.Trials(j).S_cycle)], [' Sin: Freq ' num2str(T.Trials(j).S_freq) '  Amp ' num2str(T.Trials(j).S_amp) 'g ' ]};
+        Title = {[num2str(round(T.Trials(j).S_freq,1)) ' Hz'], [num2str(round(T.Trials(j).S_amp,2)) 'g ' ]};
+        ylabel(Title,'interpreter','none');
        % print([S.name '_period_' num2str(j) '_each_cycle.pdf'],'-fillpage','-dpdf');
     end
 end

@@ -1,8 +1,9 @@
 % view files 
 %process_view_files('ZL170517_fish03a');
-filename_h = 'ZL170517_fish03a';
+filename_h = 'ZL170518_fish01a';
 process_EPSC_detect(filename_h);
 process_fit(['VC_accel_' filename_h]);
+process_fit(['CC_accel_' filename_h]);
 %Plot fitting results for all
 %process_plot_fit(filename_h);
 %process_plot_each_cycle(filename_h);
@@ -10,6 +11,7 @@ close all
 %Gather amplitudes and phase information together for further analysis
 % .mat file will be generated (Amps.mat and trials.mat)
 process_gather(['VC_accel_' filename_h]);
+process_gather(['CC_accel_' filename_h]);
 %Plot amp histogram for each recording file
 % num_plot_per_figure = 4;
 % process_amps_hist_plot(filename_h,num_plot_per_figure);
