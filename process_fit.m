@@ -4,9 +4,6 @@ f_mat = dir([filename_h '*.mat']);
 for i =1:length(f_mat)
     clearvars name S poi S_period fit_model accel_axis
     S = load(f_mat(i).name);
-    %filename = sprintf('ZL170511_fish01b_%.4d.abf',file_number);
-    %if_fit = 0;
-    %poi = repmat({{1:750000}},length(f_abf),1);
     poi = cell(1,length(S.poi));
     for j = 1:length(S.poi)
         poi_start = S.poi{j}(1)*1e6/S.si;
@@ -27,15 +24,6 @@ for i =1:length(f_mat)
     else
         [period_index,cycle_num,per_cycle_index] = cycle_fit([],[],fit_model,S_period);
     end
-    if strcmp(S.type,'voltage clamp+accel')
-        prefix = 'VC_accel_';
-    elseif strcmp(S.type,'current clamp+accel')
-        prefix = 'CC_accel_';
-    end
-        save([prefix S.name '.mat'],'S_period','fit_model','accel_axis','fit_amp','fit_freq','period_index','cycle_num','per_cycle_index','-append')
+        save(f_mat(i).name,'S_period','fit_model','accel_axis','fit_amp','fit_freq','period_index','cycle_num','per_cycle_index','-append')
 end
 end
-% amp_thre = 6; diff_gap = 240; diff_thre =-8;
-% [event_index, amps] = EPSC_detection(Data,si,amp_thre,diff_gap,diff_thre);
-% save('test.mat','Data','si','event_index','amps')
-% EPSC_check('test.mat',1)
