@@ -1,7 +1,11 @@
-function plot_accel_fit(Data,poi,fit_model,S_period,accel_axis,si)
+function plot_accel_fit(Data,poi,fit_model,S_period,accel_axis,si,type)
 %% plot results
     [~,D_y] = size(Data);
+    if strcmp(type,'EPSC+accel')||strcmp(type,'IPSC+accel')
     YLabel = {'pA','g','g','g'};
+    elseif strcmp(type,'EPSP+accel')||strcmp(type,'IPSP+accel')
+    YLabel = {'mV','g','g','g'};
+    end
     fit_accel_y = fit_model.a1.*sin(fit_model.b1.*S_period+fit_model.c1);
     for i=1:D_y
         subplot(D_y,1,i);

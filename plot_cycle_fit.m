@@ -1,4 +1,4 @@
-function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model,S_period)
+function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model,S_period,type)
         t_per_cycle = round(2*pi/fit_model.b1);
         cycle_num = round(length(S_period)/t_per_cycle);
         t_unit = 2*pi/t_per_cycle;
@@ -9,7 +9,11 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
                 hold off;
             end
             xlim([0 360]);
-            ylabel('pA','Rotation',0);
+            if strcmp(type,'EPSC+accel')||strcmp(type,'IPSC+accel')
+                ylabel('pA','Rotation',0);
+            elseif strcmp(type,'EPSP+accel')||strcmp(type,'IPSP+accel')
+                ylabel('mV','Rotation',0);
+            end
         subplot(3,1,2);
             color = {'r','g','b'};
             for i = 1:cycle_num
@@ -33,7 +37,11 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
             end
             hold off;
             xlim([0 360]);
-            ylabel('pA','Rotation',0);
+            if strcmp(type,'EPSC+accel')||strcmp(type,'IPSC+accel')
+                ylabel('pA','Rotation',0);
+            elseif strcmp(type,'EPSP+accel')||strcmp(type,'IPSP+accel')
+                ylabel('mV','Rotation',0);
+            end
             xlabel('degree');
         end
         samexaxis('abc','xmt','on','ytac','join','yld',1);  
