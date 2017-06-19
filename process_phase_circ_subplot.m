@@ -11,7 +11,7 @@ for j = 1:plot_num
     subplot(n,m,j)
     if i ~= 0
 %        plot([1,2],[3,4])
-        c_phase = S.Trials(i).Phase(S.Trials(i).Amps>amp_range(1)&S.Trials(i).Amps<amp_range(end));
+        c_phase = S.Trials(i).period_index.phase(S.Trials(i).period_index.amp>amp_range(1)&S.Trials(i).period_index.amp<amp_range(end));
     else
         c_phase = [0];
     end
@@ -27,13 +27,25 @@ for j = 1:plot_num
         set(A.Children(end-4),'LineWidth',8*S.Trials(i).FR_cycle/max_FR);
     end
     if j<=m
-            text(-0.3,2,[num2str(j*0.02) 'g'],...
+        for k = 1:n
+            if plot_order(j+(k-1)*m)~=0
+                g_index = plot_order(j+(k-1)*m);
+            end
+        end
+        G = round(S.Trials(g_index).S_amp,2);
+            text(-0.3,2,[num2str(G) 'g'],...
                 'interpreter','none',...
                 'FontWeight','bold',...
                 'FontSize',12)
     end
-    if mod(j,m) == 1
-            text(-2.5,0,[num2str(2^((j-1-m)/m)) 'Hz'],...
+    if mod(j,m) == 1 || m==1
+        for k = 1:m
+            if plot_order(j+k-1)~=0
+                freq_index = plot_order(j+k-1);
+            end
+        end
+        Hz = round(S.Trials(freq_index).S_freq,1);
+            text(-2.5,0,[num2str(Hz) 'Hz'],...
                 'interpreter','none',...
                 'FontWeight','bold',...
                 'FontSize',12)
