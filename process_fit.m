@@ -8,7 +8,7 @@ for i =1:length(f_mat)
     for j = 1:length(S.poi)
         poi_start = S.poi{j}(1)*1e6/S.si;
         poi_end = S.poi{j}(end)*1e6/S.si;
-        poi{j} = poi_start:poi_end;
+        poi{j} = poi_start+1:poi_end;
     end
     %F = figure('KeyPressFcn',{@file_move_by_key,f_abf,if_fit,poi,if_plot=1});
     %setappdata(F,'f_num',1);

@@ -7,7 +7,7 @@ for i =1:length(f_abf)
         clearvars poi
         poi_start = S.poi{j}(1)*1e6/S.si;
         poi_end = S.poi{j}(end)*1e6/S.si;
-        poi = poi_start:poi_end;
+        poi = poi_start+1:poi_end;
         F1 = figure;
         plot_accel_fit(S.Data,poi,S.fit_model{j},S.S_period{j},S.accel_axis,S.si,S.type);
         title(F1.Children(end),[S.name ' Period ' num2str(j) ' of ' num2str(length(S.poi))],'interpreter','none');

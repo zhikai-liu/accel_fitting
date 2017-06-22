@@ -14,6 +14,10 @@ for i =1:length(f_abf)
         type = 'EPSC+accel';
         save(['EPSC_accel_' name '.mat'],'name','type','Data','si','header','poi');
     end
+    if type_of_rec(header,Data) ==2 && ~isempty(poi)
+        type = 'IPSC+accel';
+        save(['IPSC_accel_' name '.mat'],'name','type','Data','si','header','poi');
+    end
     if type_of_rec(header,Data) ==4 && ~isempty(poi)
         type = 'EPSP+accel';
         save(['EPSP_accel_' name '.mat'],'name','type','Data','si','header','poi');
