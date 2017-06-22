@@ -46,29 +46,5 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
             end
             xlim([0 360]);
             ylabel('g','Rotation',0);
-<<<<<<< Updated upstream
-        if ~isempty(event_index)
-            amps = amps(event_index>=S_period(1)&event_index<=S_period(end));
-            event_index = event_index(event_index>=S_period(1)&event_index<=S_period(end));
-            angle_index = fit_model.b1.*event_index+fit_model.c1;
-            cycle_index = mod(angle_index,2*pi);
-            subplot(3,1,3);
-            for i = 1:length(event_index)
-                hold on;
-                scatter(cycle_index(i)*180/pi,amps(i),'r');
-            end
-            hold off;
-            xlim([0 360]);
-            if strcmp(type,'EPSC+accel')||strcmp(type,'IPSC+accel')
-                ylabel('pA','Rotation',0);
-            elseif strcmp(type,'EPSP+accel')||strcmp(type,'IPSP+accel')
-                ylabel('mV','Rotation',0);
-            end
-            xlabel('degree');
-        end
         samexaxis('ytac','join');  
-=======
-        
-        samexaxis('abc','xmt','on','ytac','join','yld',1);  
->>>>>>> Stashed changes
 end
