@@ -44,5 +44,5 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
             end
             xlabel('degree');
         end
-        samexaxis('abc','xmt','on','ytac','join','yld',1);  
+        samexaxis('ytac','join');  
 end

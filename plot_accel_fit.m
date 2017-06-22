@@ -19,5 +19,5 @@ function plot_accel_fit(Data,poi,fit_model,S_period,accel_axis,si,type)
         hold off;
     end
     xlabel('Second');
-    samexaxis('abc','xmt','on','ytac','join','yld',1);
+    samexaxis('ytac','join');
 end
