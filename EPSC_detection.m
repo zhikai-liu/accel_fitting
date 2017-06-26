@@ -2,7 +2,7 @@ function [event_index, amps] = EPSC_detection(W,si,amp_thre,if_2der,diff_gap,dif
 %% calculate the difference with 240us as "1st derivative" to detect event
 diff_gap = diff_gap/si;
 event_duration =event_duration/si;
-data_s = smooth(W(:,1));  %smooth the data 
+data_s = smooth(W);  %smooth the data 
 diff_ = data_s(1+diff_gap:end)-data_s(1:end-diff_gap)-diff_thre; % caculate the difference between 240us
 crossing_ = diff_(1:end-1).*diff_(2:end)<0;% find the crossing for -8pA
 r_index = find(crossing_.*(diff_(1:end-1)>0)); % find the on-rise crossing point
