@@ -1,5 +1,5 @@
 %process_view_files('ZL170517_fish03a');
-filename_h = 'ZL170518_fish01a';
+filename_h = 'ZL170518_fish03a';
 process_abf2mat(filename_h);
 process_event_detect(['EPSC_accel_' filename_h]);
 %process_event_detect(['EPSP_accel_' filename_h]);
