@@ -98,13 +98,13 @@ end
 
 switch lower(Args.XAxisLocation)
     case 'top'
-        set(ax(2:end),'xticklabel',[]);
+        set(ax(2:end),'xtick',[]);
         set(ax(1),'xaxislocation','top')
     case 'bottom'
-        set(ax(1:(end-1)),'xticklabel',[]);
+        set(ax(1:(end-1)),'xtick',[]);
         set(ax(end),'xaxislocation','bottom')
     case 'both'
-        set(ax(2:(end-1)),'xticklabel',[]);
+        set(ax(2:(end-1)),'xtick',[]);
         set(ax(end),'xaxislocation','bottom')
         set(ax(1),'xaxislocation','top')
     otherwise
