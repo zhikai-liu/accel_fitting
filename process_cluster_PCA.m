@@ -6,7 +6,7 @@ function event_raw = process_cluster_PCA(filename_h,range)
         S = load(f_mat(i).name);
         for j = 1:length(S.event_index)
             index = S.event_index(j);
-            if abs(index-16700)>200&& abs(index-26700)>200
+            if abs(index-16700)>200&& abs(index-26700)>200 && index-50>1 &&index+100<length(S.Data)
             event_raw = [event_raw,smooth(S.Data(index-50:index+100,1))];
             end
         end
