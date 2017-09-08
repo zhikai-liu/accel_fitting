@@ -15,7 +15,7 @@ process_plot_each_cycle(['EPSP_accel_' filename_h]);
 %   .mat file will be generated (Amps.mat and trials.mat)
 %process_cell_opening(['EPSC_accel_' filename_h]);
 process_gather(['EPSC_accel_' filename_h]);
-% process_gather(['IPSC_accel_' filename_h]);
+process_gather(['EPSP_accel_' filename_h]);
 %   Plot amp histogram for each recording file
 % num_plot_per_figure = 4;
 % process_amps_hist_plot(filename_h,num_plot_per_figure);

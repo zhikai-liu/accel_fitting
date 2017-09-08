@@ -14,9 +14,12 @@ for i =1:f_num
         Trials(counter).S_cycle = S.cycle_num{j};
         Trials(counter).mat_file = f_abf(i).name;
         Trials(counter).abf_file = S.name;
+        Trials(counter).poi_num=j;
+        if ~isempty(S.event_index)
         Trials(counter).FR_cycle = S.fit_freq{j}*length(S.period_index(j).phase)/S.cycle_num{j};
         Trials(counter).period_index = S.period_index(j);
         Trials(counter).per_cycle_index = S.per_cycle_index(j,:);
+        end
         if isfield(S,'cell_opening')
         Trials(counter).cell_opening = S.cell_opening;
         end
