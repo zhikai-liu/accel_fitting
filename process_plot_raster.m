@@ -18,6 +18,7 @@ for i =1:length(f_abf)
         raster = logical(raster);
         %plotSpikeRaster(raster,'TimePerBin',0.1,'PlotType','vertline');
         timePerBin = 0.1;
+        F1=figure;
         plotRaster(raster,timePerBin)
         %Title = {[T.Trials(j).Filename ' Total cycle ' num2str(T.Trials(j).S_cycle)], [' Sin: Freq ' num2str(T.Trials(j).S_freq) '  Amp ' num2str(T.Trials(j).S_amp) 'g ' ]};
         Title = {[num2str(round(T.Trials(j).S_freq,1)) ' Hz'], [num2str(round(T.Trials(j).S_amp,2)) 'g ' ]};
