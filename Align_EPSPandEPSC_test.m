@@ -42,10 +42,12 @@ function plot_only_fit(Data,fit_model,S_period,accel_axis,si,type,subplot_order)
     YLabel = {'pA','g','g','g'};
     Color='r';
     yAx='yyaxis left';
+    yrange=[-200 200];
     elseif strcmp(type,'EPSP+accel')||strcmp(type,'IPSP+accel')
     YLabel = {'mV','g','g','g'};
     Color='k';
     yAx='yyaxis right';
+    yrange=[-160 0];
     end
     %fit_accel_y = fit_model.a1.*sin(fit_model.b1.*S_period+fit_model.c1);
     xrange=S_period-S_period(1);
@@ -53,6 +55,7 @@ function plot_only_fit(Data,fit_model,S_period,accel_axis,si,type,subplot_order)
         eval(yAx);
         plot(xrange*si*1e-6,Data(S_period,1),Color);
         ylabel(YLabel{1},'Rotation',0);
+        ylim(yrange)
     elseif subplot_order==2
         eval(yAx);
         plot(xrange*si*1e-6,Data(S_period,accel_axis),Color)
