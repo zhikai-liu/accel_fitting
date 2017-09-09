@@ -3,11 +3,11 @@ EPSP_trials=load('Trials_EPSP_accel_ZL170901_fish04a.mat');
 for i=1:length(EPSC_trials.Trials)
     for j=1:length(EPSP_trials.Trials)
         if round(EPSC_trials.Trials(i).S_freq,1)==round(EPSP_trials.Trials(j).S_freq,1)...
-                && round(EPSC_trials.Trials(i).S_amp,2)==round(EPSP_trials.Trials(j).S_amp,2)
+                && round(EPSC_trials.Trials(i).S_amp,1)==round(EPSP_trials.Trials(j).S_amp,1)
             EPSC_file=load(EPSC_trials.Trials(i).mat_file);
             EPSP_file=load(EPSP_trials.Trials(j).mat_file);
             Stim_freq=round(EPSC_trials.Trials(i).S_freq,1);
-            Stim_amp=round(EPSC_trials.Trials(i).S_amp,2);
+            Stim_amp=
             figure;
             for k=1:2
                 subplot(2,1,k)
@@ -26,13 +26,10 @@ for i=1:length(EPSC_trials.Trials)
                     EPSP_file.si,...
                     EPSP_file.type,...
                     k);
-                if k==1
-                title([num2str(Stim_freq) ' Hz; ' num2str(Stim_amp) ' g']);
-                end
+                title([num2str() ' Hz ']);
             hold off;
             end
             samexaxis('YAxisLocation','none','Box','off','ytac','join');
-            print(['Combined_EPSC' num2str(EPSC_trials.Trials(i).mat_file(end-7:end-4)) '_EPSP' num2str(EPSP_trials.Trials(j).mat_file(end-7:end-4)) '_' num2str(Stim_freq) 'Hz_' num2str(Stim_amp) 'g.pdf'],'-fillpage','-dpdf');
         end
     end
 end
