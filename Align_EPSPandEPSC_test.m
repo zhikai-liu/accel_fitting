@@ -53,12 +53,12 @@ function plot_only_fit(Data,fit_model,S_period,accel_axis,si,type,subplot_order)
     xrange=S_period-S_period(1);
     if subplot_order==1
         eval(yAx);
-        plot(xrange*si*1e-6,Data(S_period,1),Color);
+        plot(xrange*si*1e-6,Data(S_period,1),Color,'LineWidth',1);
         ylabel(YLabel{1},'Rotation',0);
         ylim(yrange)
     elseif subplot_order==2
         eval(yAx);
-        plot(xrange*si*1e-6,Data(S_period,accel_axis),Color)
+        plot(xrange*si*1e-6,Data(S_period,accel_axis),Color,'LineWidth',2)
         ylabel(YLabel{2},'Rotation',0);
     end
     xlabel('Second');
