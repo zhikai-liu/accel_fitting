@@ -17,7 +17,11 @@ function plot_accel_fit(Data,poi,fit_model,S_period,accel_axis,si,type)
         plot(S_period*si*1e-6,fit_accel_y,'g')
         end
         hold off;
+        if i~=D_y
+            A=gca;
+            set(A.XAxis,'visible','off')
+        end
     end
     xlabel('Second');
-    samexaxis('ytac','join');
+    samexaxis('ytac','join','box','off');
 end
