@@ -45,7 +45,7 @@ set(h(3).handle,'Units','normal',...
          'Visible','off')
 text(0.2,1.3,['\color{blue}' num2str(g_Y_Scale) 'g\color{black}/\color{red}' num2str(pA_Y_Scale) 'pA'],'fontsize',20,'fontweight','bold')
 text(1.1,0,[num2str(X_Scale) 's'],'fontsize',20,'fontweight','bold')
-text(-19,1,'0.05Hz 0.06g','fontsize',32,'fontweight','bold')
+text(-19,1,'0.5Hz 0.06g','fontsize',32,'fontweight','bold')
 %pause(0.1);
 frame=getframe(gcf);
 writeVideo(v,frame);
