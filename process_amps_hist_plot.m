@@ -16,9 +16,9 @@ for i = 1:fig_num
             Amp_plot.(S.name)=S.amps;
         end
     end
-    figure;
-    nhist(Amp_plot,'binfactor',20,'separate')
-    print([filename_h '_amp_hist' num2str(i) '.pdf'],'-fillpage','-dpdf');
+    figure('units','normal','position',[0.4 0 0.2 1]);
+    nhist(Amp_plot,'binfactor',20,'separate','noerror')
+    print([filename_h '_amp_hist' num2str(i) '.jpg'],'-r300','-djpeg');
     clearvars Amp_plot
 end
 end

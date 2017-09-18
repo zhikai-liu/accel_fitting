@@ -16,8 +16,8 @@ process_plot_each_cycle(['EPSP_accel_' filename_h]);
 process_gather(['EPSC_accel_' filename_h]);
 process_gather(['EPSP_accel_' filename_h]);
 %   Plot amp histogram for each recording file
-% num_plot_per_figure = 4;
-% process_amps_hist_plot(filename_h,num_plot_per_figure);
+num_plot_per_figure = 4;
+process_amps_hist_plot(['EPSC_accel_' filename_h],num_plot_per_figure);
 % close all
 % %phase plot
 % Amp_range1 = -120:-50;
