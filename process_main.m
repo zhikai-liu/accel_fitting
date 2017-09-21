@@ -1,23 +1,25 @@
-filename_h = 'ZL170901_fish04a';
+filename_h = 'ZL170518_fish02a';
 process_abf2mat(filename_h);
 process_event_detect(['EPSC_accel_' filename_h]);
-process_event_detect(['EPSP_accel_' filename_h]);
+%process_event_detect(['EPSP_accel_' filename_h]);
 process_fit(['EPSC_accel_' filename_h]);
-process_fit(['EPSP_accel_' filename_h]);
+%process_fit(['EPSP_accel_' filename_h]);
 %Plot fitting results for all
 process_plot_fit(['EPSC_accel_' filename_h]);
-process_plot_fit(['EPSP_accel_' filename_h]);
+%process_plot_fit(['EPSP_accel_' filename_h]);
 process_plot_each_cycle(['EPSC_accel_' filename_h]);
-process_plot_each_cycle(['EPSP_accel_' filename_h]);
+%process_plot_each_cycle(['EPSP_accel_' filename_h]);
 %close all
 %   Gather amplitudes and phase information together for further analysis
 %   .mat file will be generated (Amps.mat and trials.mat)
 %process_cell_opening(['EPSC_accel_' filename_h]);
 process_gather(['EPSC_accel_' filename_h]);
-process_gather(['EPSP_accel_' filename_h]);
+%process_gather(['EPSP_accel_' filename_h]);
+process_amp_dep_gain_phase(['Trials_EPSC_accel_' filename_h '.mat'],'all','save','replace');
+process_plot_gain_phase_amp_freq_bode(['AmpBode_Trials_EPSC_accel_' filename_h '.mat']);
 %   Plot amp histogram for each recording file
-num_plot_per_figure = 4;
-process_amps_hist_plot(['EPSC_accel_' filename_h],num_plot_per_figure);
+% num_plot_per_figure = 4;
+% process_amps_hist_plot(['EPSC_accel_' filename_h],num_plot_per_figure);
 % close all
 % %phase plot
 % Amp_range1 = -120:-50;

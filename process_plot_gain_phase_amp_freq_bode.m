@@ -24,7 +24,6 @@ function process_plot_gain_phase_amp_freq_bode(filename)
         color_all=colormap(jet(length(Global.Freq_field_names)));
         figure('units','normal','position',[0.25,0,0.5,1])
         H1=subplot(2,1,1);
-        title({filename,['Amp: ' num2str(S_amp) ' g']},'interpreter','none','FontSize',20)
         hold on;
         for j=1:length(Global.Freq_field_names)
             isfreq=strcmp(Global.Freq_field_names{j},AmpBode_FreqFDnames);
@@ -35,7 +34,7 @@ function process_plot_gain_phase_amp_freq_bode(filename)
                 XData=AmpBode.(Global.Amp_field_names{i}).(Global.Freq_field_names{j}).XData{k};
                 YGain=AmpBode.(Global.Amp_field_names{i}).(Global.Freq_field_names{j}).YGain{k};
                 %YPhase=AmpBode.(AmpBode_AmpFDnames{i}).(AmpBode_FreqFDnames{j}).YPhase{k};
-                Sm_XData=linspace(XData(1),XData(end),500);
+                Sm_XData=linspace(XData(1),XData(end),(length(XData)-1)*10);
                 Sm_YGain=pchip(XData,YGain,Sm_XData);
                 phase_scale{j,k}=Sm_YGain./max(Sm_YGain);
                 plot(Sm_XData,Sm_YGain,'Color',color_all(j,:),'LineWidth',3,'DisplayName',[num2str(S_freq) ' Hz'])
@@ -46,6 +45,7 @@ function process_plot_gain_phase_amp_freq_bode(filename)
         ylabel('gain fr/g','FontSize',20);
         LG=legend('show');
         set(LG,'Box','off','FontSize',20,'LineWidth',3)
+        title({filename(1:end-4),['Amp: ' num2str(S_amp) ' g']},'interpreter','none','FontSize',20)
         H2=subplot(2,1,2);
         hold on;
         for j=1:length(Global.Freq_field_names)
@@ -56,12 +56,28 @@ function process_plot_gain_phase_amp_freq_bode(filename)
             for k=1:Num_trials
                 XData=AmpBode.(Global.Amp_field_names{i}).(Global.Freq_field_names{j}).XData{k};
                 YPhase=AmpBode.(Global.Amp_field_names{i}).(Global.Freq_field_names{j}).YPhase{k};
-                Sm_XData=linspace(XData(1),XData(end),500);
+                Sm_XData=linspace(XData(1),XData(end),(length(XData)-1)*10);
                 Sm_YPhase=pchip(XData,YPhase,Sm_XData);
-                %Sm_color=([1 1 1]-color_all(j,:)).*(1-phase_scale{j,k})';
+                %% Find phase cross -pi->pi that will cause unsmooth sudden phase shift
+                pi_cross_NP=((YPhase(1:end-1)+pi/2<=0).*(YPhase(2:end)-pi/2>=0));
+                pi_cross_PN=((YPhase(2:end)+pi/2<=0).*(YPhase(1:end-1)-pi/2>=0));
+                XData_index_NP=find(pi_cross_NP);
+                XData_index_PN=find(pi_cross_PN);
+                %% Adjust those crossing points
+                for h=1:length(XData_index_NP)
+                    Adj_XData=linspace(XData(XData_index_NP(h)),XData(XData_index_NP(h)+1),10)';
+                    Sm_YPhase((XData_index_NP(h)-1)*10+1:XData_index_NP(h)*10)=pchip(XData(1:XData_index_NP(h)+1),[YPhase(1:XData_index_NP(h));YPhase(XData_index_NP(h)+1)-2*pi],Adj_XData);
+                end
+                for h=1:length(XData_index_PN)
+                    Adj_XData=linspace(XData(XData_index_PN(h)),XData(XData_index_PN(h)+1),10)';
+                    Sm_YPhase((XData_index_PN(h)-1)*10+1:XData_index_PN(h)*10)=pchip(XData(1:XData_index_PN(h)+1),[YPhase(1:XData_index_PN(h));YPhase(XData_index_PN(h)+1)+2*pi],Adj_XData);
+                end
+                %% Plot Phase
+                X_NoDraw=[XData_index_NP.*10;XData_index_PN.*10];
                 for h=1:length(Sm_YPhase)-1
-                    if phase_scale{j,k}(h)>0.2
-                    plot([Sm_XData(h) Sm_XData(h+1)],[Sm_YPhase(h) Sm_YPhase(h+1)].*180./pi,'Color',color_all(j,:),'LineWidth',6*phase_scale{j,k}(h)^2+0.0001)
+                    if phase_scale{j,k}(h)>0.2&&~ismember(h,X_NoDraw)
+                    plot([Sm_XData(h) Sm_XData(h+1)],[Sm_YPhase(h) Sm_YPhase(h+1)].*180./pi,...
+                        'Color',color_all(j,:),'LineWidth',6*phase_scale{j,k}(h)^2+0.0001)
                     end
                 end
                 
@@ -69,13 +85,17 @@ function process_plot_gain_phase_amp_freq_bode(filename)
             end
         end
         plot([XData(1),XData(end)],[90 90],'k--');
+        plot([XData(1),XData(end)],[180 180],'r--');
         plot([XData(1),XData(end)],[-90 -90],'k--');
+        plot([XData(1),XData(end)],[-180 -180],'r--');
         hold off;
-        ylim([-180 180]);
-        yticks([-180 -90 0 90 180])
+        ylim([-270 270]);
+        yticks([-270 -180 -90 0 90 180 270])
         xlabel('pA 2pA/bin','FontSize',20);
         ylabel('average phase','FontSize',20);
         samexaxis('ytac','box','off');
+        print([filename(1:end-4) '_' num2str(round(S_amp,2)) 'g_allFreq.jpg'],...
+        '-r300','-djpeg')
         end
     end
 end
