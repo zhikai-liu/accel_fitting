@@ -1,0 +1,48 @@
+function process_plot_all_ampVSphase(filename,range)
+    S=load(filename);
+    Global=load('Accel_globalvar.mat');   
+    if strcmp(range,'all')
+        range=1:length(S.Trials);
+    end
+    S_amp=round([S.Trials(range).S_amp],2);
+    S_freq=round([S.Trials(range).S_freq],1);
+    freq_num=length(unique(S_freq));
+    Freq_cor_value=Global.Freq_cor_value(1:freq_num);
+    Amp_cor_value=Global.Amp_cor_value;
+    Amp_order=cell(length(Amp_cor_value),1);
+    Freq_order=cell(length(Freq_cor_value),1);
+    for i=1:length(Amp_cor_value)
+        Amp_order{i}=find(S_amp==Amp_cor_value{i});
+    end
+    for i=1:length(Freq_cor_value)
+        Freq_order{i}=find(S_freq==Freq_cor_value{i});
+    end
+    color_all=colormap(jet(length(Freq_cor_value)));
+    for i=1:length(Amp_order)
+        if ~isempty(Amp_order{i})
+        figure('units','normal','position',[0,0,1,1]);
+        hold on;
+        for j=1:length(Freq_order)
+            if ~isempty(Freq_order{j})
+                for k=1:length(Freq_order{j})
+                    if sum(Amp_order{i}==Freq_order{j}(k))
+                    trial=Freq_order{j}(k);
+                    Amps=S.Trials(trial).period_index.amp;
+                    Phases=S.Trials(trial).period_index.phase;
+                    scatter(Phases.*180./pi,Amps,'filled',...
+                        'MarkerFaceColor',color_all(j,:),...
+                        'MarkerEdgeColor',color_all(j,:),...
+                        'DisplayName',[num2str(S_freq(trial)),' Hz']);    
+                    end
+                end
+            end
+        end
+            hold off;
+            LG=legend('show');
+            set(LG,'Box','off','FontSize',20)
+            title({filename(1:end-4),[num2str(Amp_cor_value{i}) ' g']},'interpreter','none')
+            print([filename(1:end-4) '_' num2str(Amp_cor_value{i}) 'g_allFreq_ampVSphase.jpg'],...
+                '-r300','-djpeg')
+        end
+    end
+end
