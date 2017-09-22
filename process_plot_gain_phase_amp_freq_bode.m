@@ -36,6 +36,7 @@ function process_plot_gain_phase_amp_freq_bode(filename)
                 %YPhase=AmpBode.(AmpBode_AmpFDnames{i}).(AmpBode_FreqFDnames{j}).YPhase{k};
                 Sm_XData=linspace(XData(1),XData(end),(length(XData)-1)*10);
                 Sm_YGain=pchip(XData,YGain,Sm_XData);
+                max_YGain(j,k)=max(Sm_YGain);
                 phase_scale{j,k}=Sm_YGain./max(Sm_YGain);
                 plot(Sm_XData,Sm_YGain,'Color',color_all(j,:),'LineWidth',3,'DisplayName',[num2str(S_freq) ' Hz'])
             end
@@ -46,6 +47,9 @@ function process_plot_gain_phase_amp_freq_bode(filename)
         LG=legend('show');
         set(LG,'Box','off','FontSize',20,'LineWidth',3)
         title({filename(1:end-4),['Amp: ' num2str(S_amp) ' g']},'interpreter','none','FontSize',20)
+        
+        max_YGain=max_YGain./max(max(max_YGain));
+        
         H2=subplot(2,1,2);
         hold on;
         for j=1:length(Global.Freq_field_names)
@@ -73,11 +77,13 @@ function process_plot_gain_phase_amp_freq_bode(filename)
                     Sm_YPhase((XData_index_PN(h)-1)*10+1:XData_index_PN(h)*10)=pchip(XData(1:XData_index_PN(h)+1),[YPhase(1:XData_index_PN(h));YPhase(XData_index_PN(h)+1)+2*pi],Adj_XData);
                 end
                 %% Plot Phase
-                X_NoDraw=[XData_index_NP.*10;XData_index_PN.*10];
+                X_NoDraw=[XData_index_NP.*10;XData_index_PN.*10]; 
                 for h=1:length(Sm_YPhase)-1
                     if phase_scale{j,k}(h)>0.2&&~ismember(h,X_NoDraw)
-                    plot([Sm_XData(h) Sm_XData(h+1)],[Sm_YPhase(h) Sm_YPhase(h+1)].*180./pi,...
-                        'Color',color_all(j,:),'LineWidth',6*phase_scale{j,k}(h)^2+0.0001)
+                        adj_phase_scale=phase_scale{j,k}(h).*max_YGain(j);
+                        color_phase=[1 1 1].*(1-phase_scale{j,k}(h))+color_all(j,:).*phase_scale{j,k}(h);
+                        plot([Sm_XData(h) Sm_XData(h+1)],[Sm_YPhase(h) Sm_YPhase(h+1)].*180./pi,...
+                            'Color',color_all(j,:),'LineWidth',10*adj_phase_scale+0.01)
                     end
                 end
                 
@@ -91,7 +97,7 @@ function process_plot_gain_phase_amp_freq_bode(filename)
         hold off;
         ylim([-270 270]);
         yticks([-270 -180 -90 0 90 180 270])
-        xlabel('pA 2pA/bin','FontSize',20);
+        xlabel('EPSC amplitude (pA)','FontSize',20);
         ylabel('average phase','FontSize',20);
         samexaxis('ytac','box','off');
         print([filename(1:end-4) '_' num2str(round(S_amp,2)) 'g_allFreq.jpg'],...

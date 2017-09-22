@@ -35,14 +35,14 @@ function process_plot_heatmap_ampVSphase(filename,range)
     % %                         'DisplayName',[num2str(S_freq(trial)),' Hz']);
                         X_step=0.3;
                         Y_step=0.1;
-                        amp_bin=3;
+                        amp_bin=6;
                         X_phase=-180:X_step:180;
                         X_phase=X_phase./180.*pi;
                         Y_amp=floor(min(Amps)):Y_step:ceil(max(Amps));
                         HM=zeros(length(X_phase),length(Y_amp));
                         for y=1:length(Y_amp)
-                            amp_range=[max(Y_amp(y)-amp_bin,Y_amp(1)), min(Y_amp(y)+amp_bin,Y_amp(end))];
-                            x_y_phase=Phases((Amps>=amp_range(1)).*(Amps<amp_range(end))==1);
+                            amp_range=[max(Y_amp(y)-amp_bin/2,Y_amp(1)), min(Y_amp(y)+amp_bin/2,Y_amp(end))];
+                            x_y_phase=Phases(Amps>=amp_range(1)&Amps<amp_range(end));
                             rep_x_y_phase=repmat(x_y_phase,1,length(X_phase))-X_phase;
                             HM(:,y)=sum(cos(rep_x_y_phase),1)./diff(amp_range);
                          
