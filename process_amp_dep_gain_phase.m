@@ -10,16 +10,16 @@ for trial=range
     Phases=S.Trials(trial).period_index.phase;
     S_freq=S.Trials(trial).S_freq;
     S_amp=S.Trials(trial).S_amp;
-    Amp_step=1;
+    X_Amp_step=1;
     Amp_bin=6;
-    X_Amp=floor(min(Amps)):Amp_step:ceil(max(Amps));
+    X_Amp=floor(min(Amps)):X_Amp_step:ceil(max(Amps));
     S_h=struct();
     for i=1:length(X_Amp)
         %S_h(i).amp=Amps(Amps>=Edges(i)&Amps<Edges(i+1));
         amp_range=[max(X_Amp(i)-Amp_bin/2,X_Amp(1)), min(X_Amp(i)+Amp_bin/2,X_Amp(end))];
         S_h(i).bin_phase=Phases(Amps>=amp_range(1)&Amps<amp_range(end));
         if ~isempty(S_h(i).bin_phase)
-            S_h(i).gain=circ_r(S_h(i).bin_phase).*length(S_h(i).bin_phase)./Amp_bin.*S_freq./S_amp./S.Trials(trial).S_cycle;
+            S_h(i).gain=circ_r(S_h(i).bin_phase).*length(S_h(i).bin_phase)./Amp_bin.*S_freq./S.Trials(trial).S_cycle;
             S_h(i).phase=circ_mean(S_h(i).bin_phase);
         else
             S_h(i).gain=0;
@@ -60,7 +60,7 @@ for trial=range
         h(2).handle=subplot(3,1,2);
         %bar(XData,YGain,'FaceColor','r','BarWidth',1)
         plot(Sm_XData,Sm_YGain,'r','LineWidth',4)
-        ylabel('Gain FR/g','FontSize',20);
+        ylabel('Gain FR','FontSize',20);
         %% Plot Phase versus Amp
         h(3).handle=subplot(3,1,3);
         phase_scale=Sm_YGain./max(Sm_YGain);
@@ -94,44 +94,11 @@ for trial=range
     %% Save gain and phase info into file
     if ~isempty(varargin)
     if strcmp(varargin{1},'save')
-    if exist(['AmpBode_' filename],'file')==2&&(~strcmp(varargin{2},'replace')||trial~=1)
-        AmpBode=load(['AmpBode_' filename]);
-    else
-        AmpBode=struct();
-    end
-    Global=load('Accel_globalvar.mat');
-%     Global.Amp_field_names={'POtwoG','POfourG','POsixG','POeightG','POneG'};
-%     Global.Amp_cor_value={0.02,0.04,0.06,0.08,0.1};
-%     Global.Freq_field_names={'halfHz','oneHz','twoHz','fourHz','eightHz','sixteenHz','thirtytwoHz'};
-%     Global.Freq_cor_value={0.5,1,2,4,8,16,32};
-%     save('Accel_globalvar.mat','-struct','Global')
-    S_freq_round=round(S.Trials(trial).S_freq,1);%get s_freq with 1 decimal
-    Freq_field=Global.Freq_field_names{[Global.Freq_cor_value{:}]==S_freq_round};
-    S_amp_round=round(S.Trials(trial).S_amp,2);
-    Amp_field=Global.Amp_field_names{[Global.Amp_cor_value{:}]==S_amp_round};
-    if isfield(AmpBode,Amp_field)
-        if isfield(AmpBode.(Amp_field),Freq_field)
-            if isfield(AmpBode.(Amp_field).(Freq_field),'XData')
-                NumOfRec=length(AmpBode.(Amp_field).(Freq_field).XData);
-                AmpBode.(Amp_field).(Freq_field).XData{NumOfRec+1}=X_Amp';
-                AmpBode.(Amp_field).(Freq_field).YGain{NumOfRec+1}=YGain;
-                AmpBode.(Amp_field).(Freq_field).YPhase{NumOfRec+1}=YPhase;
-            else
-                AmpBode.(Amp_field).(Freq_field).XData{1}=X_Amp';
-                AmpBode.(Amp_field).(Freq_field).YGain{1}=YGain;
-                AmpBode.(Amp_field).(Freq_field).YPhase{1}=YPhase;
-            end
-        else
-            AmpBode.(Amp_field).(Freq_field).XData{1}=X_Amp';
-            AmpBode.(Amp_field).(Freq_field).YGain{1}=YGain;
-            AmpBode.(Amp_field).(Freq_field).YPhase{1}=YPhase;
-        end
-    else
-            AmpBode.(Amp_field).(Freq_field).XData{1}=X_Amp';
-            AmpBode.(Amp_field).(Freq_field).YGain{1}=YGain;
-            AmpBode.(Amp_field).(Freq_field).YPhase{1}=YPhase;
-    end
-    save(['AmpBode_' filename],'-struct','AmpBode')
+    S.Trials(trial).X_Amp=X_Amp;
+    S.Trials(trial).YGain=YGain;
+    S.Trials(trial).YPhase=YPhase;
+    S.Trials(trial).X_Amp_step=X_Amp_step;
+    save(filename,'-struct','S')
     end
     end
 end

@@ -14,10 +14,10 @@ process_fit(['EPSC_accel_' filename_h]);
 %process_cell_opening(['EPSC_accel_' filename_h]);
 process_gather(['EPSC_accel_' filename_h]);
 %process_gather(['EPSP_accel_' filename_h]);
-process_amp_dep_gain_phase(['Trials_EPSC_accel_' filename_h '.mat'],'all',0,'save','replace');
+process_amp_dep_gain_phase(['Trials_EPSC_accel_' filename_h '.mat'],'all',0,'save'); % use 'all' or include the trials you want to use
 %close all
-process_plot_gain_phase_amp_freq_bode(['AmpBode_Trials_EPSC_accel_' filename_h '.mat']);
-process_plot_all_ampVSphase(['Trials_EPSC_accel_' filename_h '.mat'],'all')
+process_plot_gain_phase_amp_freq_bode(['Trials_EPSC_accel_' filename_h '.mat'],'all'); % use 'all' or include the trials you want to use
+process_plot_all_ampVSphase(['Trials_EPSC_accel_' filename_h '.mat'],'all')  % use 'all' or include the trials you want to use
 %   Plot amp histogram for each recording file
 % num_plot_per_figure = 4;
 % process_amps_hist_plot(['EPSC_accel_' filename_h],num_plot_per_figure);
