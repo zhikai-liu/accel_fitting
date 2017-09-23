@@ -1,4 +1,4 @@
-function process_plot_gain_phase_amp_freq_bode(filename,range)
+function process_plot_gain_phase_amp_freq_bode(filename,range,varargin)
     S=load(filename);
     Global=load('Accel_globalvar.mat');
 %     Global.Amp_field_names={'POtwoG','POfourG','POsixG','POeightG','POneG'};
@@ -49,16 +49,24 @@ function process_plot_gain_phase_amp_freq_bode(filename,range)
                     Sm_YGain=pchip(X_Amp,YGain,Sm_XData);
                     max_YGain(j,k)=max(Sm_YGain);
                     phase_scale{j,k}=Sm_YGain./max(Sm_YGain);
-                    plot(Sm_XData,Sm_YGain,'Color',color_all(j,:),'LineWidth',3,'DisplayName',[num2str(S_freq(trial)) ' Hz trial ' num2str(trial)])
+                    if ~isempty(varargin)
+                        if  strcmp(varargin{1},'showtrial')
+                            Trial_num_str=[' trial ' num2str(trial)];
+                        else
+                            Trial_num_str=[];
+                        end
+                    else
+                            Trial_num_str=[];
+                    end
+                    plot(Sm_XData,Sm_YGain,'Color',color_all(j,:),'LineWidth',3,'DisplayName',[num2str(S_freq(trial)) ' Hz' Trial_num_str])
                     end
                 end
             end
         end
 %         hold off;
-        ylabel('Gain FR','FontSize',20);
-        LG=legend('show');
-        set(LG,'Box','off','FontSize',20,'LineWidth',3)
-        title({filename(1:end-4),['Amp: ' num2str(S_amp(trial)) ' g']},'interpreter','none','FontSize',20)       
+        ylabel('Gain FR/g','FontSize',20);
+        %ylim([-10 Inf]);
+             
         max_YGain=max_YGain./max(max(max_YGain));
         %%
 %         H2=subplot(3,1,2);
@@ -71,18 +79,28 @@ function process_plot_gain_phase_amp_freq_bode(filename,range)
         end
         Gain_increase_slope=zeros(1,length(X_Amp));
         Gain_increase=zeros(1,length(AcrFreq_YGain));
+        Mean_Gain_scale=zeros(1,length(X_Amp));
+        yyaxis right;
         for j=1:length(X_Amp)
             for k=1:length(AcrFreq_YGain)
                 Gain_increase(k)=AcrFreq_YGain{k}((X_index(k,1)+j-1));
             end
-            
-            FitP=fit([Freq_cor_value{AcrFreq_FreqOrderIndex}]',Gain_increase','poly1');
+            Mean_Gain_scale(j)=mean(Gain_increase);
+            FitP=fit(log2([Freq_cor_value{AcrFreq_FreqOrderIndex}]'),Gain_increase','poly1');
             Gain_increase_slope(j)=FitP.p1;
         end
-        yyaxis right;
-        scatter(X_Amp,Gain_increase_slope,'o','DisplayName','Gain Increase')
+        Mean_Gain_scale=Mean_Gain_scale./max(Mean_Gain_scale);
+        scatter(X_Amp,Gain_increase_slope,Mean_Gain_scale.*48+0.01,'o','filled',...
+            'MarkerEdgeColor','k','MarkerFaceColor','k','DisplayName','Gain increase')
+        ylabel('Gain increase')
+        A1=gca;
+        set(A1.XAxis,'visible','off');
+        set(A1.YAxis,'FontSize',20,'LineWidth',3,'Color','k');
+        LG=legend('show');
+        set(LG,'Box','off','FontSize',20,'LineWidth',3)
+        title({filename(1:end-4),['Amp: ' num2str(S_amp(trial)) ' g']},'interpreter','none','FontSize',20)  
         
-        %%
+        %% plot phase versus amp
         H3=subplot(2,1,2);
         hold on;
         for j=1:length(Freq_order)
@@ -129,12 +147,17 @@ function process_plot_gain_phase_amp_freq_bode(filename,range)
             plot(X_range,[-90 -90],'k--');
             plot(X_range,[-180 -180],'r--');
             hold off;
-            ylim([-270 270]);
-            yticks([-270 -180 -90 0 90 180 270])
+            ylim([-200 200]);
+            yticks([ -180 -90 0 90 180 ])
             xlabel('EPSC amplitude (pA)','FontSize',20);
             ylabel('Average phase','FontSize',20);
-            %samexaxis('ytac','box','off');
+            A2=gca;
+            set(A2.XAxis,'FontSize',20,'LineWidth',3);
+            set(A2.YAxis,'FontSize',20,'LineWidth',3);
             xlim(X_range)
+            samexaxis('YAxisLocation','none','Box','off');
+            set(A1.YAxis(1).Label,'Units','normalized','Position',[-0.05 0.5 0])
+            set(A2.YAxis(1).Label,'Units','normalized','Position',[-0.0415 0.5 0])
             print([filename(1:end-4) '_' num2str(round(S_amp(trial),2)) 'g_allFreq.jpg'],...
             '-r300','-djpeg')
         end

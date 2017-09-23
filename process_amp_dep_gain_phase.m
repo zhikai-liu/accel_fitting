@@ -19,7 +19,7 @@ for trial=range
         amp_range=[max(X_Amp(i)-Amp_bin/2,X_Amp(1)), min(X_Amp(i)+Amp_bin/2,X_Amp(end))];
         S_h(i).bin_phase=Phases(Amps>=amp_range(1)&Amps<amp_range(end));
         if ~isempty(S_h(i).bin_phase)
-            S_h(i).gain=circ_r(S_h(i).bin_phase).*length(S_h(i).bin_phase)./Amp_bin.*S_freq./S.Trials(trial).S_cycle;
+            S_h(i).gain=circ_r(S_h(i).bin_phase).*length(S_h(i).bin_phase)./Amp_bin.*S_freq./S_amp./S.Trials(trial).S_cycle;
             S_h(i).phase=circ_mean(S_h(i).bin_phase);
         else
             S_h(i).gain=0;
@@ -60,7 +60,7 @@ for trial=range
         h(2).handle=subplot(3,1,2);
         %bar(XData,YGain,'FaceColor','r','BarWidth',1)
         plot(Sm_XData,Sm_YGain,'r','LineWidth',4)
-        ylabel('Gain FR','FontSize',20);
+        ylabel('Gain FR/g','FontSize',20);
         %% Plot Phase versus Amp
         h(3).handle=subplot(3,1,3);
         phase_scale=Sm_YGain./max(Sm_YGain);

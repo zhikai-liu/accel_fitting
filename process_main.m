@@ -1,4 +1,4 @@
-filename_h = 'ZL170518_fish04a';
+filename_h = 'ZL170901_fish04a';
 process_abf2mat(filename_h);
 process_event_detect(['EPSC_accel_' filename_h]);
 %process_event_detect(['EPSP_accel_' filename_h]);
