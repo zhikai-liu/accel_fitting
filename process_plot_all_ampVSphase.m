@@ -17,30 +17,39 @@ function process_plot_all_ampVSphase(filename,range)
     for i=1:length(Freq_cor_value)
         Freq_order{i}=find(S_freq==Freq_cor_value{i});
     end
-    color_all=colormap(jet(length(Freq_cor_value)));
+    %color_all=colormap(jet(length(Freq_cor_value)));
+    color_all=colormap(jet(4));
     for i=1:length(Amp_order)
         if ~isempty(Amp_order{i})
-        figure('units','normal','position',[0,0,1,1]);
+        figure('units','normal','position',[0.3,0,0.4,1]);
         hold on;
         for j=1:length(Freq_order)
             if ~isempty(Freq_order{j})
                 for k=1:length(Freq_order{j})
                     if sum(Amp_order{i}==Freq_order{j}(k))
-                    trial=Freq_order{j}(k);
+                    trial_index=Freq_order{j}(k);
+                    trial=range(trial_index);
                     Amps=S.Trials(trial).period_index.amp;
                     Phases=S.Trials(trial).period_index.phase;
-                    scatter(Phases.*180./pi,Amps,'filled',...
+                    scatter(Phases,Amps,64,'filled',...
                         'MarkerFaceColor',color_all(j,:),...
                         'MarkerEdgeColor',color_all(j,:),...
-                        'DisplayName',[num2str(S_freq(trial)),' Hz trial ' num2str(trial)]);    
+                        'DisplayName',[num2str(S_freq(trial_index)),' Hz trial ' num2str(trial)]);    
                     end
                 end
             end
         end
             hold off;
             LG=legend('show');
-            set(LG,'Box','off','FontSize',20)
-            title({filename(1:end-4),[num2str(Amp_cor_value{i}) ' g']},'interpreter','none')
+            set(LG,'Box','off','FontSize',30,'FontWeight','bold')
+            A=gca;
+            set(A.XAxis,'FontSize',30,'LineWidth',3,'FontWeight','bold');
+            set(A.YAxis,'FontSize',30,'LineWidth',3,'FontWeight','bold');
+            set(A,'XLim',[0 2*pi])
+           	ylabel('EPSC amplitude (pA)','FontSize',30,'FontWeight','bold')
+            set(A,'XTick',[0 0.5*pi pi 1.5*pi 2*pi],...
+                'XTickLabel',{'0','\pi/2', '\pi', '3\pi/2', '2\pi'})
+            title({filename(1:end-4),[num2str(Amp_cor_value{i}) ' g']},'interpreter','none','FontSize',30,'FontWeight','bold')
             print([filename(1:end-4) '_' num2str(Amp_cor_value{i}) 'g_allFreq_ampVSphase.jpg'],...
                 '-r300','-djpeg')
         end

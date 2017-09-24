@@ -71,6 +71,8 @@ function process_plot_gain_phase_amp_freq_bode(filename,range,varargin)
         %%
 %         H2=subplot(3,1,2);
 %         hold on;
+        plot_gain_inccrease=0;
+if plot_gain_inccrease
         X_Amp=max(cell2mat(arrayfun(@(c) c{:}(1),AcrFreq_X_Amp,'Uniform',0))):X_Amp_step:min(cell2mat(arrayfun(@(c) c{:}(end),AcrFreq_X_Amp,'Uniform',0)));
         X_index=zeros(length(AcrFreq_YGain),2);
         for j=1:length(AcrFreq_YGain)
@@ -93,12 +95,13 @@ function process_plot_gain_phase_amp_freq_bode(filename,range,varargin)
         scatter(X_Amp,Gain_increase_slope,Mean_Gain_scale.*48+0.01,'o','filled',...
             'MarkerEdgeColor','k','MarkerFaceColor','k','DisplayName','Gain increase')
         ylabel('Gain increase')
+end
         A1=gca;
         set(A1.XAxis,'visible','off');
-        set(A1.YAxis,'FontSize',20,'LineWidth',3,'Color','k');
+        set(A1.YAxis,'FontSize',30,'FontWeight','bold','LineWidth',3,'Color','k');
         LG=legend('show');
-        set(LG,'Box','off','FontSize',20,'LineWidth',3)
-        title({filename(1:end-4),['Amp: ' num2str(S_amp(trial)) ' g']},'interpreter','none','FontSize',20)  
+        set(LG,'Box','off','FontSize',30,'FontWeight','bold','LineWidth',3)
+        title({filename(1:end-4),['Amp: ' num2str(S_amp(trial)) ' g']},'interpreter','none','FontSize',30,'FontWeight','bold')  
         
         %% plot phase versus amp
         H3=subplot(2,1,2);
@@ -149,15 +152,16 @@ function process_plot_gain_phase_amp_freq_bode(filename,range,varargin)
             hold off;
             ylim([-200 200]);
             yticks([ -180 -90 0 90 180 ])
-            xlabel('EPSC amplitude (pA)','FontSize',20);
-            ylabel('Average phase','FontSize',20);
+            xlabel('EPSC amplitude (pA)','FontSize',30,'FontWeight','bold');
+            ylabel('Average phase','FontSize',30,'FontWeight','bold');
             A2=gca;
-            set(A2.XAxis,'FontSize',20,'LineWidth',3);
-            set(A2.YAxis,'FontSize',20,'LineWidth',3);
+            set(A2.XAxis,'FontSize',30,'FontWeight','bold','LineWidth',3);
+            set(A2.YAxis,'FontSize',30,'FontWeight','bold','LineWidth',3);
             xlim(X_range)
             samexaxis('YAxisLocation','none','Box','off');
             set(A1.YAxis(1).Label,'Units','normalized','Position',[-0.05 0.5 0])
             set(A2.YAxis(1).Label,'Units','normalized','Position',[-0.0415 0.5 0])
+            %set(A1.YAxis(2),'Visible','off')
             print([filename(1:end-4) '_' num2str(round(S_amp(trial),2)) 'g_allFreq.jpg'],...
             '-r300','-djpeg')
         end
