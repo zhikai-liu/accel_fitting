@@ -1,4 +1,4 @@
-function [S_period,fit_model,accel_axis]=fit_accel(Data,si,f_name,poi,if_plot_figures)
+function [S_period,fit_model,accel_axis]=fit_accel_auto(Data,si,f_name,poi,if_plot_figures)
     [~,D_y] = size(Data);
     [~,poi_y] = size(poi);
     S_period = cell(1,poi_y);
