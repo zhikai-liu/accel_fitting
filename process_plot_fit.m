@@ -9,7 +9,7 @@ for i =1:length(f_abf)
         poi_end = S.poi{j}(end)*1e6/S.si;
         poi = poi_start+1:poi_end;
         F1 = figure('units','normal','position',[0 0 1 1]);
-        plot_accel_fit(S.Data,poi,S.fit_model{j},S.S_period{j},S.accel_axis,S.si,S.type);
+        plot_accel_fit(S.Data,poi,S.fit_model{j},S.S_period{j},S.accel_axis{j},S.si,S.type,S.other_axis(:,j),S.other_axis_fit(:,j));
         title(F1.Children(end),[S.name ' Period ' num2str(j) ' of ' num2str(length(S.poi))],...
             'interpreter','none','FontSize',20,'FontWeight','bold');
         A1=F1.Children;

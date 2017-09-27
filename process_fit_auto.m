@@ -1,4 +1,4 @@
-function process_fit(filename_h)
+function process_fit_auto(filename_h)
 %filename_h = 'ZL170518_fish01a'
 f_mat = dir([filename_h '*.mat']);
 for i =1:length(f_mat)
@@ -13,7 +13,7 @@ for i =1:length(f_mat)
     %F = figure('KeyPressFcn',{@file_move_by_key,f_abf,if_fit,poi,if_plot=1});
     %setappdata(F,'f_num',1);
     if_plot=0;
-    [S_period,fit_model,accel_axis]= fit_accel(S.Data,S.si,S.name,poi,if_plot);
+    [S_period,fit_model,accel_axis]= fit_auto_accel(S.Data,S.si,S.name,poi,if_plot);
     fit_freq = cell(1,length(fit_model)); fit_amp = fit_freq;
     for j = 1:length(fit_model)
         fit_amp{j} = fit_model{j}.a1;

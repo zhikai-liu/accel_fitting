@@ -1,8 +1,8 @@
 filename_h = 'ZL170830_fish04b';
 process_abf2mat(filename_h);
-process_event_detect(['EPSC_accel_' filename_h]);
+process_event_detect(['EPSC_*_accel_' filename_h]);
 %process_event_detect(['EPSP_accel_' filename_h]);
-process_fit(['EPSC_accel_' filename_h]);
+process_fit(['EPSC_*_accel_' filename_h]);
 %process_fit(['EPSP_accel_' filename_h]);
 %Plot fitting results for all
 %process_plot_fit(['EPSC_accel_' filename_h]);
