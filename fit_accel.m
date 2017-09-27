@@ -24,7 +24,8 @@ function [S_period,fit_model,accel_axis]=fit_accel(Data,si,f_name,poi,if_plot_fi
             end_index = find(cross_>find(Dev_<0.70*min(Dev_),1,'last'),1);
             S_end = poi_k(1)-1+cross_(end_index);
             S_period{k} = S_start:S_end;
-            fit_model{k} = fit(S_period{k}',Data(S_period{k},accel_axis),'sin1');
+            %ft=fittype(@(a1,b1,c1,d1,x) a1*sin(b1*x+c1)+d1);
+            fit_model{k} = fit(S_period{k}',Data(S_period{k},accel_axis)-mean(Data(S_period{k},accel_axis)),'sin1');
             if if_plot_figures
                 F1 = figure;
                 plot_accel_fit(Data,poi_k,fit_model{k},S_period{k},accel_axis,si);
