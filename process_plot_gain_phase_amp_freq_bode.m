@@ -23,21 +23,22 @@ function process_plot_gain_phase_amp_freq_bode(filename,range,varargin)
         Freq_order{i}=find(S_freq==Freq_cor_value{i});
     end
     color_all=colormap(jet(length(Freq_cor_value)));
-    
+    %color_all=colormap(jet(5));
      for i=1:length(Amp_order)
         if ~isempty(Amp_order{i})
             X_range=[10 10];
             AcrFreq_YGain={};
             AcrFreq_FreqOrderIndex=[];
             AcrFreq_X_Amp={};
-        figure('units','normal','position',[0,0,1,1]);
+        figure('units','normal','position',[0.1,0,0.7,1]);
         H1=subplot(2,1,1);
         hold on;
         for j=1:length(Freq_order)
             if ~isempty(Freq_order{j})
                 for k=1:length(Freq_order{j})
                     if sum(Amp_order{i}==Freq_order{j}(k))
-                    trial=Freq_order{j}(k);
+                    trial_index=Freq_order{j}(k);
+                    trial=range(trial_index);
                     X_Amp=S.Trials(trial).X_Amp;
                     X_Amp_step=S.Trials(trial).X_Amp_step;
                     X_range=[min(X_Amp(1),X_range(1)),max(X_Amp(end),X_range(end))];
@@ -58,7 +59,7 @@ function process_plot_gain_phase_amp_freq_bode(filename,range,varargin)
                     else
                             Trial_num_str=[];
                     end
-                    plot(Sm_XData,Sm_YGain,'Color',color_all(j,:),'LineWidth',3,'DisplayName',[num2str(S_freq(trial)) ' Hz' Trial_num_str])
+                    plot(Sm_XData,Sm_YGain,'Color',color_all(j,:),'LineWidth',3,'DisplayName',[num2str(S_freq(trial_index)) ' Hz' Trial_num_str])
                     end
                 end
             end
@@ -71,8 +72,8 @@ function process_plot_gain_phase_amp_freq_bode(filename,range,varargin)
         %%
 %         H2=subplot(3,1,2);
 %         hold on;
-        plot_gain_inccrease=0;
-if plot_gain_inccrease
+        plot_gain_increase=1;
+if plot_gain_increase
         X_Amp=max(cell2mat(arrayfun(@(c) c{:}(1),AcrFreq_X_Amp,'Uniform',0))):X_Amp_step:min(cell2mat(arrayfun(@(c) c{:}(end),AcrFreq_X_Amp,'Uniform',0)));
         X_index=zeros(length(AcrFreq_YGain),2);
         for j=1:length(AcrFreq_YGain)
@@ -98,10 +99,10 @@ if plot_gain_inccrease
 end
         A1=gca;
         set(A1.XAxis,'visible','off');
-        set(A1.YAxis,'FontSize',30,'FontWeight','bold','LineWidth',3,'Color','k');
+        set(A1.YAxis,'FontSize',20,'FontWeight','bold','LineWidth',3,'Color','k');
         LG=legend('show');
-        set(LG,'Box','off','FontSize',30,'FontWeight','bold','LineWidth',3)
-        title({filename(1:end-4),['Amp: ' num2str(S_amp(trial)) ' g']},'interpreter','none','FontSize',30,'FontWeight','bold')  
+        set(LG,'Box','off','FontSize',20,'FontWeight','bold','LineWidth',3)
+        title({filename(1:end-4),['Amp: ' num2str(S_amp(trial_index)) ' g']},'interpreter','none','FontSize',20,'FontWeight','bold')  
         
         %% plot phase versus amp
         H3=subplot(2,1,2);
@@ -110,7 +111,8 @@ end
             if ~isempty(Freq_order{j})
                 for k=1:length(Freq_order{j})
                     if sum(Amp_order{i}==Freq_order{j}(k))
-                    trial=Freq_order{j}(k);
+                    trial_index=Freq_order{j}(k);
+                    trial=range(trial_index);
                     X_Amp=S.Trials(trial).X_Amp;
                     YPhase=S.Trials(trial).YPhase;
                     Sm_XData=linspace(X_Amp(1),X_Amp(end),(length(X_Amp)-1)*10);
@@ -152,17 +154,18 @@ end
             hold off;
             ylim([-200 200]);
             yticks([ -180 -90 0 90 180 ])
-            xlabel('EPSC amplitude (pA)','FontSize',30,'FontWeight','bold');
-            ylabel('Average phase','FontSize',30,'FontWeight','bold');
+            yticklabels({'\pi','3\pi/2','0','\pi/2','\pi'});
+            xlabel('EPSC amplitude (pA)','FontSize',20,'FontWeight','bold');
+            ylabel('Average phase','FontSize',20,'FontWeight','bold');
             A2=gca;
-            set(A2.XAxis,'FontSize',30,'FontWeight','bold','LineWidth',3);
-            set(A2.YAxis,'FontSize',30,'FontWeight','bold','LineWidth',3);
+            set(A2.XAxis,'FontSize',20,'FontWeight','bold','LineWidth',3);
+            set(A2.YAxis,'FontSize',20,'FontWeight','bold','LineWidth',3);
             xlim(X_range)
             samexaxis('YAxisLocation','none','Box','off');
-            set(A1.YAxis(1).Label,'Units','normalized','Position',[-0.05 0.5 0])
-            set(A2.YAxis(1).Label,'Units','normalized','Position',[-0.0415 0.5 0])
+            set(A1.YAxis(1).Label,'Units','normalized','Position',[-0.08 0.5 0])
+            set(A2.YAxis(1).Label,'Units','normalized','Position',[-0.08 0.5 0])
             %set(A1.YAxis(2),'Visible','off')
-            print([filename(1:end-4) '_' num2str(round(S_amp(trial),2)) 'g_allFreq.jpg'],...
-            '-r300','-djpeg')
+            print([filename(1:end-4) '_' num2str(round(S_amp(trial_index),2)) 'g_allFreq.jpg'],...
+            '-r200','-djpeg')
         end
     end

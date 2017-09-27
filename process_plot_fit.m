@@ -8,17 +8,35 @@ for i =1:length(f_abf)
         poi_start = S.poi{j}(1)*1e6/S.si;
         poi_end = S.poi{j}(end)*1e6/S.si;
         poi = poi_start+1:poi_end;
-        F1 = figure;
+        F1 = figure('units','normal','position',[0 0 1 1]);
         plot_accel_fit(S.Data,poi,S.fit_model{j},S.S_period{j},S.accel_axis,S.si,S.type);
-        title(F1.Children(end),[S.name ' Period ' num2str(j) ' of ' num2str(length(S.poi))],'interpreter','none');
+        title(F1.Children(end),[S.name ' Period ' num2str(j) ' of ' num2str(length(S.poi))],...
+            'interpreter','none','FontSize',20,'FontWeight','bold');
+        A1=F1.Children;
+        for k=1:length(A1)
+        set(A1(k).Children,'LineWidth',3)
+        set(A1(k).XAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
+        set(A1(k).YAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
+        set(A1(k).YAxis.Label,'Units','normalized','Position',[-0.08 0.5 0])
+        end
         print([S.name '_period_' num2str(j) '_raw_fit.pdf'],'-fillpage','-dpdf');
-        F2 = figure;
+        F2 = figure('units','normal','position',[0.1 0 0.7 1]);
         if isfield(S,'event_index')
             plot_cycle_fit(S.Data,S.event_index,S.amps,poi,S.fit_model{j},S.S_period{j},S.type);
         else
             plot_cycle_fit(S.Data,[],[],poi,S.fit_model{j},S.S_period{j},S.type);
         end
-        title(F2.Children(2),{[S.name ' (Period ' num2str(j) ')'], [' Sin: Freq ' num2str(S.fit_freq{j}) '  Amp ' num2str(S.fit_amp{j}) 'g']},'interpreter','none');
-        print([S.name '_period_' num2str(j) '_cycle_fit.pdf'],'-fillpage','-dpdf');
+        title(F2.Children(2),{[S.name ' (Period ' num2str(j) ')'], [' Sin: Freq ' num2str(S.fit_freq{j}) '  Amp ' num2str(S.fit_amp{j}) 'g']},...
+            'interpreter','none','FontSize',20,'FontWeight','bold');
+        A2=F2.Children;
+        xticks([0 90 180 270 360])
+        xticklabels({'0','\pi/2','\pi','3\pi/2','2\pi'});
+        for k=1:length(A2)
+        set(A2(k).Children,'LineWidth',3)
+        set(A2(k).XAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
+        set(A2(k).YAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
+        set(A2(k).YAxis.Label,'Units','normalized','Position',[-0.08 0.5 0])
+        end
+        print([S.name '_period_' num2str(j) '_cycle_fit.jpg'],'-r300','-djpeg');
     end
 end

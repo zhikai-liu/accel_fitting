@@ -17,11 +17,11 @@ function process_plot_all_ampVSphase(filename,range)
     for i=1:length(Freq_cor_value)
         Freq_order{i}=find(S_freq==Freq_cor_value{i});
     end
-    %color_all=colormap(jet(length(Freq_cor_value)));
-    color_all=colormap(jet(4));
+    color_all=colormap(jet(length(Freq_cor_value)));
+    %color_all=colormap(jet(5));
     for i=1:length(Amp_order)
         if ~isempty(Amp_order{i})
-        figure('units','normal','position',[0.3,0,0.4,1]);
+        figure('units','normal','position',[0.1,0,0.7,1]);
         hold on;
         for j=1:length(Freq_order)
             if ~isempty(Freq_order{j})
@@ -45,7 +45,8 @@ function process_plot_all_ampVSphase(filename,range)
             A=gca;
             set(A.XAxis,'FontSize',30,'LineWidth',3,'FontWeight','bold');
             set(A.YAxis,'FontSize',30,'LineWidth',3,'FontWeight','bold');
-            set(A,'XLim',[0 2*pi])
+            set(A,'XLim',[0 2*pi],...
+                'YLim',[0 150])
            	ylabel('EPSC amplitude (pA)','FontSize',30,'FontWeight','bold')
             set(A,'XTick',[0 0.5*pi pi 1.5*pi 2*pi],...
                 'XTickLabel',{'0','\pi/2', '\pi', '3\pi/2', '2\pi'})
