@@ -16,9 +16,9 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
             end
             hold off;
             xlim([0 360]);
-            if strcmp(type,'EPSC+accel')||strcmp(type,'IPSC+accel')
+            if strcmp(type{1},'EPSC')||strcmp(type{1},'IPSC')
                 ylabel('pA','Rotation',0);
-            elseif strcmp(type,'EPSP+accel')||strcmp(type,'IPSP+accel')
+            elseif strcmp(type{1},'EPSP')||strcmp(type{1},'IPSP')
                 ylabel('mV','Rotation',0);
             end
             xlabel('degree');
@@ -32,9 +32,9 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
             xlim([0 360]);
             A=gca;
             set(A.XAxis,'visible','off')
-            if strcmp(type,'EPSC+accel')||strcmp(type,'IPSC+accel')
+            if strcmp(type{1},'EPSC')||strcmp(type{1},'IPSC')
                 ylabel('pA','Rotation',0);
-            elseif strcmp(type,'EPSP+accel')||strcmp(type,'IPSP+accel')
+            elseif strcmp(type{1},'EPSP')||strcmp(type{1},'IPSP')
                 ylabel('mV','Rotation',0);
             end
         subplot(fig_num,1,2);
