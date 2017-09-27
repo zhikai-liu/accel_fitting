@@ -14,7 +14,7 @@ function plot_accel_fit(Data,poi,fit_model,S_period,accel_axis,si,type)
         plot((S_period)*si*1e-6,Data(S_period,i),'r');
         ylabel(YLabel{i},'Rotation',0);
         if i == accel_axis
-        plot(S_period*si*1e-6,fit_accel_y,'g')
+        plot(S_period*si*1e-6,fit_accel_y+mean(Data(S_period,i)),'g')
         end
         hold off;
         if i~=D_y
