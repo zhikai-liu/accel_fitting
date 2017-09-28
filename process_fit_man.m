@@ -13,6 +13,7 @@ for i =1:length(f_mat)
     %F = figure('KeyPressFcn',{@file_move_by_key,f_abf,if_fit,poi,if_plot=1});
     %setappdata(F,'f_num',1);
     if_plot=0;
+
     [S_period,fit_model,accel_axis,other_axis_fit,other_axis]=fit_man_accel(S.Data,S.si,S.name,poi,if_plot);
     fit_freq = cell(1,length(fit_model)); fit_amp = fit_freq;
     for j = 1:length(fit_model)

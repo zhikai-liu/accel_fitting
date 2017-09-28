@@ -38,5 +38,6 @@ for i =1:length(f_abf)
         set(A2(k).YAxis.Label,'Units','normalized','Position',[-0.08 0.5 0])
         end
         print([S.name '_period_' num2str(j) '_cycle_fit.jpg'],'-r300','-djpeg');
+        close all;
     end
 end
