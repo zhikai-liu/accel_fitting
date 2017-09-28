@@ -23,6 +23,11 @@ for i =1:f_num
         if isfield(S,'cell_opening')
         Trials(counter).cell_opening = S.cell_opening;
         end
+        if isfield(S,'other_axis')
+            Trials(counter).other_axis=S.other_axis(:,j);
+            Trials(counter).other_axis_fit=S.other_axis_fit(:,j);
+            Trials(counter).accel_axis=S.accel_axis{j};
+        end
         counter = counter+1;
     end
 end
