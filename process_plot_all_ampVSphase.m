@@ -19,6 +19,7 @@ function process_plot_all_ampVSphase(filename,range)
     end
     color_all=colormap(jet(length(Freq_cor_value)));
     %color_all=colormap(jet(5));
+    Amp_max=0;
     for i=1:length(Amp_order)
         if ~isempty(Amp_order{i})
         figure('units','normal','position',[0.1,0,0.7,1]);
@@ -30,6 +31,7 @@ function process_plot_all_ampVSphase(filename,range)
                     trial_index=Freq_order{j}(k);
                     trial=range(trial_index);
                     Amps=S.Trials(trial).period_index.amp;
+                    Amp_max=max(max(Amps),Amp_max);
                     Phases=S.Trials(trial).period_index.phase;
                     scatter(Phases,Amps,64,'filled',...
                         'MarkerFaceColor',color_all(j,:),...
@@ -46,12 +48,12 @@ function process_plot_all_ampVSphase(filename,range)
             set(A.XAxis,'FontSize',30,'LineWidth',3,'FontWeight','bold');
             set(A.YAxis,'FontSize',30,'LineWidth',3,'FontWeight','bold');
             set(A,'XLim',[0 2*pi],...
-                'YLim',[0 150])
+                'YLim',[0 Amp_max*1.5])
            	ylabel('EPSC amplitude (pA)','FontSize',30,'FontWeight','bold')
             set(A,'XTick',[0 0.5*pi pi 1.5*pi 2*pi],...
                 'XTickLabel',{'0','\pi/2', '\pi', '3\pi/2', '2\pi'})
             title({filename(1:end-4),[num2str(Amp_cor_value{i}) ' g']},'interpreter','none','FontSize',30,'FontWeight','bold')
-            print([filename(1:end-4) '_' num2str(Amp_cor_value{i}) 'g_allFreq_ampVSphase.jpg'],...
+            print([filename(1:end-4) '_' num2str(Amp_cor_value{i}) 'g_allFreq_ampVSphase_scatter.jpg'],...
                 '-r300','-djpeg')
         end
     end

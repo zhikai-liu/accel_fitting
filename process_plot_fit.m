@@ -19,7 +19,7 @@ for i =1:length(f_abf)
         set(A1(k).YAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
         set(A1(k).YAxis.Label,'Units','normalized','Position',[-0.08 0.5 0])
         end
-        print([S.name '_period_' num2str(j) '_raw_fit.pdf'],'-fillpage','-dpdf');
+        print([S.name '_period_' num2str(j) '_raw_fit.jpg'],'-r300','-djpeg');
         F2 = figure('units','normal','position',[0.1 0 0.7 1]);
         if isfield(S,'event_index')
             plot_cycle_fit(S.Data,S.event_index,S.amps,poi,S.fit_model{j},S.S_period{j},S.type);

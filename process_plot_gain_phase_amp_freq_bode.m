@@ -72,7 +72,11 @@ function process_plot_gain_phase_amp_freq_bode(filename,range,varargin)
         %%
 %         H2=subplot(3,1,2);
 %         hold on;
+if length(AcrFreq_FreqOrderIndex)>1
         plot_gain_increase=1;
+else
+    plot_gain_increase=0;
+end
 if plot_gain_increase
         X_Amp=max(cell2mat(arrayfun(@(c) c{:}(1),AcrFreq_X_Amp,'Uniform',0))):X_Amp_step:min(cell2mat(arrayfun(@(c) c{:}(end),AcrFreq_X_Amp,'Uniform',0)));
         X_index=zeros(length(AcrFreq_YGain),2);
@@ -165,7 +169,7 @@ end
             set(A1.YAxis(1).Label,'Units','normalized','Position',[-0.08 0.5 0])
             set(A2.YAxis(1).Label,'Units','normalized','Position',[-0.08 0.5 0])
             %set(A1.YAxis(2),'Visible','off')
-            print([filename(1:end-4) '_' num2str(round(S_amp(trial_index),2)) 'g_allFreq.jpg'],...
+            print([filename(1:end-4) '_' num2str(round(S_amp(trial_index),2)) 'g_allFreq_bode.jpg'],...
             '-r200','-djpeg')
         end
     end
