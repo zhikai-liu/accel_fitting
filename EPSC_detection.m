@@ -36,7 +36,7 @@ raw_l = length(raw_index);
 amp_raw = zeros(raw_l,1);
 for i = 1:raw_l
     if i == raw_l
-        duration = event_duration; % the last EPSC duration is 640us
+        duration = min(event_duration,length(data_s)-raw_index(i)); % the last EPSC duration is 640us
     else
     duration = min(raw_index(i+1)-raw_index(i),32);%duration of EPSC is the smaller one of either 640us or before next EPSC comes
     end
