@@ -5,7 +5,7 @@ FNames=fieldnames(S);
 H=struct();
 for i=1:length(FNames)
     ampbin_num=length(S.(FNames{i}));
-    T=load(['Trials_EPSC_accel_' FNames{i} '.mat']);
+    T=load(['Trials_EPSC_auto_accel_' FNames{i} '.mat']);
     amp_select=round([T.Trials.S_amp],2)==S_amp;
     A_select=T.Trials(amp_select);
     for k=1:length(S_freq)

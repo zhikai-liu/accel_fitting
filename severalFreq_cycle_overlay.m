@@ -15,7 +15,7 @@ for i = 1:n
     period = plot_period{i}(1).*1e6/trial.si:plot_period{i}(end).*1e6/trial.si;
     h(i).pA=subplot(2*n+1,1,2*i-1);
     plot_cycle_overlay(trial.Data,1,trial.fit_model{S.Trials(plot_order(i)).poi_num},trial.S_period{S.Trials(plot_order(i)).poi_num},...
-        'LineWidth',1.5)
+        'k','LineWidth',2)
     ylim(pA_YLIM_range);
 %     A = gca;
 %     set(A,'linewidth',4,'fontsize',20,'fontweight','bold')
@@ -24,7 +24,7 @@ for i = 1:n
 %     set(A.XAxis,'Visible','off')
     h(i).g=subplot(2*n+1,1,2*i);
     plot_cycle_overlay(trial.Data,2,trial.fit_model{S.Trials(plot_order(i)).poi_num},trial.S_period{S.Trials(plot_order(i)).poi_num},...
-        'b','LineWidth',2)
+        'r','LineWidth',4)
     ylabel('g');
     ylim(g_YLIM_ragne);
     text(-4,0.1,[num2str(2^(i-2)) ' Hz 0.04g'],'fontsize',20,'fontweight','bold')
@@ -57,9 +57,9 @@ end
 set(h(2*n+1).scaleBar,'Units','normal',...
          'position',[0.6,0.1,0.04,0.05],...
          'Visible','off')
-text(0.2,1.3,'\color{blue}0.1g\color{black}/40pA','fontsize',20,'fontweight','bold')
-text(1.1,0,'\pi/2','fontsize',20,'fontweight','bold')
-print('severalFreq_example_cycle_overlay.jpg','-r300','-djpeg')
+text(0.2,1.3,'\color{red}0.1g\color{black}/40pA','fontsize',20,'fontweight','bold')
+text(1.1,0,'90^o','fontsize',20,'fontweight','bold')
+print('severalFreq_example_cycle_overlay','-dsvg')
 
 
 function plot_cycle_overlay(Data,dim,fit_model,S_period,varargin)

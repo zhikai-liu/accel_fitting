@@ -1,6 +1,8 @@
 
 f_name={'ZL170517_fish03a','ZL170518_fish01a','ZL170518_fish02a','ZL170518_fish03a','ZL170518_fish04a',...
-    'ZL170830_fish04b','ZL170830_fish05b','ZL170901_fish04a'};
+    'ZL170830_fish04b','ZL170830_fish05b','ZL170901_fish04a','ZL170828_fish01a','ZL170828_fish03a',...
+    'ZL170828_fish03b','ZL170828_fish04a','ZL170830_fish01b','ZL170830_fish02a','ZL170830_fish04a',...
+    'ZL170901_fish03a','ZL170906_fish01b','ZL170906_fish03a','ZL170906_fish03b'};
 drc={'rostral','caudal'};
 S=struct();
 S.(f_name{1}).amp_range=[40 80];
@@ -35,6 +37,64 @@ S.(f_name{8})(2).amp_range=[30 45];
 S.(f_name{8})(2).direction='rostral';
 S.(f_name{8})(3).amp_range=[90 110];
 S.(f_name{8})(3).direction='rostral';
-
-
+S.(f_name{9}).amp_range=[20 50];
+S.(f_name{9}).direction='rostral';
+S.(f_name{10})(1).amp_range=[0 30];
+S.(f_name{10})(1).direction='caudal';
+S.(f_name{10})(2).amp_range=[40 70];
+S.(f_name{10})(2).direction='caudal';
+S.(f_name{10})(3).amp_range=[70 95];
+S.(f_name{10})(3).direction='rostral';
+S.(f_name{10})(4).amp_range=[95 120];
+S.(f_name{10})(4).direction='caudal';
+S.(f_name{11})(1).amp_range=[0 20];
+S.(f_name{11})(1).direction='caudal';
+S.(f_name{11})(2).amp_range=[20 60];
+S.(f_name{11})(2).direction='caudal';
+S.(f_name{11})(3).amp_range=[80 120];
+S.(f_name{11})(3).direction='caudal';
+S.(f_name{12})(1).amp_range=[0 20];
+S.(f_name{12})(1).direction='caudal';
+S.(f_name{12})(2).amp_range=[20 40];
+S.(f_name{12})(2).direction='caudal';
+S.(f_name{12})(3).amp_range=[50 70];
+S.(f_name{12})(3).direction='caudal';
+S.(f_name{13})(1).amp_range=[0 17];
+S.(f_name{13})(1).direction='caudal';
+S.(f_name{13})(2).amp_range=[17 30];
+S.(f_name{13})(2).direction='caudal';
+S.(f_name{13})(3).amp_range=[40 60];
+S.(f_name{13})(3).direction='rostral';
+S.(f_name{14})(1).amp_range=[0 25];
+S.(f_name{14})(1).direction='rostral';
+S.(f_name{14})(2).amp_range=[25 100];
+S.(f_name{14})(2).direction='rostral';
+S.(f_name{14})(3).amp_range=[130 200];
+S.(f_name{14})(3).direction='rostral';
+S.(f_name{15})(1).amp_range=[0 50];
+S.(f_name{15})(1).direction='caudal';
+S.(f_name{15})(2).amp_range=[70 150];
+S.(f_name{15})(2).direction='caudal';
+S.(f_name{16})(1).amp_range=[0 18];
+S.(f_name{16})(1).direction='rostral';
+S.(f_name{16})(2).amp_range=[18 30];
+S.(f_name{16})(2).direction='rostral';
+S.(f_name{16})(3).amp_range=[30 60];
+S.(f_name{16})(3).direction='rostral';
+S.(f_name{16})(4).amp_range=[70 110];
+S.(f_name{16})(4).direction='rostral';
+S.(f_name{17})(1).amp_range=[0 20];
+S.(f_name{17})(1).direction='caudal';
+S.(f_name{17})(2).amp_range=[20 40];
+S.(f_name{17})(2).direction='caudal';
+S.(f_name{17})(3).amp_range=[80 120];
+S.(f_name{17})(3).direction='caudal';
+S.(f_name{18})(1).amp_range=[23 50];
+S.(f_name{18})(1).direction='rostral';
+S.(f_name{19})(1).amp_range=[0 25];
+S.(f_name{19})(1).direction='caudal';
+S.(f_name{19})(2).amp_range=[40 70];
+S.(f_name{19})(2).direction='caudal';
+S.(f_name{19})(3).amp_range=[200 250];
+S.(f_name{19})(3).direction='caudal';
 save('ampbin_info.mat','-struct','S');

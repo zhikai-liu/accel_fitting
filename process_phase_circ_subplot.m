@@ -31,8 +31,8 @@ for j = 1:plot_num
         set(A.Children(1:end),'Visible','off');
     else
         set(A.Children(1:4),'fontsize',16,'FontWeight','bold');
-        set(A.Children(end),'MarkerSize',6,'LineWidth',2,'Color','blue');
-        set(A.Children(end-4),'LineWidth',16*weight,'Color','red');
+        set(A.Children(end),'MarkerSize',6,'LineWidth',2,'Color','red');
+        set(A.Children(end-4),'LineWidth',16*weight,'Color','black');
     end
     if j<=m
         for k = 1:n
@@ -60,6 +60,7 @@ for j = 1:plot_num
     end
 end
 print([filename_h '_phase_subplot(' num2str(amp_range(1)) 'to' num2str(amp_range(end)) 'pA).jpg'],'-r300','-djpeg')
+print([filename_h '_phase_subplot(' num2str(amp_range(1)) 'to' num2str(amp_range(end)) 'pA)'],'-dsvg')
 end
 
 function A=circular_phase_plot(alpha,weight,varargin)
@@ -92,6 +93,6 @@ function A=circular_phase_plot(alpha,weight,varargin)
     set(gca,'box','off')
     set(gca,'xtick',[])
     set(gca,'ytick',[])
-    text(1.2, 0, '0'); text(-.05, 1.2, '\pi/2');  text(-1.35, 0, '±\pi');  text(-.075, -1.2, '-\pi/2');
+    text(1.3, 0, '0^o'); text(-0.2, 1.3, '90^o');  text(-1.6, 0, '180^o');  text(-0.2, -1.3, '270^o');
     A=gca;
 end
