@@ -35,6 +35,8 @@ function plot_ampbins_bode(filename)
                     freq_phase(k)=freq_phase(k)+2*pi;
                 end
             end
+            gain_fit=fit(log2(S_freq)',freq_gain','poly1');
+            phase_fit=fit(log2(S_freq)',freq_phase','poly1');
             S(count).S_freq=S_freq;
             S(count).freq_gain=freq_gain;
             S(count).freq_phase=freq_phase;
@@ -42,6 +44,8 @@ function plot_ampbins_bode(filename)
             S(count).direction=direction;
             S(count).amp_range=H.(FNames{i}).(Freq_FNames{k})(h).AmpBins(j).amp_range;
             S(count).rec_file=FNames{i};
+            S(count).gain_fit=gain_fit;
+            S(count).phase_fit=phase_fit;
             count=count+1;
         end
     end
@@ -49,6 +53,16 @@ function plot_ampbins_bode(filename)
     S_rostral=S([S.direction]==pi/2);
     S_caudal=S([S.direction]==-pi/2);
    	freq_num=length(S(1).S_freq);
+    
+    rostral_gain_a1=cell2mat(arrayfun(@(x) x.gain_fit.p1,S_rostral(:)','Uniform',0));
+    rostral_gain_b1=cell2mat(arrayfun(@(x) x.gain_fit.p2,S_rostral(:)','Uniform',0));
+    rostral_phase_a1=cell2mat(arrayfun(@(x) x.phase_fit.p1,S_rostral(:)','Uniform',0));
+    rostral_phase_b1=cell2mat(arrayfun(@(x) x.phase_fit.p2,S_rostral(:)','Uniform',0));
+    caudal_gain_a1=cell2mat(arrayfun(@(x) x.gain_fit.p1,S_caudal(:)','Uniform',0));
+    caudal_gain_b1=cell2mat(arrayfun(@(x) x.gain_fit.p2,S_caudal(:)','Uniform',0));
+    caudal_phase_a1=cell2mat(arrayfun(@(x) x.phase_fit.p1,S_caudal(:)','Uniform',0));
+    caudal_phase_b1=cell2mat(arrayfun(@(x) x.phase_fit.p2,S_caudal(:)','Uniform',0));
+    
     rostral_gain_avr=zeros(1,freq_num);
     rostral_gain_std=zeros(1,freq_num);
     caudal_gain_avr=zeros(1,freq_num);
@@ -99,8 +113,26 @@ function plot_ampbins_bode(filename)
     %ylim([-90 180])
     xlabel('Hz')
     ylabel('phase')
-    
-    
-    
+    figure;
+    subplot(2,1,1)
+    errorbar([1 2],...
+        [mean(rostral_gain_a1) mean(caudal_gain_a1)],...
+        [std(rostral_gain_a1)/sqrt(length(rostral_gain_a1)) std(caudal_gain_a1)]/sqrt(length(caudal_gain_a1)))
+    hold on;
+    errorbar([4 5],...
+        [mean(rostral_gain_b1) mean(caudal_gain_b1)],...
+        [std(rostral_gain_b1)/sqrt(length(rostral_gain_b1)) std(caudal_gain_b1)]/sqrt(length(caudal_gain_b1)))
+    hold off;
+    xlim([0 6])
+    subplot(2,1,2)
+    errorbar([1 2],...
+        [mean(rostral_phase_a1) mean(caudal_phase_a1)],...
+        [std(rostral_phase_a1)/sqrt(length(rostral_phase_a1)) std(caudal_phase_a1)]/sqrt(length(caudal_phase_a1)))    
+    hold on;
+        errorbar([4 5],...
+        [mean(rostral_phase_b1) mean(caudal_phase_b1)],...
+        [std(rostral_phase_b1)/sqrt(length(rostral_phase_b1)) std(caudal_phase_b1)]/sqrt(length(caudal_phase_b1)))    
+    hold off;
+    xlim([0 6])
     
 end
