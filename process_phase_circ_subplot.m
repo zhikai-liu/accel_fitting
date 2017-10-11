@@ -31,8 +31,8 @@ for j = 1:plot_num
         set(A.Children(1:end),'Visible','off');
     else
         set(A.Children(1:4),'fontsize',16,'FontWeight','bold');
-        set(A.Children(end),'MarkerSize',6,'LineWidth',2,'Color','red');
-        set(A.Children(end-4),'LineWidth',16*weight,'Color','black');
+        set(A.Children(end),'MarkerSize',6,'LineWidth',2,'Color','k');
+        set(A.Children(end-4),'LineWidth',16*weight,'Color','k');
     end
     if j<=m
         for k = 1:n
@@ -62,6 +62,7 @@ end
 print([filename_h '_phase_subplot(' num2str(amp_range(1)) 'to' num2str(amp_range(end)) 'pA).jpg'],'-r300','-djpeg')
 print([filename_h '_phase_subplot(' num2str(amp_range(1)) 'to' num2str(amp_range(end)) 'pA)'],'-dsvg')
 end
+
 
 function A=circular_phase_plot(alpha,weight,varargin)
 % convert angles to unit vectors

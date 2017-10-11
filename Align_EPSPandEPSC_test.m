@@ -57,6 +57,7 @@ for i=1:length(EPSC_trials.Trials)
             text(0.2,0.7,['\color{black}' num2str(g_scale) 'g' '/' '\color{red}' num2str(g_scale) 'g'],'fontsize',20,'fontweight','bold')
             x_scale=round(S_period_sec/XAxis_l(1)*0.035,2);
             text(1.1,0,[num2str(x_scale) 's'],'fontsize',20,'fontweight','bold')
+            print(['Combined_EPSC' num2str(EPSC_trials.Trials(i).mat_file(end-7:end-4)) '_EPSP' num2str(EPSP_trials.Trials(j).mat_file(end-7:end-4)) '_' num2str(Stim_freq) 'Hz_' num2str(Stim_amp) 'g.svg'],'-dsvg');
             print(['Combined_EPSC' num2str(EPSC_trials.Trials(i).mat_file(end-7:end-4)) '_EPSP' num2str(EPSP_trials.Trials(j).mat_file(end-7:end-4)) '_' num2str(Stim_freq) 'Hz_' num2str(Stim_amp) 'g.jpg'],'-r300','-djpeg');
         end
     end

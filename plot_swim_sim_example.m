@@ -1,13 +1,12 @@
-[Data,si,info]=abfload('ZL170901_fish04a_0014.abf'); %22
+[Data,si,info]=abfload('ZL170901_fish04a_0022.abf'); %14
 S=struct();
 data_l=length(Data);
 S.Data=Data;
 S.si=si;
-t_range(1,:)=[4.48 4.68];
-t_range(2,:)=[7.82 8.12];
-% t_range(1,:)=[17.48 17.78];
-% t_range(2,:)=[8.03 8.33];
-
+% t_range(1,:)=[4.48 4.78];
+% t_range(2,:)=[7.82 8.12];
+t_range(1,:)=[17.48 17.78];
+t_range(2,:)=[8.03 8.33];
 for i=1:size(t_range,1)
 xrange=1:data_l;
 XAxis_l=0.2*6/5;
@@ -26,11 +25,11 @@ figure('Units','normal',...
     'Position',[0 0 1 1],...
     'Visible', 'on');
 h(1).handle=subplot(3,1,1);
-plot(xrange*S.si*1e-6,S.Data(xrange,1),'r','LineWidth',3)
+plot(xrange*S.si*1e-6,S.Data(xrange,1),'k','LineWidth',3)
 xlim(XLIM)
 ylim(pA_YLIM)
 h(2).handle=subplot(3,1,2);
-plot(xrange*S.si*1e-6,S.Data(xrange,2),'b','LineWidth',6)
+plot(xrange*S.si*1e-6,S.Data(xrange,2),'r','LineWidth',6)
 xlim(XLIM)
 ylim(g_YLIM)
 samexaxis('ytac','box','off');
@@ -47,8 +46,9 @@ set(h(1).handle,'Units','normal',...
 set(h(3).handle,'Units','normal',...
          'position',[0.65,0.3,Scale_XAxis,Scale_YAxis],...
          'Visible','off')
-text(0.2,1.3,['\color{blue}' num2str(g_Y_Scale) 'g\color{black}/\color{red}' num2str(pA_Y_Scale) 'pA'],'fontsize',20,'fontweight','bold')
+text(0.2,1.3,['\color{red}' num2str(g_Y_Scale) 'g\color{black}/' num2str(pA_Y_Scale) 'pA'],'fontsize',20,'fontweight','bold')
 text(1.1,0,[num2str(X_Scale*1000) 'ms'],'fontsize',20,'fontweight','bold')
-print(['Swim_example_',num2str(i)],'-dsvg')
+print(['Swim_example_AP_0',num2str(i)],'-dsvg')
+% close all
 end
 %text(-19,1,'0.05Hz 0.06g','fontsize',32,'fontweight','bold')
