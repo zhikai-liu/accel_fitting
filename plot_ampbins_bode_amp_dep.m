@@ -10,7 +10,7 @@ function plot_ampbins_bode_amp_dep(filename)
         freq_gain=zeros(1,length(Freq_FNames));
         freq_phase=zeros(1,length(Freq_FNames));
         freq_amp=zeros(1,length(Freq_FNames));
-        freq_var=zeros(1,length(Freq_FNames));;
+        freq_var=zeros(1,length(Freq_FNames));
         ampbin_num=length(H.(FNames{i})(1).(Freq_FNames{1})(1).AmpBins);
         for j=1:ampbin_num
             for k=1:length(Freq_FNames)
