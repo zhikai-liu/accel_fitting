@@ -22,6 +22,7 @@ for i=1:length(FNames)
                 amp_range=S.(FNames{i})(j).amp_range;
                 direction=S.(FNames{i})(j).direction;
                 H.(FNames{i}).(['S_freq_' num2str(k)])(h).AmpBins(j).phase=phases(amps>amp_range(1)&amps<amp_range(end));
+                H.(FNames{i}).(['S_freq_' num2str(k)])(h).AmpBins(j).amp=amps(amps>amp_range(1)&amps<amp_range(end));
             end
         end
     end
