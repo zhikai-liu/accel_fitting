@@ -101,21 +101,25 @@ function plot_ampbins_bode_amp_dep(filename)
     all_gain_std=zeros(1,freq_num);
     all_phase_avr=zeros(1,freq_num);
     all_phase_std=zeros(1,freq_num);
+    %% plot Gain vs EPSC Amp for each frequency
     figure('units','normal','position',[0.1,0,0.5,1]);
     for i=1:freq_num
         subplot(freq_num,1,i)
+        %% Extract all gain and phase tuned to rostral direction
         rostral_gain=cell2mat(arrayfun(@(x) x.freq_gain(i),S_rostral(:)','Uniform',0));
         rostral_gain_avr(i)=mean(rostral_gain);
         rostral_gain_std(i)=std(rostral_gain)/sqrt(length(rostral_gain));
         rostral_phase=cell2mat(arrayfun(@(x) x.freq_phase(i),S_rostral(:)','Uniform',0));
         rostral_phase_avr(i)=mean(rostral_phase);
         rostral_phase_std(i)=std(rostral_phase)/sqrt(length(rostral_phase));
+        %% Extract all gain and phase tuned to caudal direction
         caudal_gain=cell2mat(arrayfun(@(x) x.freq_gain(i),S_caudal(:)','Uniform',0));
         caudal_gain_avr(i)=mean(caudal_gain);
         caudal_gain_std(i)=std(caudal_gain)/sqrt(length(caudal_gain));
         caudal_phase=cell2mat(arrayfun(@(x) x.freq_phase(i),S_caudal(:)','Uniform',0));
         caudal_phase_avr(i)=mean(caudal_phase);
         caudal_phase_std(i)=std(caudal_phase)/sqrt(length(caudal_phase));
+        %% Extract all EPSC amp, gain and phase tuned to both direction
         all_amp=cell2mat(arrayfun(@(x) x.freq_amp(i),S(:)','Uniform',0));
         all_gain=cell2mat(arrayfun(@(x) x.freq_gain(i),S(:)','Uniform',0));
         all_phase=cell2mat(arrayfun(@(x) x.freq_phase(i),S(:)','Uniform',0));
@@ -123,8 +127,9 @@ function plot_ampbins_bode_amp_dep(filename)
         all_gain_std(i)=std(all_gain)/sqrt(length(all_gain));
         all_phase_avr(i)=mean(all_phase);
         all_phase_std(i)=std(all_phase)/sqrt(length(all_phase));
-        %%plot gain vs amp for each frequency
+        %% plot gain vs amp with scatter
         scatter(all_amp,all_gain,25,'filled')
+        %% Calculate fit curve with poly1 and plot it too
         [gain_inc_amp_fit,gof]=fit(all_amp',all_gain','poly1');
         x_amp=0:250;
         y_predict=x_amp.*gain_inc_amp_fit.p1+gain_inc_amp_fit.p2;
@@ -136,7 +141,21 @@ function plot_ampbins_bode_amp_dep(filename)
             'Units','normalized');
     end
     print('GainVSamp_all_frequency.jpg','-r300','-djpeg')
-    %plot results
+    
+    %% Plot phase variance vs Gain
+    color_freq=colormap(jet(freq_num));
+    figure('units','normal','position',[0.1,0,0.5,1]);
+    hold on;
+    for i=1:freq_num
+        all_gain=cell2mat(arrayfun(@(x) x.freq_gain(i),S(:)','Uniform',0));
+        all_var=cell2mat(arrayfun(@(x) x.freq_var(i),S(:)','Uniform',0));
+        scatter(all_gain,all_var,25,'filled',...
+            'MarkerEdgeColor',color_freq(i,:),...
+            'MarkerFaceColor',color_freq(i,:),...
+            'DisplayName',[num2str(S(1).S_freq(i)) ' Hz']);
+    end
+    legend('show')
+    %% plot gain increase and phase shift vs stim frequency
     figure('units','normal','position',[0.1,0,0.5,1]);
     subplot(3,1,1)
     hold on;
