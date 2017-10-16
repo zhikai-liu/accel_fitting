@@ -18,11 +18,13 @@ for i=1:length(FNames)
             H.(FNames{i}).(['S_freq_' num2str(k)])(h).AmpBins=S.(FNames{i});
             amps=F_select(h).period_index.amp;
             phases=F_select(h).period_index.phase;
+            events=F_select(h).period_index.event_index;
             for j=1:ampbin_num
                 amp_range=S.(FNames{i})(j).amp_range;
                 direction=S.(FNames{i})(j).direction;
                 H.(FNames{i}).(['S_freq_' num2str(k)])(h).AmpBins(j).phase=phases(amps>amp_range(1)&amps<amp_range(end));
                 H.(FNames{i}).(['S_freq_' num2str(k)])(h).AmpBins(j).amp=amps(amps>amp_range(1)&amps<amp_range(end));
+                H.(FNames{i}).(['S_freq_' num2str(k)])(h).AmpBins(j).events=events(amps>amp_range(1)&amps<amp_range(end));
             end
         end
     end
