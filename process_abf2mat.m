@@ -1,3 +1,19 @@
+%{
+  This funtion is used to convert .abf to .mat
+  The .mat file stores all data in a structure with fields like:
+
+  name: name of the original file
+  type: what kind of recording it is (EPSC, EPSP, IPSC, 'auto' 'man')
+  Data: recording data
+  si: Sampling intervals
+  header: header of the file
+  poi: periods of interest
+
+  Usage: A _poi.xlsx file is needed to tell which recording is useful and
+  which time is the period of interest. The algorithm will only analyze the
+  recordings that is noted in the .xlsx file.
+%}
+
 function process_abf2mat(filename_h)
 f_abf = dir([filename_h '*.abf']);
 poi_all = cell(length(f_abf),1);
