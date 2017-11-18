@@ -1,3 +1,5 @@
+%% A code to make movies of real time recording with two traces, the EPSC and the acceleration on X-Axis
+
 S=load('EPSC_accel_ZL170901_fish04a_0009.mat');
 v = VideoWriter('Rec_ZL170901_fish04a_0009.avi');
 open(v);

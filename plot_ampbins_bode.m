@@ -1,3 +1,5 @@
+% Bode plot for one amplitude bins of a neuron which requires recordings at
+% different frequencies of stimulation.
 function plot_ampbins_bode(filename,range)
     H=load(filename);
     S=struct();

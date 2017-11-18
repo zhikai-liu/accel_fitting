@@ -9,17 +9,26 @@ function process_auto_abf2mat(filename_h)
     f_abf = dir([filename_h '*.abf']);
     poi_auto=generate_poi();
     for i=1:length(f_abf)
-        [~,name,~] = fileparts(f_abf(i).name);
+        [~,abf_name,~] = fileparts(f_abf(i).name);
         if f_abf(i).bytes>20*1024*1024
         [Data_all,si,header] = abfload(f_abf(i).name);
         [~,~,z]=size(Data_all);
         max_diff=max(Data_all(:,2,5))-min(Data_all(:,2,5));
         if max_diff>0.11
-            poi=poi_auto{i};
-            type
-            for j=1:z
+            stim_label='auto_accel';
+            switch type_of_rec(header,Data_all(:,:,1)) 
+                case 1
+                    type={'EPSC',stim_label};
+                case 2
+                    type={'IPSC',stim_label};
+                case 4
+                    type={'EPSP',stim_label};
+            end
+            for j=1:6
+                poi=poi_auto{j};
                 Data=Data_all(:,:,j);
-                save(['EPSP_' stim_label '_accel_' name '_' num2str(i) '.mat'],'name','type','Data','si','header','poi');
+                name=[abf_name '_' num2str(j)];
+                save([type{1} '_' stim_label '_' name '.mat'],'name','type','Data','si','header','poi');
             end
         end
         end

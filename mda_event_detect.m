@@ -1,3 +1,7 @@
+% .mda file are from algorithm called mountainsort3.
+% ms3 uses threshold event detection while we use a differnet strategy
+% This code is generating a "truth" event index to compare to ms3 event detection performance
+
 function mda_event_detect(filename)
     Data=readmda(filename);
     Data=Data';

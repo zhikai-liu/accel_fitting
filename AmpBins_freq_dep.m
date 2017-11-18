@@ -1,3 +1,16 @@
+
+% Need to run AmpBins_info.m first.
+% Get the info from ampbin_info.mat file.
+% Separate the events into different clusters based on their EPSC amplitudes
+% Also arrange the recording in an order that follows stim frequency.
+% You can specify which stim amplitude you want to analyze by changing S_amp
+
+% All data is finally stored in a struct H.
+% First order fields are different neuron names.
+% Second order fields are different stim frequency names
+% Third order or higher fields are the data you want to use for each neuron stimulated at a specific frequency.
+
+
 S=load('ampbin_info.mat');
 S_amp=0.02;
 S_freq=[0.5 1 2 4 8];

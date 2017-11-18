@@ -1,3 +1,8 @@
+
+% This script is used to create a figure where EPSC and EPSP are aligned together based on their sensory stimulation curve. 
+% You need to select specific files (EPSP and EPSC) and modify the code for your own use.
+
+
 EPSC_trials=load('Trials_EPSC_accel_ZL170901_fish04a.mat');
 EPSP_trials=load('Trials_EPSP_accel_ZL170901_fish04a.mat');
 for i=1:length(EPSC_trials.Trials)

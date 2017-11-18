@@ -1,6 +1,6 @@
 function process_main(filename_h)
 %filename_h = 'ZL170901_fish05a';
-process_abf2mat(filename_h);
+%process_abf2mat(filename_h);
 process_event_detect(['EPSC_*_accel_' filename_h]);
 %process_event_detect(['EPSP_accel_' filename_h]);
 process_fit_man(['EPSC_*_accel_' filename_h]);
