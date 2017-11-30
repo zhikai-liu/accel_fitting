@@ -130,14 +130,14 @@ function plot_ampbins_bode_amp_dep(filename)
         %% plot gain vs amp with scatter
         scatter(all_amp,all_gain,25,'filled')
         %% Calculate fit curve with poly1 and plot it too
-        [gain_inc_amp_fit,gof]=fit(all_amp',all_gain','poly1');
+        [gain_slope_amp_fit,gof]=fit(all_amp',all_gain','poly1');
         x_amp=0:250;
-        y_predict=x_amp.*gain_inc_amp_fit.p1+gain_inc_amp_fit.p2;
+        y_predict=x_amp.*gain_slope_amp_fit.p1+gain_slope_amp_fit.p2;
         hold on;
         plot(x_amp,y_predict,'r','LineWidth',2)
         text(0.8,0.8,[num2str(S(1).S_freq(i)) ' Hz'],'Units','normalized')
         text(0.8,0.6,['R^2=' num2str(gof.rsquare)],'Units','normalized')
-        text(0.8,0.4,['Y=' num2str(round(gain_inc_amp_fit.p1,3)) 'X+' num2str(round(gain_inc_amp_fit.p2,2))],...
+        text(0.8,0.4,['Y=' num2str(round(gain_slope_amp_fit.p1,3)) 'X+' num2str(round(gain_slope_amp_fit.p2,2))],...
             'Units','normalized');
     end
     print('GainVSamp_all_frequency.jpg','-r300','-djpeg')
@@ -156,8 +156,8 @@ function plot_ampbins_bode_amp_dep(filename)
     end
     legend('show')
     %% plot gain increase and phase shift vs stim frequency
-    figure('units','normal','position',[0.1,0,0.5,1]);
-    subplot(3,1,1)
+   figure('units','normal','position',[0,0,0.7,0.5]);
+    subplot(1,2,1)
     hold on;
     for i=1:length(S)
     plot(log2(S(i).S_freq),S(i).freq_gain,'Color',S(i).color,'LineStyle',S(i).line_stype,'LineWidth',2)
@@ -168,8 +168,10 @@ function plot_ampbins_bode_amp_dep(filename)
     xlim([-2 4]);
     xticks([-1 0 1 2 3])
     xticklabels({0.5 1 2 4 8});
+    xlabel('Hz')
     ylabel('Gain, EPSC/s')
-    subplot(3,1,2)
+    AxisFormat;
+    subplot(1,2,2)
     hold on;
     for i=1:length(S)
     plot(log2(S(i).S_freq),S(i).freq_phase.*180./pi,'Color',S(i).color,'LineStyle',S(i).line_stype,'LineWidth',2)
@@ -183,45 +185,88 @@ function plot_ampbins_bode_amp_dep(filename)
     %ylim([-90 180])
     xlabel('Hz')
     ylabel('phase')
-    
-    subplot(3,1,3)
-    hold on;
-    for i=1:length(S)
-    plot(log2(S(i).S_freq),S(i).freq_var.*180./pi,'Color',S(i).color,'LineStyle',S(i).line_stype,'LineWidth',2)
-    end
-    hold off;
-    xlim([-2 4]);
-    xticks([-1 0 1 2 3])
-    xticklabels({0.5 1 2 4 8});
-    %ylim([-90 180])
-    xlabel('Hz')
-    ylabel('phase variance')
+    AxisFormat;
+%     
+%     subplot(3,1,3)
+%     hold on;
+%     for i=1:length(S)
+%     plot(log2(S(i).S_freq),S(i).freq_var.*180./pi,'Color',S(i).color,'LineStyle',S(i).line_stype,'LineWidth',2)
+%     end
+%     hold off;
+%     xlim([-2 4]);
+%     xticks([-1 0 1 2 3])
+%     xticklabels({0.5 1 2 4 8});
+%     %ylim([-90 180])
+%     xlabel('Hz')
+%     ylabel('phase variance')
     
     
     print('Bode_amp_heatmap.jpg','-r300','-djpeg')
-    [gain_inc_amp_fit,gof]=fit(all_amp_avr',all_gain_slope','poly1');
+    %% gain slope vs EPSC amp
+    figure('units','normal','position',[0,0,0.7,0.5]);
+    [gain_slope_amp_fit,gof]=fit(all_amp_avr',all_gain_slope','poly1');
     x_amp=0:250;
-    y_predict=x_amp.*gain_inc_amp_fit.p1+gain_inc_amp_fit.p2;
-    figure('units','normal','position',[0.1,0,0.5,1]);
-    subplot(4,1,1)
-    scatter(all_amp_avr,all_gain_slope,25,'filled')
+    y_predict=x_amp.*gain_slope_amp_fit.p1+gain_slope_amp_fit.p2;
+    subplot(1,2,1)
+    scatter(all_amp_avr,all_gain_slope,45,'filled')
     hold on;
-    plot(x_amp,y_predict,'r','LineWidth',2)
-    text(200,10,['R^2=' num2str(gof.rsquare)])
-    text(200,5,['Y=' num2str(round(gain_inc_amp_fit.p1,3)) 'X+' num2str(round(gain_inc_amp_fit.p2,2))]);
+    plot(x_amp,y_predict,'r','LineWidth',3)
+    text(130,7,['R^2=' num2str(gof.rsquare)],...
+        'FontSize',20,'FontWeight','bold')
+    text(130,5,['Y=' num2str(round(gain_slope_amp_fit.p1,3)) 'X+' num2str(round(gain_slope_amp_fit.p2,2))],...
+        'FontSize',20,'FontWeight','bold');
+    xlabel('EPSC amp (pA)')
     ylabel('gain slope')
-    subplot(4,1,2)
-    scatter(all_amp_avr,all_gain_intercept,25,'filled')
-    ylabel('gain intercept')
-    subplot(4,1,3)
-    scatter(all_amp_avr,all_phase_slope.*180./pi,25,'filled')
+    AxisFormat;
+    %% gain intercept vs EPSC amp
+    [gain_intercept_amp_fit,gof]=fit(all_amp_avr',all_gain_intercept','poly1');
+    x_amp=0:250;
+    y_predict=x_amp.*gain_intercept_amp_fit.p1+gain_intercept_amp_fit.p2;
+    subplot(1,2,2)
+    scatter(all_amp_avr,all_gain_intercept,45,'filled')
+    hold on;
+    plot(x_amp,y_predict,'r','LineWidth',3)
+    text(130,10,['R^2=' num2str(gof.rsquare)],...
+        'FontSize',20,'FontWeight','bold')
+    text(130,7,['Y=' num2str(round(gain_intercept_amp_fit.p1,3)) 'X+' num2str(round(gain_intercept_amp_fit.p2,2))],...
+        'FontSize',20,'FontWeight','bold');
+    ylabel('gain intercept at 1Hz')
+    xlabel('EPSC amp (pA)')
+    AxisFormat;
+    print('gainVSamp.jpg','-r300','-djpeg')
+    %% phase slope vs EPSC amp
+    figure('units','normal','position',[0,0,0.7,0.5]);
+    [phase_slope_amp_fit,gof]=fit(all_amp_avr',all_phase_slope','poly1');
+    x_amp=0:250;
+    y_predict=x_amp.*phase_slope_amp_fit.p1+phase_slope_amp_fit.p2;
+    subplot(1,2,1)
+    scatter(all_amp_avr,all_phase_slope.*180./pi,45,'filled')
+    hold on;
+    plot(x_amp,y_predict.*180./pi,'r','LineWidth',3)
+    text(130,10,['R^2=' num2str(gof.rsquare)],'FontSize',20,'FontWeight','bold')
+    text(130,0,['Y=' num2str(round(phase_slope_amp_fit.p1.*180./pi,3)) 'X' num2str(round(phase_slope_amp_fit.p2.*180./pi,2))],'FontSize',20,'FontWeight','bold');
+    xlabel('EPSC amp (pA)')
     ylabel('phase slope')
-    subplot(4,1,4)
-    scatter(all_amp_avr,all_phase_intercept.*180./pi,25,'filled')
-    ylabel('phase intercept')
-    xlabel('Amp (pA)')
-    print('slope_intercept_VSamp.jpg','-r300','-djpeg')
+    AxisFormat;
+    %% phase intercept vs EPSC amp
+    [phase_intercept_amp_fit,gof]=fit(all_amp_avr',all_phase_intercept','poly1');
+    x_amp=0:250;
+    y_predict=x_amp.*phase_intercept_amp_fit.p1+phase_intercept_amp_fit.p2;
     
+    subplot(1,2,2)
+    scatter(all_amp_avr,all_phase_intercept.*180./pi,45,'filled')
+    hold on;
+    plot(x_amp,y_predict.*180./pi,'r','LineWidth',3)
+    text(130,120,['R^2=' num2str(gof.rsquare)],'FontSize',20,'FontWeight','bold')
+    text(130,100,['Y=' num2str(round(phase_intercept_amp_fit.p1.*180./pi,3)) 'X+' num2str(round(phase_intercept_amp_fit.p2.*180./pi,2))],'FontSize',20,'FontWeight','bold');
+    ylabel('phase intercept at 1Hz')
+    xlabel('EPSC amp (pA)')
+    AxisFormat;
+    print('phaseVSamp.jpg','-r300','-djpeg')   
+end
 
-    
+function AxisFormat()
+    A=gca;
+    set(A.XAxis,'FontSize',20,'FontWeight','bold','LineWidth',1.2,'Color','k');
+    set(A.YAxis,'FontSize',20,'FontWeight','bold','LineWidth',1.2,'Color','k');
 end
