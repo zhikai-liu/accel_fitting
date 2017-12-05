@@ -1,4 +1,4 @@
-function process_plot_all_ampVSphase(filename,range)
+function process_plot_all_ampVSphase(filename,range,varargin)
     S=load(filename);
     Global=load('Accel_globalvar.mat');   
     if strcmp(range,'all')
@@ -33,10 +33,15 @@ function process_plot_all_ampVSphase(filename,range)
                     Amps=S.Trials(trial).period_index.amp;
                     Amp_max=max(max(Amps),Amp_max);
                     Phases=S.Trials(trial).period_index.phase;
+                    if isempty(varargin)
+                        LG=[num2str(S_freq(trial_index)),' Hz'];
+                    elseif strcmp(varargin{1},'showtrial')
+                        LG=[num2str(S_freq(trial_index)),' Hz trial ' num2str(trial)];
+                    end
                     scatter(Phases,Amps,64,'filled',...
                         'MarkerFaceColor',color_all(j,:),...
                         'MarkerEdgeColor',color_all(j,:),...
-                        'DisplayName',[num2str(S_freq(trial_index)),' Hz trial ' num2str(trial)]);    
+                        'DisplayName',LG);    
                     end
                 end
             end
