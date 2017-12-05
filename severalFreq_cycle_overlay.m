@@ -14,9 +14,13 @@ for i = 1:n
     trial = load(S.Trials(plot_order(i)).mat_file);
     period = plot_period{i}(1).*1e6/trial.si:plot_period{i}(end).*1e6/trial.si;
     h(i).pA=subplot(2*n+1,1,2*i-1);
+    amp_range=40:90;
+    hold on;
+    plot_EPSC_hist(trial,amp_range);
     plot_cycle_overlay(trial.Data,1,trial.fit_model{S.Trials(plot_order(i)).poi_num},trial.S_period{S.Trials(plot_order(i)).poi_num},...
         'k','LineWidth',2)
-    ylim(pA_YLIM_range);
+    hold off;
+    %ylim(pA_YLIM_range);
 %     A = gca;
 %     set(A,'linewidth',4,'fontsize',20,'fontweight','bold')
 %     set(A,'XTick',[])
@@ -25,8 +29,9 @@ for i = 1:n
     h(i).g=subplot(2*n+1,1,2*i);
     plot_cycle_overlay(trial.Data,2,trial.fit_model{S.Trials(plot_order(i)).poi_num},trial.S_period{S.Trials(plot_order(i)).poi_num},...
         'r','LineWidth',4)
+    hold off;
     ylabel('g');
-    ylim(g_YLIM_ragne);
+    %ylim(g_YLIM_ragne);
     text(-4,0.1,[num2str(2^(i-2)) ' Hz 0.04g'],'fontsize',20,'fontweight','bold')
 %     A = gca;
 %     set(A,'linewidth',4,'fontsize',20,'fontweight','bold')
@@ -73,4 +78,12 @@ function plot_cycle_overlay(Data,dim,fit_model,S_period,varargin)
         end
         xlim([0 2*pi]);
         xticks([0 pi/2 pi 3*pi/2 2*pi])
+end
+function plot_EPSC_hist(trial,amp_range)
+    n_cycles=length(trial.per_cycle_index);
+    phases_to_hist=trial.period_index.phase(trial.period_index.amp>amp_range(1)&trial.period_index.amp<amp_range(end));
+    phases_to_hist=mod(phases_to_hist,2*pi);
+    xbins=linspace(0,2*pi,36);
+    [counts,centers]=hist(phases_to_hist,xbins);
+    bar(centers,counts/n_cycles*50);
 end
