@@ -1,4 +1,4 @@
-function event_interval_monitor(filename)
+baffunction event_interval_monitor(filename)
 
 % Input should be output file from AmpBins_freq_dep.m;
 % This code can show the event interval time histogram for different ampbins of each neuron.

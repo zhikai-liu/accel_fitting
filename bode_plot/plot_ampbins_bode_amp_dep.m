@@ -1,3 +1,11 @@
+% This code is used to plot a summary figure of all putative vestibular afferents, what 
+% does their temporal tuning looks like and how it is related to EPSC
+% strength. So there are 5 figures to be plotted.
+
+% Figure 1: 5 subplots, for each frequency, gain vs EPSC amp
+% Figure 2: 1 subplot, phase variance vs gain
+% Figure 3: 
+
 function plot_ampbins_bode_amp_dep(filename)
     H=load(filename);
     S=struct();
@@ -42,7 +50,7 @@ function plot_ampbins_bode_amp_dep(filename)
                     freq_phase(k)=freq_phase(k)+2*pi;
                 end
             end
-            gain_fit=fit(log2(S_freq)',freq_gain','poly1');
+            gain_fit=fit(log2(S_freq)',log2(freq_gain)','poly1');
             phase_fit=fit(log2(S_freq)',freq_phase','poly1');
             %% Define heatmap color based on synaptic strength (EPSC amps)
 %             if mean(freq_amp)>150
@@ -162,12 +170,16 @@ function plot_ampbins_bode_amp_dep(filename)
     for i=1:freq_num
         %all_gain(i,:)=cell2mat(arrayfun(@(x) x.freq_gain(i),S(:)','Uniform',0));
         all_var=cell2mat(arrayfun(@(x) x.freq_var(i),S(:)','Uniform',0));
-        scatter(all_gain(i,:),all_var,25,'filled',...
+        scatter(all_gain(i,:),all_var*180/pi,25,'filled',...
             'MarkerEdgeColor',color_freq(i,:),...
             'MarkerFaceColor',color_freq(i,:),...
             'DisplayName',[num2str(S(1).S_freq(i)) ' Hz']);
     end
     legend('show')
+    xlabel('Gain')
+    ylabel('Phase variance (degree)')
+    AxisFormat();
+    print('PhaseVar_vs_Gain.jpg','-r300','-djpeg')
     %% New figure for 
     figure('units','normal','position',[0,0,0.7,0.5]);
     %% Calculate parameters for three colors
@@ -254,7 +266,7 @@ function plot_ampbins_bode_amp_dep(filename)
     plot(x_amp,y_predict,'r','LineWidth',3)
     text(0.1,0,['R^2=' num2str(gof.rsquare)],...
         'FontSize',20,'FontWeight','bold')
-    text(0.1,-1,['Y=' num2str(round(gain_slope_amp_fit.p1,3)) '*log(X)+' num2str(round(gain_slope_amp_fit.p2,2))],...
+    text(0.1,0.1,['Y=' num2str(round(gain_slope_amp_fit.p1,3)) '*log(X)+' num2str(round(gain_slope_amp_fit.p2,2))],...
         'FontSize',20,'FontWeight','bold');
     xlabel('EPSC amp (pA)')
     ylabel('gain slope')
@@ -270,9 +282,9 @@ function plot_ampbins_bode_amp_dep(filename)
     scatter(log10(all_amp_avr),all_gain_intercept,45,'filled')
     hold on;
     plot(x_amp,y_predict,'r','LineWidth',3)
-    text(2,14,['R^2=' num2str(gof.rsquare)],...
+    text(2,-2,['R^2=' num2str(gof.rsquare)],...
         'FontSize',20,'FontWeight','bold')
-    text(2,13,['Y=' num2str(round(gain_intercept_amp_fit.p1,3)) '*log(X)+' num2str(round(gain_intercept_amp_fit.p2,2))],...
+    text(2,-1,['Y=' num2str(round(gain_intercept_amp_fit.p1,3)) '*log(X)+' num2str(round(gain_intercept_amp_fit.p2,2))],...
         'FontSize',20,'FontWeight','bold');
     ylabel('gain intercept at 1Hz')
     xlabel('EPSC amp (pA)')
