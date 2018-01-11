@@ -23,12 +23,13 @@ function stim_detector(data,si)
     %% Plot all events together after alignment
     figure;
     hold on;
-    range_zero=X(1):X(1)+15;
+    range_zero=X(1)-5:X(1)+20;
     trials=zeros(length(X),1001);
     failures=zeros(length(X),1);
     for i=1:length(X)
-        range=X(i):X(i)+15;
-        delay=finddelay(v_d(range_zero)-mean(v_d(X(1)-50:X(1)-10)),v_d(range)-mean(v_d(X(i)-50:X(i)-10)));
+        range=X(i)-5:X(i)+20;
+        %delay=finddelay(v_d(range_zero)-mean(v_d(X(1)-50:X(1)-10)),v_d(range)-mean(v_d(X(i)-50:X(i)-10)));
+        delay=get_delay(v_d(range_zero)-mean(v_d(X(1)-50:X(1)-10)),v_d(range)-mean(v_d(X(i)-50:X(i)-10)));
         X(i)=X(i)+delay;
         trials(i,:)=v_d(X(i)-500:X(i)+500)-mean(v_d(X(i)-50:X(i)-10));
         if trials(i,:)>-100
@@ -76,4 +77,17 @@ function stim_detector(data,si)
     histogram(latency_ms)
     xlabel('ms')
     STD=std(latency_ms)
+end
+
+function index=get_delay(w0,w1)
+    dist=zeros(11,1);
+    for i=-5:5
+        if i<0
+            dist(i+6)=sum((w1(1:end+i)-w0(1-i:end)).^2/(11-abs(i))).^0.5;
+        else
+            dist(i+6)=sum((w1(1+i:end)-w0(1:end-i)).^2/(11-abs(i))).^0.5;
+        end
+    end
+    [~,index]=min(dist);
+    index=index-6;
 end
