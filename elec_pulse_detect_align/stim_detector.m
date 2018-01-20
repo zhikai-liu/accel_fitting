@@ -24,7 +24,6 @@ function s_trials=stim_detector(data,si,clust_num)
 
     range_zero=X(1)-5:X(1)+20;
     trials=zeros(length(X),1001);
-    x_data=(-500:500)*si*1e-3;
     for i=1:length(X)
         range=X(i)-5:X(i)+20;
         %delay=finddelay(v_d(range_zero)-mean(v_d(X(1)-50:X(1)-10)),v_d(range)-mean(v_d(X(i)-50:X(i)-10)));
@@ -32,7 +31,7 @@ function s_trials=stim_detector(data,si,clust_num)
         X(i)=X(i)+delay;
         trials(i,:)=v_d(X(i)-500:X(i)+500)-mean(v_d(X(i)-50:X(i)-10));
     end
-    threshold=-40;
+    threshold=-50;
     failures=find_failures(trials,threshold);
     
 %     %% Cluster all events with PCA and kmeans
@@ -63,7 +62,7 @@ function s_trials=stim_detector(data,si,clust_num)
     k=1;
     figure;
     hold on;
-    x_data=(1:size(fail_EPSC,2))*si*1e-3;
+    x_data=(1:size(fail_EPSC,2))*si*1e-3-10;
     for i=1:length(X)
         if failures(i)==1
             fail_EPSC(j,:)=trials(i,:)-f_average;
@@ -100,6 +99,7 @@ function s_trials=stim_detector(data,si,clust_num)
     figure;
     histogram(latency_ms)
     xlabel('ms')
+    MEAN=mean(latency_ms)
     STD=std(latency_ms)
 %     figure;
 %     plot(X(failures==0),latency_ms)
