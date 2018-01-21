@@ -5,7 +5,7 @@
 
 % Modified from EPSC_detection code
 
-function s_trials=stim_detector(data,si,clust_num)
+function [s_trials,f_trials]=stim_detector(data,si,color)
     v_d=smooth(data(:,1)); % data smoothing
     %% calculate derivative of signal and find threshold crossing point
     diff_v=diff(v_d)./si.*1e6;
@@ -15,11 +15,18 @@ function s_trials=stim_detector(data,si,clust_num)
     X_=1:length(sign_cross_thre);
     X=X_(sign_cross_thre);
     %% Plot data and detected beginning of an electrical pulse
-    figure;
-    plot(v_d)
+    x_data=(1:length(v_d)).*si*1e-6;
+    figure('Unit','Normal','position',[0 0.3 1 0.6]);
+    plot(x_data,v_d,'k','LineWidth',2);
     hold on;
-    scatter(X,v_d(X),'r*');
+    scatter(X.*si*1e-6,v_d(X),'r*');
     hold off;
+    xlabel('s')
+    ylabel('pA','Rotation',90)
+    xlim([14.7 14.9])
+    ylim([-200 -20])
+    A=gca;
+    set(A,'fontsize',20,'fontweight','bold','box','off')
     %% Align and baseline substract all stimulated events
 
     range_zero=X(1)-5:X(1)+20;
@@ -66,19 +73,22 @@ function s_trials=stim_detector(data,si,clust_num)
     for i=1:length(X)
         if failures(i)==1
             fail_EPSC(j,:)=trials(i,:)-f_average;
-            plot(x_data,fail_EPSC(j,:),'r')  
+            plot(x_data,fail_EPSC(j,:),'b')  
             j=j+1;
         else
             succ_EPSC(k,:)=trials(i,:)-f_average;
-            plot(x_data,succ_EPSC(k,:),'g')
+            plot(x_data,succ_EPSC(k,:),'Color',[0.3,0.3,0.3])
             latency(k)=find_ten_per_rise(succ_EPSC(k,501:end));
             k=k+1;
         end
     end
     hold off;
     xlabel('ms')
+    ylabel('pA')
+    A=gca;
+    set(A,'fontsize',20,'fontweight','bold','box','off')
     %% Align the EPSC signals based on their peaks or 10%/50% rise time
-    figure;
+    figure('Unit','Normal','position',[0.2 0.3 0.4 0.6]);
     hold on;
     latency_ms=latency*si*1e-3;
     laten_med=round(median(latency));
@@ -90,15 +100,23 @@ function s_trials=stim_detector(data,si,clust_num)
         elseif discre<0
             aligned_succ_EPSC(i,:)=[zeros(1,-discre),succ_EPSC(i,1:end+discre)];
         end
-        plot(x_data,aligned_succ_EPSC(i,:),'g')
+        plot(x_data,aligned_succ_EPSC(i,:),'Color',[0.3,0.3,0.3])
     end
     aligned_succ_EPSC_aver=mean(aligned_succ_EPSC,1);
-    plot(x_data,aligned_succ_EPSC_aver,'k')
+    plot(x_data,aligned_succ_EPSC_aver,color,'LineWidth',4)
     hold off;
     xlabel('ms')
+    ylabel('pA')
+    xlim([-1 5])
+    ylim([-200 150])
+    
+    A=gca;
+    set(A,'fontsize',20,'fontweight','bold','box','off')
     figure;
-    histogram(latency_ms)
+    histogram(latency_ms,'BinWidth',0.05,'Normalization','probability','FaceColor',color,'EdgeColor','k')
     xlabel('ms')
+    A=gca;
+    set(A,'fontsize',20,'fontweight','bold','box','off')
     MEAN=mean(latency_ms)
     STD=std(latency_ms)
 %     figure;
@@ -139,13 +157,9 @@ end
 % need to be modified later
 function failure_index=find_failures(trials,threshold)
     failure_index=zeros(size(trials,1),1);
-    figure;
-    hold on;
     for i=1:size(trials,1)
         if trials(i,:)>threshold
             failure_index(i)=1;
-            plot(trials(i,:))
         end
     end
-    hold off;
 end
