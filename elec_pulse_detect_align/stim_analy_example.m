@@ -62,7 +62,7 @@ clust_num=1;
 % samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
 
 %% Cluster all events with PCA and kmeans
-clust_num=2;
+clust_num=4;
 mean_clust=cell(2,1);
 for j=1:2
     if j==1
@@ -89,7 +89,7 @@ hold off;
 figure;
 clust=cell(clust_num,1);
 for k=1:clust_num
-    h.a(k)=subplot(clust_num,1,k);
+    h(k).a=subplot(clust_num,1,k);
     clust{k}=clust_ori(clust_index==k,:);
     hold on;
     for i=1:size(clust{k},1)
@@ -98,7 +98,7 @@ for k=1:clust_num
     mean_clust{j}(k,:)=mean(clust{k},1);
     plot(x_data,mean_clust{j}(k,:),'color',color_map(k,:),'LineWidth',4)
     hold off;
-    set(h.a(k),'fontsize',20,'fontweight','bold')
+    set(h(k).a,'fontsize',20,'fontweight','bold')
 end
 xlabel('ms')
 ylabel('pA')
