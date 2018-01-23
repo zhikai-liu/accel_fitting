@@ -5,7 +5,7 @@
 
 % Modified from EPSC_detection code
 
-function [s_trials,f_trials]=stim_detector(data,si,color)
+function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     v_d=smooth(data(:,1)); % data smoothing
     %% calculate derivative of signal and find threshold crossing point
     diff_v=diff(v_d)./si.*1e6;
