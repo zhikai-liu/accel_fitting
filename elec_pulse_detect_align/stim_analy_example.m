@@ -1,16 +1,16 @@
 %% Example analysis for ZL171220_fish01a
-f_name_nodrug={'08','09','10','11'};
-f_name_NBQX={'20','21','22','23'};
+f_name_nodrug={'25','26','27','28'};
+f_name_NBQX={'41','42','43','44'};
 concate_wave_nodrug=[0];
 for i=1:length(f_name_nodrug)
-    [w,si,~]=abfload(['ZL171220_fish01a_00' f_name_nodrug{i} '.abf']);
+    [w,si,~]=abfload(['ZL171219_fish01a_00' f_name_nodrug{i} '.abf']);
     pad=linspace(concate_wave_nodrug(end),w(1,1),100);
     concate_wave_nodrug=[concate_wave_nodrug;w(:,1)];
 end
 
 concate_wave_NBQX=[0];
 for i=1:length(f_name_NBQX)
-    [w,si,~]=abfload(['ZL171220_fish01a_00' f_name_NBQX{i} '.abf']);
+    [w,si,~]=abfload(['ZL171219_fish01a_00' f_name_NBQX{i} '.abf']);
     pad=linspace(concate_wave_NBQX(end),w(1,1),100);
     concate_wave_NBQX=[concate_wave_NBQX;w(:,1)];
 end
@@ -18,57 +18,59 @@ clust_num=1;
 [EPSC_trials_nodrug_s,EPSC_trials_nodrug_f,aligned_EPSC_nodrug]=stim_detector(concate_wave_nodrug,si,'g');
 [EPSC_trials_NBQX_s,EPSC_trials_NBQX_f,aligned_EPSC_NBQX]=stim_detector(concate_wave_NBQX,si,'r');
 
-% figure('Unit','Normal','position',[0 0 1 1]);
+figure('Unit','Normal','position',[0 0 1 1]);
  x_data=(1:size(EPSC_trials_nodrug_s,2)).*si.*1e-3-10;
-% % for i=1:size(EPSC_trials_nodrug,1)
-% %     plot(x_data,EPSC_trials_nodrug(i,:),'g--')
-% % end
-% EPSC_trials_aver_nodrug=mean(EPSC_trials_nodrug_s,1);
-% A1=subplot(2,1,1);
-% hold on;
-% for i=1:size(EPSC_trials_nodrug_s,1)
-%     plot(x_data,EPSC_trials_nodrug_s(i,:),'color',[0.3,0.3,0.3])
+% for i=1:size(EPSC_trials_nodrug,1)
+%     plot(x_data,EPSC_trials_nodrug(i,:),'g--')
 % end
-% for i=1:size(EPSC_trials_nodrug_f,1)
-%     plot(x_data,EPSC_trials_nodrug_f(i,:),'color','b')
-% end
-% 
-% plot(x_data,EPSC_trials_aver_nodrug,'g','LineWidth',4)
-% nodrug_EPSC_peak=min(EPSC_trials_aver_nodrug);
-% hold off
-% ylim([-200,25])
-% xlim([-1,6])
-% EPSC_trials_aver_NBQX=mean(EPSC_trials_NBQX_s,1);
-% NBQX_EPSC_peak=min(EPSC_trials_aver_NBQX);
-% set(A1.XAxis,'Visible','off')
-% set(A1,'fontsize',20,'fontweight','bold')
-% legend({'pre-NBQX'},'TextColor','g')
-% A2=subplot(2,1,2);
-% hold on;
-% for i=1:size(EPSC_trials_NBQX_s,1)
-%     plot(x_data,EPSC_trials_NBQX_s(i,:),'color',[0.3,0.3,0.3])
-% end
-% for i=1:size(EPSC_trials_NBQX_f,1)
-%     plot(x_data,EPSC_trials_NBQX_f(i,:),'color','b')
-% end
-% plot(x_data,EPSC_trials_aver_NBQX,'r','LineWidth',4)
-% hold off;
-% ylim([-200,25])
-% xlim([-1,6])
-% xlabel('ms')
-% ylabel('pA')
-% legend({'post-NBQX'},'TextColor','r')
-% set(A2,'fontsize',20,'fontweight','bold')
-% samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
+EPSC_trials_aver_nodrug=mean(EPSC_trials_nodrug_s,1);
+A1=subplot(2,1,1);
+hold on;
+for i=1:size(EPSC_trials_nodrug_s,1)
+    plot(x_data,EPSC_trials_nodrug_s(i,:),'color',[0.3,0.3,0.3])
+end
+for i=1:size(EPSC_trials_nodrug_f,1)
+    plot(x_data,EPSC_trials_nodrug_f(i,:),'color','b')
+end
+
+plot(x_data,EPSC_trials_aver_nodrug,'g','LineWidth',4)
+nodrug_EPSC_peak=min(EPSC_trials_aver_nodrug);
+hold off
+ylim([-100,25])
+xlim([-1,6])
+EPSC_trials_aver_NBQX=mean(EPSC_trials_NBQX_s,1);
+NBQX_EPSC_peak=min(EPSC_trials_aver_NBQX);
+set(A1.XAxis,'Visible','off')
+set(A1,'fontsize',20,'fontweight','bold')
+legend({'pre-NBQX'},'TextColor','g')
+A2=subplot(2,1,2);
+hold on;
+for i=1:size(EPSC_trials_NBQX_s,1)
+    plot(x_data,EPSC_trials_NBQX_s(i,:),'color',[0.3,0.3,0.3])
+end
+for i=1:size(EPSC_trials_NBQX_f,1)
+    plot(x_data,EPSC_trials_NBQX_f(i,:),'color','b')
+end
+plot(x_data,EPSC_trials_aver_NBQX,'r','LineWidth',4)
+hold off;
+ylim([-100,25])
+xlim([-1,6])
+xlabel('ms')
+ylabel('pA')
+legend({'post-NBQX'},'TextColor','r')
+set(A2,'fontsize',20,'fontweight','bold')
+samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
 
 %% Cluster all events with PCA and kmeans
-clust_num=4;
+clust_num=2;
 mean_clust=cell(2,1);
 for j=1:2
     if j==1
-        clust_ori=aligned_EPSC_nodrug;
+        %clust_ori=aligned_EPSC_nodrug;
+        clust_ori=EPSC_trials_nodrug_s;
     elseif j==2
-        clust_ori=aligned_EPSC_NBQX;
+        %clust_ori=aligned_EPSC_NBQX;
+        clust_ori=EPSC_trials_NBQX_s;
     end
     mean_clust{j}=zeros(clust_num,size(aligned_EPSC_nodrug,2));
 [coeff,score,latent] = pca(clust_ori(:,525:600));
@@ -131,7 +133,6 @@ diff_EPSC=aligned_EPSC_nodrug_aver(4:end)-aligned_EPSC_NBQX_aver(1:end-3).*peak_
 
 LineStyle={'--','-'};
 delay=[0,aver_delay];
-%peak_ratio=0.8;
 ratio=[1,peak_ratio];
 figure;
 hold on
@@ -139,12 +140,12 @@ for j=1:2
     for i=1:clust_num
         plot(x_data-delay(j),mean_clust{j}(i,:).*ratio(j),'color',color_map(i,:),'LineWidth',4,'LineStyle',LineStyle{j})
     end
+end 
+hold off
 xlabel('ms')
 ylabel('pA')
 A=gca;
 set(A,'fontsize',20,'fontweight','bold')
-end
-hold off
 xlim([0 4])
 
 
