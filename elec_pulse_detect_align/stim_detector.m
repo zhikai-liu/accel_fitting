@@ -38,7 +38,7 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
         X(i)=X(i)+delay;
         trials(i,:)=v_d(X(i)-500:X(i)+500)-mean(v_d(X(i)-50:X(i)-10));
     end
-    threshold=-50;
+    threshold=-30;
     failures=find_failures(trials,threshold);
     
 %     %% Cluster all events with PCA and kmeans
@@ -57,9 +57,10 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
 %         plot(x_data,trials(i,:),'color',color_map(clust_index(i),:))
 %     end
 %     hold off;
-    
+    x_data=(1:size(trials,2))*si*1e-3-10;
     f_trials=trials(failures==1,:);
     s_trials=trials(failures==0,:);
+    if sum(failures)>1
     f_average=mean(f_trials,1);  
     %% Subtract failures to remove electrical artifact and only real signal remains
     fail_EPSC=zeros(sum(failures==1),size(trials,2));
@@ -69,7 +70,7 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     k=1;
     figure;
     hold on;
-    x_data=(1:size(fail_EPSC,2))*si*1e-3-10;
+
     for i=1:length(X)
         if failures(i)==1
             fail_EPSC(j,:)=trials(i,:)-f_average;
@@ -78,7 +79,7 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
         else
             succ_EPSC(k,:)=trials(i,:)-f_average;
             plot(x_data,succ_EPSC(k,:),'Color',[0.3,0.3,0.3])
-            latency(k)=find_ten_per_rise(succ_EPSC(k,501:end));
+            latency(k)=find_ten_per_rise(succ_EPSC(k,530:end));
             k=k+1;
         end
     end
@@ -87,10 +88,17 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     ylabel('pA')
     A=gca;
     set(A,'fontsize',20,'fontweight','bold','box','off')
+    else
+        succ_EPSC=trials;
+        latency=zeros(size(trials,1),1);
+        for i=1:size(trials,1)
+            latency(i)=find_ten_per_rise(succ_EPSC(i,530:end));
+        end
+    end
     %% Align the EPSC signals based on their peaks or 10%/50% rise time
     figure('Unit','Normal','position',[0.2 0.3 0.4 0.6]);
     hold on;
-    latency_ms=latency*si*1e-3;
+    latency_ms=latency*si*1e-3+0.6;
     laten_med=round(median(latency));
     aligned_succ_EPSC=succ_EPSC;
     for i=1:size(succ_EPSC,1)
@@ -119,6 +127,7 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     set(A,'fontsize',20,'fontweight','bold','box','off')
     MEAN=mean(latency_ms)
     STD=std(latency_ms)
+    s_trials=aligned_succ_EPSC;
 %     figure;
 %     plot(X(failures==0),latency_ms)
 end
