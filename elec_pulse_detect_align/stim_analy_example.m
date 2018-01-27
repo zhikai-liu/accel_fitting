@@ -1,7 +1,7 @@
 %% Example analysis for ZL171220_fish01a
-f_name_nodrug={'21','22','23'};
-f_name_NBQX={'32','33','34'};
-f_header='ZL171219_fish02b_00';
+f_name_nodrug={'08','09','10','11'};
+f_name_NBQX={'20','21','22','23'};
+f_header='ZL171220_fish01a_00';
 concate_wave_nodrug=[0];
 for i=1:length(f_name_nodrug)
     [w,si,~]=abfload([f_header f_name_nodrug{i} '.abf']);
@@ -15,7 +15,7 @@ for i=1:length(f_name_NBQX)
     pad=linspace(concate_wave_NBQX(end),w(1,1),100);
     concate_wave_NBQX=[concate_wave_NBQX;w(:,1)];
 end
-clust_num=1;
+clust_num=3;
 [EPSC_trials_nodrug_s,EPSC_trials_nodrug_f,aligned_EPSC_nodrug]=stim_detector(concate_wave_nodrug,si,'g');
 [EPSC_trials_NBQX_s,EPSC_trials_NBQX_f,aligned_EPSC_NBQX]=stim_detector(concate_wave_NBQX,si,'r');
 
@@ -63,7 +63,7 @@ set(A2,'fontsize',20,'fontweight','bold')
 samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
 
 %% Cluster all events with PCA and kmeans
-clust_num=1;
+clust_num=2;
 mean_clust=cell(2,1);
 for j=1:2
     if j==1
