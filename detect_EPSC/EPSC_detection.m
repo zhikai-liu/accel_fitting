@@ -1,4 +1,4 @@
-function [event_index,event_peak, amps] = EPSC_detection(W,si,amp_thre,if_2der,diff_gap,diff_thre,event_duration)
+function [event_index,event_peak,amps,der_index] = EPSC_detection(W,si,amp_thre,if_2der,diff_gap,diff_thre,event_duration)
 %% calculate the difference with 240us as "1st derivative" to detect event
 diff_gap = diff_gap/si;
 event_duration =event_duration/si;
