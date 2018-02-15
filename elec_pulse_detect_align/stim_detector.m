@@ -38,11 +38,11 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
         X(i)=X(i)+delay;
         trials(i,:)=v_d(X(i)-500:X(i)+500)-mean(v_d(X(i)-50:X(i)-10));
     end
-    threshold=-60;
+    threshold=-100;
     if strcmp(color,'g')
-        low_thre=0;
+        low_thre=-100;
     else
-        low_thre=-50;
+        low_thre=-100;
     end
     failures=find_failures(trials,threshold,low_thre);
     
@@ -94,10 +94,15 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
 %     A=gca;
 %     set(A,'fontsize',20,'fontweight','bold','box','off')
     else
-        succ_EPSC=trials;
-        latency=zeros(size(trials,1),1);
+        succ_EPSC=zeros(sum(failures==0),size(trials,2));
+        latency=zeros(sum(failures==0),1);
+        k=1;
         for i=1:size(trials,1)
-            latency(i)=find_ten_per_rise(succ_EPSC(i,501:end));
+            if failures(i)==0
+                succ_EPSC(k,:)=trials(i,:);
+                latency(k)=find_ten_per_rise(succ_EPSC(k,501:end));
+                k=k+1;
+            end
         end
     end
     %% Align the EPSC signals based on their peaks or 10%/50% rise time
@@ -158,7 +163,7 @@ end
 function i=find_ten_per_rise(w)
     [EPSC_peak,index]=min(w);
     i=1;
-    per=0.8;% 0.5 indicate 50% rise time
+    per=0.2;% 0.5 indicate 50% rise time
     while i<index-1
         if w(i)>per*EPSC_peak&&w(i+1)<per*EPSC_peak 
             break

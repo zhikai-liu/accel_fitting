@@ -1,7 +1,7 @@
 %% Example analysis for ZL171220_fish01a
-f_name_nodrug={'07','08','09','10'};
-f_name_NBQX={'20','21','22','23'};
-f_header='ZL180130_fish01a_00';
+f_name_nodrug={'09','10','11','13'};
+f_name_NBQX={'21','23','24','25'};
+f_header='ZL180210_fish01a_00';
 concate_wave_nodrug=[0];
 for i=1:length(f_name_nodrug)
     [w,si,~]=abfload([f_header f_name_nodrug{i} '.abf']);
@@ -18,7 +18,7 @@ end
 [EPSC_trials_nodrug_s,EPSC_trials_nodrug_f,aligned_EPSC_nodrug]=stim_detector(concate_wave_nodrug,si,'g');
 [EPSC_trials_NBQX_s,EPSC_trials_NBQX_f,aligned_EPSC_NBQX]=stim_detector(concate_wave_NBQX,si,'r');
 
-figure('Unit','Normal','position',[0 0 1 1]);
+F1=figure('Unit','Normal','position',[0.2 0.2 0.4 0.6]);
  x_data=(1:size(EPSC_trials_nodrug_s,2)).*si.*1e-3-10;
 % for i=1:size(EPSC_trials_nodrug,1)
 %     plot(x_data,EPSC_trials_nodrug(i,:),'g--')
@@ -60,7 +60,9 @@ ylabel('pA')
 legend({'post-NBQX'},'TextColor','r')
 set(A2,'fontsize',20,'fontweight','bold')
 samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
-
+xlim([-1 9])
+title(f_header(1:end-3),'interpreter','none')
+print([f_header(1:end-3) '_all_traces.jpg'],'-r300','-djpeg');
 %% Cluster all events with PCA and kmeans
 mean_clust=cell(2,1);
 for j=1:2
@@ -113,25 +115,35 @@ aligned_EPSC_nodrug_aver=mean(aligned_EPSC_nodrug,1);
 nodrug_EPSC_peak=min(aligned_EPSC_nodrug_aver);
 aligned_EPSC_NBQX_aver=mean(aligned_EPSC_NBQX,1);
 NBQX_EPSC_peak=min(aligned_EPSC_NBQX_aver);
-aver_delay=finddelay(aligned_EPSC_nodrug_aver,aligned_EPSC_NBQX_aver);
 peak_ratio=abs(nodrug_EPSC_peak/NBQX_EPSC_peak);
+aver_delay=get_delay(aligned_EPSC_nodrug_aver(520:560),aligned_EPSC_NBQX_aver(520:560).*peak_ratio);
 if aver_delay<0
-    diff_EPSC=aligned_EPSC_nodrug_aver(1+aver_delay:end)-aligned_EPSC_NBQX_aver(1:end-aver_delay).*peak_ratio;
+    diff_EPSC=aligned_EPSC_nodrug_aver(1-aver_delay:end)-aligned_EPSC_NBQX_aver(1:end+aver_delay).*peak_ratio;
 elseif aver_delay>=0
     diff_EPSC=aligned_EPSC_nodrug_aver(1:end-aver_delay)-aligned_EPSC_NBQX_aver(1+aver_delay:end).*peak_ratio;
 end
 
-figure;
+F2=figure('Unit','Normal','position',[0.2 0.2 0.6 0.6]);
 hold on;
 plot(x_data,aligned_EPSC_nodrug_aver,'g','LineWidth',4,'DisplayName','Pre-NBQX')
 plot(x_data-aver_delay*si*1e-3,aligned_EPSC_NBQX_aver.*peak_ratio,'r','LineWidth',4,'DisplayName','Scaled post-NBQX')
-plot(x_data(1:end-aver_delay),diff_EPSC,'k','LineWidth',4,'DisplayName','Reduced components by NBQX');
+if aver_delay>0
+    plot(x_data(1:end-aver_delay),diff_EPSC,'k','LineWidth',4,'DisplayName','Reduced components by NBQX');
+else
+    plot(x_data(1-aver_delay:end),diff_EPSC,'k','LineWidth',4,'DisplayName','Reduced components by NBQX');
+end
 xlabel('ms')
 ylabel('pA')
 xlim([-1 9])
 legend('show')
 A=gca;
 set(A,'fontsize',20,'fontweight','bold')
+title(f_header(1:end-3),'interpreter','none')
+print([f_header(1:end-3) '_aver.jpg'],'-r300','-djpeg');
+
+save([f_header(1:end-3) '_summary.mat'],'aligned_EPSC_nodrug','aligned_EPSC_nodrug_aver'...
+    ,'aligned_EPSC_NBQX','aligned_EPSC_NBQX_aver','peak_ratio'...
+    ,'diff_EPSC','aver_delay','si');
 
 %peak_ratio=1;
 LineStyle={'--','-'};
@@ -151,6 +163,50 @@ ratio=[1,peak_ratio];
 % set(A,'fontsize',20,'fontweight','bold')
 % xlim([0 4])
 
+
+%% Plot the area of charge transfer for electrical and chemical components
+F3=figure('Unit','Normal','position',[0.2 0.2 0.6 0.6]);
+hold on;
+if aver_delay>0
+    area(aligned_EPSC_nodrug_aver,'FaceColor','g','EdgeColor','g','DisplayName','Pre-NBQX')
+    area(aligned_EPSC_NBQX_aver(1+aver_delay:end).*peak_ratio,'FaceColor','r','EdgeColor','r'...
+        ,'DisplayName','Scaled post-NBQX')
+else
+    area(aligned_EPSC_nodrug_aver(1-aver_delay:end),'FaceColor','g','EdgeColor','g','DisplayName','Pre-NBQX')
+    area(aligned_EPSC_NBQX_aver.*peak_ratio,'FaceColor','r','EdgeColor','r'...
+    ,'DisplayName','Scaled post-NBQX')
+end
+xlim([500 1000])
+xlabel('ms')
+ylabel('pA')
+legend('show')
+A=gca;
+A.XTick=500:100:1000;
+A.XTickLabel={'0','2','4','6','8','10'};
+set(A,'fontsize',20,'fontweight','bold')
+title(f_header(1:end-3),'interpreter','none')
+print([f_header(1:end-3) '_area.jpg'],'-r300','-djpeg');
+
+
+
+function index=get_delay(w0,w1)
+    dist=zeros(11,1);
+%     figure;
+%     hold on;
+    for i=-5:5
+        if i<0
+            dist(i+6)=sum((w1(1:end+i)-w0(1-i:end)).^2/(11-abs(i))).^0.5;
+            %dist(i+7)=max(abs(w1(1:end+i)-w0(1-i:end)));
+            %plot(w1(1:end+i)-w0(1-i:end),'r')
+        else
+            dist(i+6)=sum((w1(1+i:end)-w0(1:end-i)).^2/(11-abs(i))).^0.5;
+            %dist(i+7)=max(abs(w1(1+i:end)-w0(1:end-i))); 
+            %plot(w1(1+i:end)-w0(1:end-i),'g')
+        end
+    end
+    [~,index]=min(dist);
+    index=index-6;
+end
 
 
 
