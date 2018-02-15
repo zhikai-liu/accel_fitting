@@ -15,7 +15,6 @@ for i=1:length(f_name_NBQX)
     pad=linspace(concate_wave_NBQX(end),w(1,1),100);
     concate_wave_NBQX=[concate_wave_NBQX;w(25e3:end,1)];
 end
-clust_num=3;
 [EPSC_trials_nodrug_s,EPSC_trials_nodrug_f,aligned_EPSC_nodrug]=stim_detector(concate_wave_nodrug,si,'g');
 [EPSC_trials_NBQX_s,EPSC_trials_NBQX_f,aligned_EPSC_NBQX]=stim_detector(concate_wave_NBQX,si,'r');
 
@@ -63,7 +62,6 @@ set(A2,'fontsize',20,'fontweight','bold')
 samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
 
 %% Cluster all events with PCA and kmeans
-clust_num=2;
 mean_clust=cell(2,1);
 for j=1:2
     if j==1
@@ -72,82 +70,86 @@ for j=1:2
     elseif j==2
         clust_ori=aligned_EPSC_NBQX;
         %clust_ori=EPSC_trials_NBQX_s;
-    end
-    mean_clust{j}=zeros(clust_num,size(aligned_EPSC_nodrug,2));
+    end    
 [coeff,score,latent] = pca(clust_ori(:,525:600));
-clust_index = kmeans(clust_ori(:,525:600),clust_num);
+clust_index = isosplit5(clust_ori(:,525:600)');
+clust_num=max(clust_index);
+mean_clust{j}=zeros(clust_num,size(aligned_EPSC_nodrug,2));
 color_map=colormap(jet(clust_num));
-figure;
-hold on;
-for i = 1:length(score)
-    scatter3(score(i,1),score(i,2),score(i,3),'MarkerEdgeColor',color_map(clust_index(i),:));
-end
-hold off;
-figure
-hold on;
-for i=1:size(clust_ori,1)
-    plot(x_data,clust_ori(i,:),'color',color_map(clust_index(i),:))
-end
-hold off;
-figure;
+% figure;
+% hold on;
+% for i = 1:length(score)
+%     scatter3(score(i,1),score(i,2),score(i,3),'MarkerEdgeColor',color_map(clust_index(i),:));
+% end
+% hold off;
+% figure
+% hold on;
+% for i=1:size(clust_ori,1)
+%     plot(x_data,clust_ori(i,:),'color',color_map(clust_index(i),:))
+% end
+% hold off;
+
+% figure;
 clust=cell(clust_num,1);
 for k=1:clust_num
-    h(k).a=subplot(clust_num,1,k);
+%     h(k).a=subplot(clust_num,1,k);
     clust{k}=clust_ori(clust_index==k,:);
-    hold on;
+%     hold on;
     for i=1:size(clust{k},1)
-    plot(x_data,clust{k}(i,:),'color',[0.3 0.3 0.3])
+%     plot(x_data,clust{k}(i,:),'color',[0.3 0.3 0.3])
     end
     mean_clust{j}(k,:)=mean(clust{k},1);
-    plot(x_data,mean_clust{j}(k,:),'color',color_map(k,:),'LineWidth',4)
-    hold off;
-    set(h(k).a,'fontsize',20,'fontweight','bold')
+%     plot(x_data,mean_clust{j}(k,:),'color',color_map(k,:),'LineWidth',4)
+%     hold off;
+%     set(h(k).a,'fontsize',20,'fontweight','bold')
 end
-xlabel('ms')
-ylabel('pA')
-samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
-xlim([0 4])
-
+% xlabel('ms')
+% ylabel('pA')
+% samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
+% xlim([0 4])
 end
-
 
 aligned_EPSC_nodrug_aver=mean(aligned_EPSC_nodrug,1);
 nodrug_EPSC_peak=min(aligned_EPSC_nodrug_aver);
 aligned_EPSC_NBQX_aver=mean(aligned_EPSC_NBQX,1);
 NBQX_EPSC_peak=min(aligned_EPSC_NBQX_aver);
-aver_delay=finddelay(aligned_EPSC_nodrug_aver,aligned_EPSC_NBQX_aver)*si*1e-3;
+aver_delay=finddelay(aligned_EPSC_nodrug_aver,aligned_EPSC_NBQX_aver);
 peak_ratio=abs(nodrug_EPSC_peak/NBQX_EPSC_peak);
-diff_EPSC=aligned_EPSC_nodrug_aver(4:end)-aligned_EPSC_NBQX_aver(1:end-3).*peak_ratio;
+if aver_delay<0
+    diff_EPSC=aligned_EPSC_nodrug_aver(1+aver_delay:end)-aligned_EPSC_NBQX_aver(1:end-aver_delay).*peak_ratio;
+elseif aver_delay>=0
+    diff_EPSC=aligned_EPSC_nodrug_aver(1:end-aver_delay)-aligned_EPSC_NBQX_aver(1+aver_delay:end).*peak_ratio;
+end
 
-% figure;
-% hold on;
-% plot(x_data,aligned_EPSC_nodrug_aver,'g','LineWidth',4,'DisplayName','Pre-NBQX')
-% plot(x_data-aver_delay,aligned_EPSC_NBQX_aver.*peak_ratio,'r','LineWidth',4,'DisplayName','Scaled post-NBQX')
-% plot(x_data(1:end-3),diff_EPSC,'k','LineWidth',4,'DisplayName','Reduced components by NBQX');
-% xlabel('ms')
-% ylabel('pA')
-% xlim([-1 9])
-% legend('show')
-% A=gca;
-% set(A,'fontsize',20,'fontweight','bold')
+figure;
+hold on;
+plot(x_data,aligned_EPSC_nodrug_aver,'g','LineWidth',4,'DisplayName','Pre-NBQX')
+plot(x_data-aver_delay*si*1e-3,aligned_EPSC_NBQX_aver.*peak_ratio,'r','LineWidth',4,'DisplayName','Scaled post-NBQX')
+plot(x_data(1:end-aver_delay),diff_EPSC,'k','LineWidth',4,'DisplayName','Reduced components by NBQX');
+xlabel('ms')
+ylabel('pA')
+xlim([-1 9])
+legend('show')
+A=gca;
+set(A,'fontsize',20,'fontweight','bold')
 
-peak_ratio=1;
+%peak_ratio=1;
 LineStyle={'--','-'};
 delay=[0,aver_delay];
 ratio=[1,peak_ratio];
-figure;
-hold on
-for j=1:2
-    for i=1:clust_num
-        plot(x_data-delay(j),mean_clust{j}(i,:).*ratio(j),'color',color_map(i,:),'LineWidth',4,'LineStyle',LineStyle{j})
-    end
-end 
-hold off
-xlabel('ms')
-ylabel('pA')
-A=gca;
-set(A,'fontsize',20,'fontweight','bold')
-xlim([0 4])
+% figure;
+% hold on
+% for j=1:2
+%     for i=1:clust_num
+%         plot(x_data-delay(j),mean_clust{j}(i,:).*ratio(j),'color',color_map(i,:),'LineWidth',4,'LineStyle',LineStyle{j})
+%     end
+% end 
+% hold off
+% xlabel('ms')
+% ylabel('pA')
+% A=gca;
+% set(A,'fontsize',20,'fontweight','bold')
+% xlim([0 4])
 
 
 
@@ -156,12 +158,12 @@ xlim([0 4])
 
 function failure_index=find_failures(trials,threshold)
     failure_index=zeros(size(trials,1),1);
-    figure;
-    hold on;
+%     figure;
+%     hold on;
     for i=1:size(trials,1)
         if trials(i,:)>threshold
             failure_index(i)=1;
-            plot(trials(i,:))
+%             plot(trials(i,:))
         end
     end
     hold off;

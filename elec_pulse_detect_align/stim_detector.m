@@ -39,7 +39,12 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
         trials(i,:)=v_d(X(i)-500:X(i)+500)-mean(v_d(X(i)-50:X(i)-10));
     end
     threshold=-60;
-    failures=find_failures(trials,threshold);
+    if strcmp(color,'g')
+        low_thre=0;
+    else
+        low_thre=-50;
+    end
+    failures=find_failures(trials,threshold,low_thre);
     
 %     %% Cluster all events with PCA and kmeans
 %     [coeff,score,latent] = pca(trials(:,500:750));
@@ -60,12 +65,12 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     x_data=(1:size(trials,2))*si*1e-3-10;
     f_trials=trials(failures==1,:);
     s_trials=trials(failures==0,:);
-    if sum(failures)>1
+    if sum(failures==1)>1
     f_average=mean(f_trials,1);  
     %% Subtract failures to remove electrical artifact and only real signal remains
     fail_EPSC=zeros(sum(failures==1),size(trials,2));
-    succ_EPSC=zeros(sum(failures~=1),size(trials,2));
-    latency=zeros(sum(failures~=1),1);
+    succ_EPSC=zeros(sum(failures==0),size(trials,2));
+    latency=zeros(sum(failures==0),1);
     j=1;
     k=1;
 %     figure;
@@ -76,10 +81,10 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
             fail_EPSC(j,:)=trials(i,:)-f_average;
 %             plot(x_data,fail_EPSC(j,:),'b')  
             j=j+1;
-        else
+        elseif failures(i)==0
             succ_EPSC(k,:)=trials(i,:)-f_average;
 %             plot(x_data,succ_EPSC(k,:),'Color',[0.3,0.3,0.3])
-            latency(k)=find_ten_per_rise(succ_EPSC(k,530:end));
+            latency(k)=find_ten_per_rise(succ_EPSC(k,501:end));
             k=k+1;
         end
     end
@@ -92,13 +97,13 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
         succ_EPSC=trials;
         latency=zeros(size(trials,1),1);
         for i=1:size(trials,1)
-            latency(i)=find_ten_per_rise(succ_EPSC(i,530:end));
+            latency(i)=find_ten_per_rise(succ_EPSC(i,501:end));
         end
     end
     %% Align the EPSC signals based on their peaks or 10%/50% rise time
     figure('Unit','Normal','position',[0.2 0.3 0.4 0.6]);
     hold on;
-    latency_ms=latency*si*1e-3+0.6;
+    latency_ms=latency*si*1e-3;
     laten_med=round(median(latency));
     aligned_succ_EPSC=succ_EPSC;
     for i=1:size(succ_EPSC,1)
@@ -150,25 +155,32 @@ function index=get_delay(w0,w1)
     index=index-6;
 end
 
-function index=find_ten_per_rise(w)
+function i=find_ten_per_rise(w)
     [EPSC_peak,index]=min(w);
     i=1;
-    per=0.5;% 0.5 indicate 50% rise time
+    per=0.8;% 0.5 indicate 50% rise time
     while i<index-1
-        if w(index-i)<per*EPSC_peak&&w(index-i-1)>per*EPSC_peak 
+        if w(i)>per*EPSC_peak&&w(i+1)<per*EPSC_peak 
             break
         end
         i=i+1;
-    end
-    index=index-i-1;  
+    end 
 end
 % use peak to distinguish success and failures, not the best way,
 % need to be modified later
-function failure_index=find_failures(trials,threshold)
+function failure_index=find_failures(trials,threshold,varargin)
     failure_index=zeros(size(trials,1),1);
+    low_thre=0;
+    if ~isempty(varargin)
+    low_thre=varargin{1};
+    end
     for i=1:size(trials,1)
         if trials(i,:)>threshold
-            failure_index(i)=1;
+            if trials(i,:)>low_thre
+                failure_index(i)=2;
+            else
+                failure_index(i)=1;
+            end
         end
     end
 end
