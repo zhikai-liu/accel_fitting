@@ -1,19 +1,19 @@
 %% Example analysis for ZL171220_fish01a
-f_name_nodrug={'08','09','10','11'};
+f_name_nodrug={'07','08','09','10'};
 f_name_NBQX={'20','21','22','23'};
-f_header='ZL171220_fish01a_00';
+f_header='ZL180130_fish01a_00';
 concate_wave_nodrug=[0];
 for i=1:length(f_name_nodrug)
     [w,si,~]=abfload([f_header f_name_nodrug{i} '.abf']);
     pad=linspace(concate_wave_nodrug(end),w(1,1),100);
-    concate_wave_nodrug=[concate_wave_nodrug;w(:,1)];
+    concate_wave_nodrug=[concate_wave_nodrug;w(25e3:end,1)];
 end
 
 concate_wave_NBQX=[0];
 for i=1:length(f_name_NBQX)
     [w,si,~]=abfload([f_header f_name_NBQX{i} '.abf']);
     pad=linspace(concate_wave_NBQX(end),w(1,1),100);
-    concate_wave_NBQX=[concate_wave_NBQX;w(:,1)];
+    concate_wave_NBQX=[concate_wave_NBQX;w(25e3:end,1)];
 end
 clust_num=3;
 [EPSC_trials_nodrug_s,EPSC_trials_nodrug_f,aligned_EPSC_nodrug]=stim_detector(concate_wave_nodrug,si,'g');
@@ -39,8 +39,8 @@ end
 
 plot(x_data,EPSC_trials_aver_nodrug,'g','LineWidth',4)
 hold off
-ylim([-150,25])
-xlim([-1,6])
+% ylim([-150,25])
+% xlim([-1,6])
 set(A1.XAxis,'Visible','off')
 set(A1,'fontsize',20,'fontweight','bold')
 legend({'pre-NBQX'},'TextColor','g')
@@ -54,8 +54,8 @@ for i=1:size(EPSC_trials_NBQX_f,1)
 end
 plot(x_data,EPSC_trials_aver_NBQX,'r','LineWidth',4)
 hold off;
-ylim([-150,25])
-xlim([-1,6])
+% ylim([-150,25])
+% xlim([-1,6])
 xlabel('ms')
 ylabel('pA')
 legend({'post-NBQX'},'TextColor','r')
@@ -118,7 +118,7 @@ NBQX_EPSC_peak=min(aligned_EPSC_NBQX_aver);
 aver_delay=finddelay(aligned_EPSC_nodrug_aver,aligned_EPSC_NBQX_aver)*si*1e-3;
 peak_ratio=abs(nodrug_EPSC_peak/NBQX_EPSC_peak);
 diff_EPSC=aligned_EPSC_nodrug_aver(4:end)-aligned_EPSC_NBQX_aver(1:end-3).*peak_ratio;
-% 
+
 % figure;
 % hold on;
 % plot(x_data,aligned_EPSC_nodrug_aver,'g','LineWidth',4,'DisplayName','Pre-NBQX')

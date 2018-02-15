@@ -9,7 +9,7 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     v_d=smooth(data(:,1)); % data smoothing
     %% calculate derivative of signal and find threshold crossing point
     diff_v=diff(v_d)./si.*1e6;
-    thre=4e6;
+    thre=1e6;
     cross_thre=diff_v>thre;
     sign_cross_thre=diff(cross_thre)==1;% find the first crossing point for an electrical pulse event
     X_=1:length(sign_cross_thre);
@@ -23,8 +23,8 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     hold off;
     xlabel('s')
     ylabel('pA','Rotation',90)
-    xlim([14.7 14.9])
-    ylim([-200 -20])
+%     xlim([14.7 14.9])
+%     ylim([-200 -20])
     A=gca;
     set(A,'fontsize',20,'fontweight','bold','box','off')
     %% Align and baseline substract all stimulated events
@@ -38,7 +38,7 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
         X(i)=X(i)+delay;
         trials(i,:)=v_d(X(i)-500:X(i)+500)-mean(v_d(X(i)-50:X(i)-10));
     end
-    threshold=-30;
+    threshold=-60;
     failures=find_failures(trials,threshold);
     
 %     %% Cluster all events with PCA and kmeans
@@ -68,26 +68,26 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     latency=zeros(sum(failures~=1),1);
     j=1;
     k=1;
-    figure;
-    hold on;
+%     figure;
+%     hold on;
 
     for i=1:length(X)
         if failures(i)==1
             fail_EPSC(j,:)=trials(i,:)-f_average;
-            plot(x_data,fail_EPSC(j,:),'b')  
+%             plot(x_data,fail_EPSC(j,:),'b')  
             j=j+1;
         else
             succ_EPSC(k,:)=trials(i,:)-f_average;
-            plot(x_data,succ_EPSC(k,:),'Color',[0.3,0.3,0.3])
+%             plot(x_data,succ_EPSC(k,:),'Color',[0.3,0.3,0.3])
             latency(k)=find_ten_per_rise(succ_EPSC(k,530:end));
             k=k+1;
         end
     end
-    hold off;
-    xlabel('ms')
-    ylabel('pA')
-    A=gca;
-    set(A,'fontsize',20,'fontweight','bold','box','off')
+%     hold off;
+%     xlabel('ms')
+%     ylabel('pA')
+%     A=gca;
+%     set(A,'fontsize',20,'fontweight','bold','box','off')
     else
         succ_EPSC=trials;
         latency=zeros(size(trials,1),1);
@@ -116,7 +116,7 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     xlabel('ms')
     ylabel('pA')
     xlim([-1 5])
-    ylim([-200 150])
+%     ylim([-200 150])
     
     A=gca;
     set(A,'fontsize',20,'fontweight','bold','box','off')
@@ -127,7 +127,6 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     set(A,'fontsize',20,'fontweight','bold','box','off')
     MEAN=mean(latency_ms)
     STD=std(latency_ms)
-    s_trials=aligned_succ_EPSC;
 %     figure;
 %     plot(X(failures==0),latency_ms)
 end
@@ -154,8 +153,9 @@ end
 function index=find_ten_per_rise(w)
     [EPSC_peak,index]=min(w);
     i=1;
+    per=0.5;% 0.5 indicate 50% rise time
     while i<index-1
-        if w(index-i)<0.2*EPSC_peak&&w(index-i-1)>0.2*EPSC_peak % 0.5 indicate 50% rise time
+        if w(index-i)<per*EPSC_peak&&w(index-i-1)>per*EPSC_peak 
             break
         end
         i=i+1;
