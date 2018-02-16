@@ -9,7 +9,7 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
     v_d=smooth(data(:,1)); % data smoothing
     %% calculate derivative of signal and find threshold crossing point
     diff_v=diff(v_d)./si.*1e6;
-    thre=1e6;
+    thre=2e6;
     cross_thre=diff_v>thre;
     sign_cross_thre=diff(cross_thre)==1;% find the first crossing point for an electrical pulse event
     X_=1:length(sign_cross_thre);
@@ -163,7 +163,7 @@ end
 function i=find_ten_per_rise(w)
     [EPSC_peak,index]=min(w);
     i=1;
-    per=0.2;% 0.5 indicate 50% rise time
+    per=0.5;% 0.5 indicate 50% rise time
     while i<index-1
         if w(i)>per*EPSC_peak&&w(i+1)<per*EPSC_peak 
             break

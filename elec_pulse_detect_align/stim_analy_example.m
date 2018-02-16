@@ -1,7 +1,7 @@
 %% Example analysis for ZL171220_fish01a
-f_name_nodrug={'09','10','11','13'};
-f_name_NBQX={'21','23','24','25'};
-f_header='ZL180210_fish01a_00';
+f_name_nodrug={'07','08','09','10'};
+f_name_NBQX={'18','19','20'};
+f_header='ZL180210_fish03b_00';
 concate_wave_nodrug=[0];
 for i=1:length(f_name_nodrug)
     [w,si,~]=abfload([f_header f_name_nodrug{i} '.abf']);
@@ -92,19 +92,19 @@ color_map=colormap(jet(clust_num));
 % hold off;
 
 % figure;
-clust=cell(clust_num,1);
-for k=1:clust_num
+% clust=cell(clust_num,1);
+% for k=1:clust_num
 %     h(k).a=subplot(clust_num,1,k);
-    clust{k}=clust_ori(clust_index==k,:);
+%     clust{k}=clust_ori(clust_index==k,:);
 %     hold on;
-    for i=1:size(clust{k},1)
+%     for i=1:size(clust{k},1)
 %     plot(x_data,clust{k}(i,:),'color',[0.3 0.3 0.3])
-    end
-    mean_clust{j}(k,:)=mean(clust{k},1);
+%     end
+%     mean_clust{j}(k,:)=mean(clust{k},1);
 %     plot(x_data,mean_clust{j}(k,:),'color',color_map(k,:),'LineWidth',4)
 %     hold off;
 %     set(h(k).a,'fontsize',20,'fontweight','bold')
-end
+% end
 % xlabel('ms')
 % ylabel('pA')
 % samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
@@ -112,10 +112,13 @@ end
 end
 
 aligned_EPSC_nodrug_aver=mean(aligned_EPSC_nodrug,1);
-nodrug_EPSC_peak=min(aligned_EPSC_nodrug_aver);
+%aligned_EPSC_nodrug_aver=mean_clust{1}(1,:);
+nodrug_EPSC_peak=min(aligned_EPSC_nodrug_aver(500:600));
+%aligned_EPSC_NBQX_aver=mean_clust{2}(2,:);
 aligned_EPSC_NBQX_aver=mean(aligned_EPSC_NBQX,1);
-NBQX_EPSC_peak=min(aligned_EPSC_NBQX_aver);
+NBQX_EPSC_peak=min(aligned_EPSC_NBQX_aver(500:600));
 peak_ratio=abs(nodrug_EPSC_peak/NBQX_EPSC_peak);
+peak_ratio=1;
 aver_delay=get_delay(aligned_EPSC_nodrug_aver(520:560),aligned_EPSC_NBQX_aver(520:560).*peak_ratio);
 if aver_delay<0
     diff_EPSC=aligned_EPSC_nodrug_aver(1-aver_delay:end)-aligned_EPSC_NBQX_aver(1:end+aver_delay).*peak_ratio;
