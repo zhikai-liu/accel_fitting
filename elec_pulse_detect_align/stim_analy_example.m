@@ -1,7 +1,7 @@
 %% Example analysis for ZL171220_fish01a
-f_name_nodrug={'07','08','09','10'};
-f_name_NBQX={'18','19','20'};
-f_header='ZL180210_fish03b_00';
+f_name_nodrug={'08','09','10','11'};
+f_name_NBQX={'20','21','22','23'};
+f_header='ZL171220_fish01a_00';
 concate_wave_nodrug=[0];
 for i=1:length(f_name_nodrug)
     [w,si,~]=abfload([f_header f_name_nodrug{i} '.abf']);
@@ -118,7 +118,7 @@ nodrug_EPSC_peak=min(aligned_EPSC_nodrug_aver(500:600));
 aligned_EPSC_NBQX_aver=mean(aligned_EPSC_NBQX,1);
 NBQX_EPSC_peak=min(aligned_EPSC_NBQX_aver(500:600));
 peak_ratio=abs(nodrug_EPSC_peak/NBQX_EPSC_peak);
-peak_ratio=1;
+%peak_ratio=1;
 aver_delay=get_delay(aligned_EPSC_nodrug_aver(520:560),aligned_EPSC_NBQX_aver(520:560).*peak_ratio);
 if aver_delay<0
     diff_EPSC=aligned_EPSC_nodrug_aver(1-aver_delay:end)-aligned_EPSC_NBQX_aver(1:end+aver_delay).*peak_ratio;
