@@ -25,7 +25,7 @@ for i =range
             %event_clips=SD(index-50:index+100,1); %% align on the beginning of the EPSC
             %event_clips=event_clips-mean(event_clips(40:50));
             
-            event_clips=SD(S.event_peak(j)-50:S.event_peak(j)+100,1); %% align on the EPSC peak
+            event_clips=SD(S.event_peak(j)-50:S.event_peak(j)+5000,1); %% align on the EPSC peak
             event_clips=event_clips-mean(SD(index-5:index));
             event_raw = [event_raw,event_clips];
             

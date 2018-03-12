@@ -21,11 +21,12 @@ function [S_period,fit_model,accel_axis,other_axis_fit,other_axis]=fit_man_accel
             [~,accel_axis{k}] = max(STD(all_axis));
             accel_axis{k} = accel_axis{k}+1;
             %% find the start and end of sine wave
+            max_ratio=0.6;
             Dev_ = Data(poi_k,accel_axis{k})-mean(Data(poi_k,accel_axis{k}));
             cross_ = find(Dev_(1:end-1).*Dev_(2:end)<0);
-            start_index = find(cross_<find(Dev_>0.70*max(Dev_),1),1,'last');
+            start_index = find(cross_<find(Dev_>max_ratio*max(Dev_),1),1,'last');
             S_start = poi_k(1)-1+cross_(start_index);
-            end_index = find(cross_>find(Dev_<0.70*min(Dev_),1,'last'),1);
+            end_index = find(cross_>find(Dev_<max_ratio*min(Dev_),1,'last'),1);
             S_end = poi_k(1)-1+cross_(end_index);
             S_period{k} = S_start:S_end;
             %ft=fittype(@(a1,b1,c1,d1,x) a1*sin(b1*x+c1)+d1);
