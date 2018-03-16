@@ -71,5 +71,4 @@ end;
 
 %% convert from frequency domain into time domain. 
 d = real(ifft(D));
-d_fs = real(ifft(D_fs));	
-
+d_fs = real(ifft(D_fs));

@@ -1,13 +1,13 @@
-load('all_events.mat');
-data=S.Data;
-% load('all_traces.mat');
-% data=data_pad';
+% load('all_events.mat');
+% data=S.Data;
+load('all_traces.mat');
+data=data_pad';
 %% calculate the template for single EPSC
 load('template2.mat');
 %f=fit([1:length(t)-36]',t(37:end),'exp2'); %model the falling phase with double exponential
 %model_T=-[t(1:75);f(105:1000)]; 
-model_T=-t(1:75);
-s_data=-smooth(data-mean(data));
+model_T=t(1:75);
+s_data=data-mean(data);
 results=struct();
 %model_T=t;
 %% calculate the deconvolved signal
@@ -15,36 +15,17 @@ count=1;
 results(count).model_T=model_T;
 
 while 1
-    [results(count).D,results(count).D_fs]=signal_deconv(s_data,results(count).model_T,5e4,50,2500);
-    results(count).LM=get_local_maxima_above_threshold(results(count).D_fs,3.5*std(results(count).D_fs),1);
+    [results(count).D,results(count).D_fs]=signal_deconv(s_data,results(count).model_T,5e4,0,2000);
+    results(count).LM=get_local_maxima_above_threshold(results(count).D_fs,3*std(results(count).D_fs),1);
     
     results(count).LM=results(count).LM(results(count).LM+8<=length(s_data)&results(count).LM-8>=0); %delete events that is at the edge of trace, edge is defined as 8 points away from the start or the end of trace
-    
-    
-   
-    %% Reconstruct the signal from the deconvolution trace
-    results(count).D_re=zeros(length(results(count).D_fs),1);
-    %D_re(LM)=D(LM);
-    
-    results(count).coeff_delta=coeff_delta_signal(s_data,results(count).model_T,results(count).LM);% get coeff of the delta function, that minimize the least square root error
-    results(count).LM=results(count).LM(results(count).coeff_delta>0);% elminate some events that are in the oppose direction of template but still picked up
-    results(count).D_re(results(count).LM)=results(count).coeff_delta(results(count).coeff_delta>0);
-    results(count).LM_Y=s_data(results(count).LM);
-    results(count).signal_re=fft(results(count).D_re).*fft(results(count).model_T,size(s_data,1));
-    
-    results(count).penalty=(results(count).signal_re-s_data)'*(results(count).signal_re-s_data); % penalty function used for later if iteration is needed to improve peformance
-    if count>2
-        if results(count-1).penalty-results(count).penalty<1000
-            break
-        end
-    end
+
 %     %% Only use the given template
 %     if count==1
 %         count=count+1;
 %         break;
 %     end
 %     
-   
     %% Find single event that is temporally isolated from other events and use their average as the next template
     inter_LM=diff(results(count).LM);
     long_single_events=results(count).LM(inter_LM>1000&[0;inter_LM(1:end-1)]>200);
@@ -55,16 +36,16 @@ while 1
         all_template(:,i)=s_data(long_single_events(i)-20:long_single_events(i)+499)-mean(s_data(long_single_events(i)-30:long_single_events(i)-20));
         plot(all_template(:,i),'color',[0.3,0.3,0.3])
     end
-    count=count+1;
-    results(count).model_T=mean(all_template,2);
-    results(count).all_template=all_template;
-    plot(results(count).model_T,'k','LineWidth',5)
+
+    results(count+1).model_T=mean(all_template,2);
+    results(count+1).all_template=all_template;
+    plot(results(count+1).model_T,'k','LineWidth',5)
     hold off;
     
     %% clustering templates
-    [~,score,~,~,~] = pca(all_template(1:120,:)');
+    [~,score,~,~,~] = pca(all_template(1:500,:)');
     clust_index=isosplit5(score(:,1:3)');
-    results(count).template_cluster=clust_index;
+    results(count+1).template_cluster=clust_index;
     clust_num=max(clust_index);
     map=colormap(jet(clust_num));
     
@@ -88,6 +69,26 @@ while 1
         plot(mean(all_template(:,clust_index==i),2),'color',map(i,:),'LineWidth',5)
     end
     hold off;
+    
+        %% Reconstruct the signal from the deconvolution trace
+    results(count).D_re=zeros(length(results(count).D_fs),1);
+    %D_re(LM)=D(LM);
+    
+    results(count).coeff_delta=coeff_delta_signal(s_data,results(count).model_T,results(count).LM);% get coeff of the delta function, that minimize the least square root error
+    
+    results(count).coeff_delta=coeff_delta_signal(s_data,results(count).model_T,results(count).LM);
+    results(count).LM=results(count).LM(results(count).coeff_delta>0);% elminate some events that are in the oppose direction of template but still picked up
+    results(count).D_re(results(count).LM)=results(count).coeff_delta(results(count).coeff_delta>0);
+    results(count).LM_Y=s_data(results(count).LM);
+    results(count).signal_fft_re=fft(results(count).D_re).*fft(results(count).model_T,size(s_data,1));
+    results(count).signal_re=real(ifft(results(count).signal_fft_re));
+    results(count).penalty=(results(count).signal_re-s_data)'*(results(count).signal_re-s_data); % penalty function used for later if iteration is needed to improve peformance
+    if count>2
+        if results(count-1).penalty-results(count).penalty<1000
+            break
+        end
+    end
+    count=count+1;
 end
 
 
@@ -112,20 +113,28 @@ signal_re=results(count-1).signal_re;
 if count-1>1
 %% Multiple template analysis
 all_template=results(count-1).all_template;
-coeff = pca(all_template(1:120,:)');
+coeff_pca = pca(all_template(1:500,:)');
+LM_for_fit=LM;
+coeff_multi=coeff_multi_template(s_data,coeff_pca(:,1:3),LM_for_fit);%calculate least square root coefficients for each template
+
 template_num=3;
 map=colormap(jet(template_num));
 multi_template=struct();
 figure;
 for i=1:template_num
 subplot(template_num+1,1,i)
-plot(coeff(:,i),'color',map(i,:))
+plot(coeff_pca(:,i),'color',map(i,:))
 end 
 samexaxis('ytac','join','box','off');
 figure;
 for i=1:template_num
-    multi_template(i).model_T=coeff(:,i);
-    [multi_template(i).D,multi_template(i).D_fs]=signal_deconv(s_data, multi_template(i).model_T,5e4,50,2000);
+    multi_template(i).model_T=coeff_pca(:,i);
+    multi_template(i).coeff_delta=coeff_multi(:,i);
+    [multi_template(i).D,multi_template(i).D_fs]=signal_deconv(s_data, multi_template(i).model_T,5e4,0,2000);
+    multi_template(i).D_re=zeros(length(s_data),1);
+    multi_template(i).D_re(LM_for_fit)=multi_template(i).coeff_delta;
+    multi_template(i).signal_fft_re=fft(multi_template(i).D_re).*fft(multi_template(i).model_T,size(s_data,1));
+    multi_template(i).signal_re=real(ifft(multi_template(i).signal_fft_re));
     %multi_template(i).LM=get_local_maxima_above_threshold(multi_template(i).D_fs,3.5*std(multi_template(i).D_fs),1);  
     %multi_template(i).LM=multi_template(i).LM(multi_template(i).LM+8<=length(s_data)&multi_template(i).LM-8>=0); %delete events that is at the edge of trace, edge is defined as 8 points away from the start or the end of trace
     subplot(template_num+1,1,i)
@@ -137,6 +146,15 @@ end
 subplot(template_num+1,1,template_num+1)
 plot(s_data);
 samexaxis('ytac','join','box','off');
+multi_signal_re=sum([multi_template(1).signal_re,multi_template(2).signal_re,multi_template(3).signal_re],2);
+figure;
+plot(s_data,'k')
+hold on;
+plot(multi_signal_re,'r')
+hold off;
+title('Multi-template reconstructed signal')
+
+
 
 
 % figure;
@@ -166,7 +184,7 @@ figure;
 subplot(2,1,1);
 plot(s_data)
 hold on;
-plot(real(ifft(signal_re)));
+plot(signal_re);
 scatter(LM,LM_Y)
 subplot(2,1,2)
 plot(D_fs)
@@ -197,9 +215,21 @@ end
 figure;
 hold on;
 for i = 1:clust_num
-    inds=find(clust_index==i);
-    scatter3(multi_template(1).D_fs(LM(inds)),multi_template(2).D_fs(LM(inds)),multi_template(3).D_fs(LM(inds)),'MarkerEdgeColor',map(i,:));
+    inds=LM(clust_index==i);
+    scatter3(multi_template(1).D_fs(inds),multi_template(2).D_fs(inds),multi_template(3).D_fs(inds),'MarkerEdgeColor',map(i,:));
 end
+
+%% Plot clustering results with recontruction coefficient
+figure;
+hold on;
+%scatter3(multi_template(1).coeff_delta,multi_template(2).coeff_delta,multi_template(3).coeff_delta,'MarkerEdgeColor','k')
+for i = 1:clust_num
+    inds=find(clust_index==i);
+    scatter3(multi_template(1).coeff_delta(inds),multi_template(2).coeff_delta(inds),multi_template(3).coeff_delta(inds),'MarkerEdgeColor',map(i,:));
+end
+
+
+
 
 
 figure;
@@ -278,4 +308,76 @@ function coeff=coeff_delta_signal(data,kernel,timepoint)
         end
     end   
     coeff=M\B;
+end
+
+function coeff=coeff_multi_template(data,kernels,timepoint)
+
+    %% This function is solving a series of equations, here the example is three: 
+    %M11*A+M12*B+M13*C=Y1
+    %M21*A+M22*B+M23*C=Y2
+    %M31*A+M32*B+M33*C=Y3
+    
+    k_n=size(kernels,2);
+    k_l=size(kernels,1);
+    t_l=length(timepoint);
+    ij_lookup=cell(k_n);
+    M=cell(k_n);
+    %% First calculate a lookup sheet for matrix M
+    for m=1:size(ij_lookup,1)
+        for n=1:size(ij_lookup,2)
+            ij_lookup{m,n}=zeros(k_l,1); 
+            for i=1:k_l % here, i-1 is the difference between ij for later
+                %ij_lookup(1) means delta_ij is zero, ij_lookup(k_l) means delta_ij is k_l-1;
+                ij_lookup{m,n}(i)=kernels(1:k_l-i+1,m)'*kernels(i:k_l,n);
+                % in the lookup sheet, kernel n is always before kernel m
+                % on the timeline
+            end
+        end
+    end
+    %% Fill M with value based on the lookup sheet
+    for m=1:size(M,1)
+        for n=1:size(M,2)
+             M{m,n}=zeros(t_l);
+            for i=1:t_l
+                for j=1:t_l
+                    if abs(timepoint(i)-timepoint(j))<k_l
+                        if timepoint(i)>timepoint(j) %is this larger or smaller?
+                            M{m,n}(i,j)=ij_lookup{m,n}(timepoint(i)-timepoint(j)+1);
+                        else
+                            M{m,n}(i,j)=ij_lookup{n,m}(timepoint(j)-timepoint(i)+1);
+                        end
+                    end
+                end
+            end
+        end
+    end
+    %% Calculate the vector Y
+    Y=cell(k_n,1);
+    for m=1:k_n
+        Y{m}=zeros(t_l,1);
+        for i=1:t_l
+            if timepoint(i)+k_l<=length(data)
+                Y{m}(i)=data(timepoint(i)+1:timepoint(i)+k_l)'*kernels(:,m);
+            else
+                Y{m}(i)=data(timepoint(i)+1:end)'*kernels(1:length(data)-timepoint(i),m);
+            end
+        end
+    end
+    %% The series of equations can also be presented as:
+    % M11, M12, M13   A   Y1
+    %(M21, M22, M23)*(B)=(Y2)
+    % M31, M32, M33   C   Y3
+    %% in which the question will be simplified as M*X=Y
+    M_all=zeros(k_n*t_l);
+    for m=1:size(M,1)
+        for n=1:size(M,2)
+            M_all(t_l*(m-1)+1:t_l*m,t_l*(n-1)+1:t_l*n)=M{m,n};
+        end
+    end
+    Y_all=zeros(k_n*t_l,1);
+    for m=1:k_n
+        Y_all(t_l*(m-1)+1:t_l*m,1)=Y{m,1};
+    end
+    coeff=M_all\Y_all;
+    coeff=reshape(coeff,t_l,k_n);
 end
