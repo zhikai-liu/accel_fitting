@@ -1,6 +1,6 @@
 % load('all_events.mat');
 % data=S.Data;
-load('all_traces.mat');
+load('all_traces_padded.mat');
 data=data_pad';
 %% calculate the template for single EPSC
 load('template2.mat');
@@ -16,7 +16,7 @@ results(count).model_T=model_T;
 
 while 1
     [results(count).D,results(count).D_fs]=signal_deconv(s_data,results(count).model_T,5e4,0,2000);
-    results(count).LM=get_local_maxima_above_threshold(results(count).D_fs,3*std(results(count).D_fs),1);
+    results(count).LM=get_local_maxima_above_threshold(results(count).D_fs,3.5*std(results(count).D_fs),1);
     
     results(count).LM=results(count).LM(results(count).LM+8<=length(s_data)&results(count).LM-8>=0); %delete events that is at the edge of trace, edge is defined as 8 points away from the start or the end of trace
 

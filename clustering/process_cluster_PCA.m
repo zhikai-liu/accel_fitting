@@ -25,7 +25,7 @@ for i =range
             %event_clips=SD(index-50:index+100,1); %% align on the beginning of the EPSC
             %event_clips=event_clips-mean(event_clips(40:50));
             
-            event_clips=SD(S.event_peak(j)-50:S.event_peak(j)+5000,1); %% align on the EPSC peak
+            event_clips=SD(S.event_peak(j)-50:S.event_peak(j)+100,1); %% align on the EPSC peak
             event_clips=event_clips-mean(SD(index-5:index));
             event_raw = [event_raw,event_clips];
             
@@ -86,24 +86,24 @@ end
 samexaxis('ytac','join','box','off');
 
 %plotting time series of events in their amps, colored by clusters
-figure;
-hold on;
-x_start=zeros(length(range),1);
-for i=range
-    xdata=x_start(i)+peak_index(trial_num==i);
-    ydata=Amps(trial_num==i);
-    cdata=clust_index(trial_num==i);
-    for j=1:clust_num
-        c_xdata=xdata(cdata==j);
-        c_ydata=ydata(cdata==j);
-        scatter(c_xdata.*si.*1e-6,c_ydata,'MarkerEdgeColor',map(j,:))
-    end
-    plot([x_start.*si.*1e-6 x_start.*si.*1e-6],[0 100],'k--')
-    if i<length(range)
-        x_start(i+1)=max(xdata)+5000;
-    end
-end
-hold off;
+% figure;
+% hold on;
+% x_start=zeros(length(range),1);
+% for i=range
+%     xdata=x_start(i)+peak_index(trial_num==i);
+%     ydata=Amps(trial_num==i);
+%     cdata=clust_index(trial_num==i);
+%     for j=1:clust_num
+%         c_xdata=xdata(cdata==j);
+%         c_ydata=ydata(cdata==j);
+%         scatter(c_xdata.*si.*1e-6,c_ydata,'MarkerEdgeColor',map(j,:))
+%     end
+%     plot([x_start.*si.*1e-6 x_start.*si.*1e-6],[0 100],'k--')
+%     if i<length(range)
+%         x_start(i+1)=max(xdata)+5000;
+%     end
+% end
+% hold off;
 
 
 %Plottign corrolegram
