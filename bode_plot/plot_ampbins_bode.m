@@ -1,5 +1,6 @@
 % Bode plot for one amplitude bins of a neuron which requires recordings at
 % different frequencies of stimulation.
+%% Input filename is 'Trials_freq_dep.mat', range is the FNames range in the struct
 function plot_ampbins_bode(filename,range)
     H=load(filename);
     S=struct();
@@ -47,6 +48,7 @@ function plot_ampbins_bode(filename,range)
             S(count).color=color;
             S(count).direction=direction;
             S(count).amp_range=H.(FNames{i}).(Freq_FNames{k})(h).AmpBins(j).amp_range;
+            S(count).corre_clean=H.(FNames{i}).(Freq_FNames{k})(h).AmpBins(j).corre_clean;
             S(count).rec_file=FNames{i};
             S(count).gain_fit=gain_fit;
             S(count).phase_fit=phase_fit;
@@ -90,6 +92,7 @@ function plot_ampbins_bode(filename,range)
         caudal_phase_std(i)=std(caudal_phase)/sqrt(length(caudal_phase));
     end
     %plot results
+    S=S([S(:).corre_clean]==1);
     figure;
     subplot(1,2,1)
     hold on;
