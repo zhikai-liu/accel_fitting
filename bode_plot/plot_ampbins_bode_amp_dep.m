@@ -26,9 +26,17 @@ function plot_ampbins_bode_amp_dep(filename)
                 gain_avr=zeros(1,length(H.(FNames{i}).(Freq_FNames{k})));
                 phase_avr=gain_avr;
                 angle_var=gain_avr;
-                for h=1:length(H.(FNames{i}).(Freq_FNames{k}))              
+                amp_avr=gain_avr;
+                for h=1:length(H.(FNames{i}).(Freq_FNames{k})) 
                     phase=H.(FNames{i}).(Freq_FNames{k})(h).AmpBins(j).phase;
-                    amp_avr=H.(FNames{i}).(Freq_FNames{k})(h).AmpBins(j).amp;
+                    
+                    if isempty(phase)
+                        angle_var(h)=NaN;
+                        gain_avr(h)=NaN;
+                        phase_avr(h)=NaN;
+                        amp_avr(h)=NaN;
+                    else
+                        amp_avr(h)=mean(H.(FNames{i}).(Freq_FNames{k})(h).AmpBins(j).amp);
                     if strcmp('rostral',H.(FNames{i}).(Freq_FNames{k})(h).AmpBins(j).direction)
                         direction=pi/2;
                         line_stype='-';
@@ -41,7 +49,15 @@ function plot_ampbins_bode_amp_dep(filename)
                     gain_avr(h)=abs(r)./H.(FNames{i}).(Freq_FNames{k})(h).S_cycle.*H.(FNames{i}).(Freq_FNames{k})(h).S_freq;
                     %gain_avr(h)=abs(r)./H.(FNames{i}).(Freq_FNames{k})(h).S_cycle;
                     phase_avr(h)=angle(r);
+                    end
                 end
+                
+                if isnan(gain_avr)
+                    freq_var(k)=NaN;
+                    freq_gain(k)=NaN;
+                    freq_phase(k)=NaN;
+                    freq_amp(k)=NaN;    
+                else
                 freq_var(k)=mean(angle_var);
                 freq_gain(k)=mean(gain_avr);
                 freq_phase(k)=direction-mean(phase_avr);
@@ -49,9 +65,13 @@ function plot_ampbins_bode_amp_dep(filename)
                 if freq_phase(k)<-pi/2
                     freq_phase(k)=freq_phase(k)+2*pi;
                 end
+                end
             end
-            gain_fit=fit(log2(S_freq)',log2(freq_gain)','poly1');
-            phase_fit=fit(log2(S_freq)',freq_phase','poly1');
+            fit_X=log2(S_freq(~isnan(freq_gain)))';
+            fit_Y_gain=log2(freq_gain(~isnan(freq_gain))+0.00001)';
+            fit_Y_phase=freq_phase(~isnan(freq_phase))';
+            gain_fit=fit(fit_X,fit_Y_gain,'poly1');
+            phase_fit=fit(fit_X,fit_Y_phase,'poly1');
             %% Define heatmap color based on synaptic strength (EPSC amps)
 %             if mean(freq_amp)>150
 %                 color=color_all(150,:);
@@ -75,6 +95,7 @@ function plot_ampbins_bode_amp_dep(filename)
             S(count).line_stype=line_stype;
             S(count).direction=direction;
             S(count).amp_range=H.(FNames{i}).(Freq_FNames{k})(h).AmpBins(j).amp_range;
+            S(count).corre_clean=H.(FNames{i}).(Freq_FNames{k})(h).AmpBins(j).corre_clean;
             S(count).rec_file=FNames{i};
             S(count).gain_fit=gain_fit;
             S(count).phase_fit=phase_fit;
@@ -82,6 +103,7 @@ function plot_ampbins_bode_amp_dep(filename)
         end
     end
     save('afferents_summary_amp_color','S');
+    S=S([S(:).corre_clean]==1);
     S_rostral=S([S.direction]==pi/2);
     S_caudal=S([S.direction]==-pi/2);
    	freq_num=length(S(1).S_freq);
@@ -151,7 +173,9 @@ function plot_ampbins_bode_amp_dep(filename)
         %% plot gain vs amp with scatter
         scatter(all_amp(i,:),all_gain(i,:),25,'filled')
         %% Calculate fit curve with poly1 and plot it too
-        [gain_slope_amp_fit,gof]=fit(all_amp(i,:)',all_gain(i,:)','poly1');
+        fit_X=all_amp(i,:)';
+        fit_Y=all_gain(i,:)';
+        [gain_slope_amp_fit,gof]=fit(fit_X(~isnan(fit_X)),fit_Y(~isnan(fit_Y)),'poly1');
         x_amp=0:250;
         y_predict=x_amp.*gain_slope_amp_fit.p1+gain_slope_amp_fit.p2;
         hold on;

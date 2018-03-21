@@ -22,7 +22,6 @@ f_name={'ZL170517_fish03a',...  %1
     'ZL170906_fish03b',...%19
     'ZL170901_fish02b',...%20
     'ZL170901_fish03b',...%21
-    'ZL170901_fish04a',...%22
     };
 drc={'rostral','caudal'};
 S=struct();
@@ -227,4 +226,15 @@ S.(f_name{20}).amp_range=[50 70];%ZL170901_fish02b, Amp1
 S.(f_name{20}).direction='rostral';
 S.(f_name{20}).corre_clean=1;
 
+S.(f_name{21})(1).amp_range=[20 30];%ZL170901_fish03b, Amp1
+S.(f_name{21})(1).direction='rostral';
+S.(f_name{21})(1).corre_clean=1;
+
+S.(f_name{21})(2).amp_range=[30 40];%ZL170901_fish03b, Amp2
+S.(f_name{21})(2).direction='rostral';
+S.(f_name{21})(2).corre_clean=1;
+
+S.(f_name{21})(3).amp_range=[90 100];%ZL170901_fish03b, Amp3
+S.(f_name{21})(3).direction='rostral';
+S.(f_name{21})(3).corre_clean=1;
 save('ampbin_info.mat','-struct','S');
