@@ -21,7 +21,7 @@ function [S_period,fit_model,accel_axis,other_axis_fit,other_axis]=fit_man_accel
             [~,accel_axis{k}] = max(STD(all_axis));
             accel_axis{k} = accel_axis{k}+1;
             %% find the start and end of sine wave
-            max_ratio=0.6;
+            max_ratio=0.75;
             Dev_ = Data(poi_k,accel_axis{k})-mean(Data(poi_k,accel_axis{k}));
             cross_ = find(Dev_(1:end-1).*Dev_(2:end)<0);
             start_index = find(cross_<find(Dev_>max_ratio*max(Dev_),1),1,'last');
