@@ -38,11 +38,11 @@ end
 
 plot(x_data,EPSC_trials_aver_nodrug,'g','LineWidth',4)
 hold off
-% ylim([-150,25])
-% xlim([-1,6])
+ylim([-200,25])
+xlim([-1,4])
 set(A1.XAxis,'Visible','off')
 set(A1,'fontsize',20,'fontweight','bold')
-legend({'pre-NBQX'},'TextColor','g')
+legend({'pre-NBQX'},'TextColor','g','box','off')
 A2=subplot(2,1,2);
 hold on;
 for i=1:size(EPSC_trials_NBQX_s,1)
@@ -53,14 +53,14 @@ for i=1:size(EPSC_trials_NBQX_f,1)
 end
 plot(x_data,EPSC_trials_aver_NBQX,'r','LineWidth',4)
 hold off;
-% ylim([-150,25])
-% xlim([-1,6])
+ylim([-200,25])
+xlim([-1,4])
 xlabel('ms')
 ylabel('pA')
-legend({'post-NBQX'},'TextColor','r')
+legend({'post-NBQX'},'TextColor','r','box','off')
 set(A2,'fontsize',20,'fontweight','bold')
 samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
-xlim([-1 9])
+%xlim([-1 9])
 title(f_header(1:end-3),'interpreter','none')
 print([f_header(1:end-3) '_all_traces.jpg'],'-r300','-djpeg');
 %% Cluster all events with PCA and kmeans
@@ -78,37 +78,39 @@ clust_index = isosplit5(clust_ori(:,525:600)');
 clust_num=max(clust_index);
 mean_clust{j}=zeros(clust_num,size(aligned_EPSC_nodrug,2));
 color_map=colormap(jet(clust_num));
-% figure;
-% hold on;
-% for i = 1:length(score)
-%     scatter3(score(i,1),score(i,2),score(i,3),'MarkerEdgeColor',color_map(clust_index(i),:));
-% end
-% hold off;
-% figure
-% hold on;
-% for i=1:size(clust_ori,1)
-%     plot(x_data,clust_ori(i,:),'color',color_map(clust_index(i),:))
-% end
-% hold off;
 
-% figure;
-% clust=cell(clust_num,1);
-% for k=1:clust_num
-%     h(k).a=subplot(clust_num,1,k);
-%     clust{k}=clust_ori(clust_index==k,:);
-%     hold on;
-%     for i=1:size(clust{k},1)
-%     plot(x_data,clust{k}(i,:),'color',[0.3 0.3 0.3])
-%     end
-%     mean_clust{j}(k,:)=mean(clust{k},1);
-%     plot(x_data,mean_clust{j}(k,:),'color',color_map(k,:),'LineWidth',4)
-%     hold off;
-%     set(h(k).a,'fontsize',20,'fontweight','bold')
-% end
-% xlabel('ms')
-% ylabel('pA')
-% samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
-% xlim([0 4])
+figure;
+hold on;
+for i = 1:length(score)
+    scatter3(score(i,1),score(i,2),score(i,3),'MarkerEdgeColor',color_map(clust_index(i),:));
+end
+hold off;
+figure
+hold on;
+for i=1:size(clust_ori,1)
+    plot(x_data,clust_ori(i,:),'color',color_map(clust_index(i),:))
+end
+hold off;
+
+figure;
+clust=cell(clust_num,1);
+h=struct();
+for k=1:clust_num
+    h(k).a=subplot(clust_num,1,k);
+    clust{k}=clust_ori(clust_index==k,:);
+    hold on;
+    for i=1:size(clust{k},1)
+    plot(x_data,clust{k}(i,:),'color',[0.3 0.3 0.3])
+    end
+    mean_clust{j}(k,:)=mean(clust{k},1);
+    plot(x_data,mean_clust{j}(k,:),'color',color_map(k,:),'LineWidth',4)
+    hold off;
+    set(h(k).a,'fontsize',20,'fontweight','bold')
+end
+xlabel('ms')
+ylabel('pA')
+samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
+xlim([0 4])
 end
 
 aligned_EPSC_nodrug_aver=mean(aligned_EPSC_nodrug,1);

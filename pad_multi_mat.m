@@ -1,4 +1,4 @@
-function pad_multi_mat(filename_h,range)
+function data_pad=pad_multi_mat(filename_h,range)
 f_mat = dir([filename_h '*.mat']);
 S = load(f_mat(1).name);
 if strcmp(range,'all')
