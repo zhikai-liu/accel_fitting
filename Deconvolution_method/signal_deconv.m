@@ -66,9 +66,11 @@ else
     w = 1/sqrt(2*pi*B(2)/fs) * exp (-0.5*min([f;fs-f]/B(2),[],1).^2);
     w( f<B(1) | fs-B(1) < f ) = 0; 
     D_fs = fs*w(:).*D;
+    %R_fs = fs*w(:).*R;
 end; 
 
 
 %% convert from frequency domain into time domain. 
 d = real(ifft(D));
 d_fs = real(ifft(D_fs));
+%r_fs= real(ifft(R_fs));

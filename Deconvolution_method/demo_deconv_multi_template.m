@@ -19,7 +19,7 @@ LM_Y=results(count-1).LM_Y;
 D_re=results(count-1).D_re;
 signal_re=results(count-1).signal_re;
 
-
+s_data=data-mean(data);
 if count-1>1
 %% Multiple template analysis
 all_template=results(count-1).all_template;
@@ -81,8 +81,6 @@ plot(penalty)
 
 
 %% Collect a short length of the deconvolved signal at the local maxima
-
-
 event_D=D_fs(LM);
 for i=1:10
     event_D=[D_fs(LM-i),event_D,D_fs(LM+i)];
@@ -150,9 +148,17 @@ end
 
 %% Plotting corrolegram
 si=20;
-figure;
 pad=100*1e3/si;%pad length is 100ms
+figure;
+for j=1:clust_num
+    subplot(clust_num,1,j)
+    c_xdata=LM(clust_index==j);
+    ISI=diff(c_xdata).*si.*1e-3;
+    histogram(ISI(ISI<20),200)
+    xlim([0 20])
+end
 
+figure;
 for j=1:clust_num
     cross_corr=zeros(sum(clust_index==j),2*pad+1);
     count=1;
@@ -176,6 +182,7 @@ for j=1:clust_num
     xlim([-20,20])
     %ylim([0 0.6])
     AxisFormat;
+
 end
 samexaxis('ytac','box','off');
 xlabel('ms')

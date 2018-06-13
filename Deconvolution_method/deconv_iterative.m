@@ -5,6 +5,29 @@ function results=deconv_iterative(data,template)
 % between reconstructed and real signal is calculated. The process
 % is continued until the penalty doesn't decrease anymore.
 %%
+% For 'results', it contains('count' specifies which iteration):
+%         results(count).model_T: Template used for deconv.
+
+%         results(count).D: Deconvoluted traces.
+
+%         results(count).LM: Thresholded event index, or the timepoint of detected event.
+
+%         results(count+1).all_template: Events chosen for generating template for the next iteration.
+
+%         results(count+1).model_T: Template for next iteration.
+
+%         results(count).coeff_delta: coeff for each event that minimize the least square error.
+
+%         results(count).D_re: Reconstructed deconvolved trace, where event timepoint has value of its coefficient and 
+%                               non-event timepoint being zero.
+
+%         results(count).LM_Y: Value of each event timepoint for the orignal signal.
+
+%         results(count).signal_fft_re: Reconstructed signal in Fourier space.
+
+%         results(count).signal_re: Reconstructed signal.
+
+%         results(count).penalty: Penalty between real and reconstructed signals.
 
 s_data=data-mean(data); %signal baseline adjusted to zero
 results=struct();
