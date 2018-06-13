@@ -161,7 +161,6 @@ for j=1:clust_num
     cross_corr=zeros(sum(clust_index==j),2*pad+1);
     count=1;
     subplot(clust_num,1,j)
-    
     c_xdata=LM(clust_index==j);
     spikes=zeros(1,max(c_xdata)+2*pad);
     spikes(c_xdata+pad)=1;
