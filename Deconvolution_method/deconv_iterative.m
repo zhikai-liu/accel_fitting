@@ -29,6 +29,7 @@ function results=deconv_iterative(data,template)
 
 %         results(count).penalty: Penalty between real and reconstructed signals.
 
+%% Pre-processing
 s_data=data-mean(data); %signal baseline adjusted to zero
 results=struct();
 count=1;
@@ -47,7 +48,7 @@ while 1
 %         break;
 %     end
 %     
-    %% Find single event that is temporally isolated from other events and use their average as the next template
+%% Find single event that is temporally isolated from other events and use their average as the next template
     inter_LM=diff(results(count).LM);
     long_single_events=results(count).LM(inter_LM>1000&[0;inter_LM(1:end-1)]>200);
     all_template=zeros(520,length(long_single_events));

@@ -7,7 +7,10 @@ load('template2.mat');
 %f=fit([1:length(t)-36]',t(37:end),'exp2'); %model the falling phase with double exponential
 %model_T=-[t(1:75);f(105:1000)]; 
 model_T=t(1:75);
-results=deconv_iterative(data,model_T);
+s_data=smooth(data-mean(data));
+s_data=diff(s_data);
+model_T=diff(model_T);
+results=deconv_iterative(s_data,model_T);
 count=length(results);
 %% Use the least square root error round (count-1) for later analysis
 D=results(count-1).D;
@@ -19,14 +22,12 @@ LM_Y=results(count-1).LM_Y;
 D_re=results(count-1).D_re;
 signal_re=results(count-1).signal_re;
 
-s_data=data-mean(data);
-if count-1>1
 %% Multiple template analysis
-all_template=results(count-1).all_template;
-coeff_pca = pca(all_template(1:500,:)');
-LM_for_fit=LM;
-coeff_multi=coeff_multi_template(s_data,coeff_pca(:,1:3),LM_for_fit);%calculate least square root coefficients for each template
 
+if count-1>1
+all_template=results(count-1).all_template;
+%coeff_pca = pca(all_template(1:150,:)');
+[coeff_pca,~,latent] = pca(all_template(:,:)');
 template_num=3;
 map=colormap(jet(template_num));
 multi_template=struct();
@@ -36,6 +37,10 @@ subplot(template_num+1,1,i)
 plot(coeff_pca(:,i),'color',map(i,:))
 end 
 samexaxis('ytac','join','box','off');
+
+LM_for_fit=LM;
+coeff_multi=coeff_multi_template(s_data,coeff_pca(:,1:template_num),LM_for_fit);%calculate least square root coefficients for each template
+
 figure;
 for i=1:template_num
     multi_template(i).model_T=coeff_pca(:,i);
@@ -56,11 +61,17 @@ end
 subplot(template_num+1,1,template_num+1)
 plot(s_data);
 samexaxis('ytac','join','box','off');
-multi_signal_re=sum([multi_template(1).signal_re,multi_template(2).signal_re,multi_template(3).signal_re],2);
+%multi_signal_re=sum([multi_template(1).signal_re,multi_template(2).signal_re,multi_template(3).signal_re],2);
+multi_signal_re=sum([multi_template(1).signal_re,multi_template(2).signal_re],2);
+%ind_event=multi_template(1).coeff_delta*multi_template(1).model_T'+multi_template(2).coeff_delta*multi_template(2).model_T'+multi_template(3).coeff_delta.*multi_template(3).model_T';
+ind_event=multi_template(1).coeff_delta*multi_template(1).model_T'+multi_template(2).coeff_delta*multi_template(2).model_T';
 figure;
 plot(s_data,'k')
 hold on;
 plot(multi_signal_re,'r')
+for i=1:length(LM)
+    plot(LM(i):LM(i)+519,ind_event(i,:))
+end
 hold off;
 title('Multi-template reconstructed signal')
 
@@ -93,7 +104,8 @@ subplot(2,1,1);
 plot(s_data)
 hold on;
 plot(signal_re);
-scatter(LM,LM_Y)
+%scatter(LM,LM_Y)
+scatter(LM(1:end-1)+86,s_data(LM(1:end-1)+86))
 subplot(2,1,2)
 plot(D_fs)
 Q=D_fs(LM);
@@ -146,18 +158,30 @@ for i=1:length(LM)
     plot(event_D(i,:),'Color',map(clust_index(i),:))
 end
 
-%% Plotting corrolegram
+%% Plot EPSC events that violate refractory period within the same cluster
 si=20;
 pad=100*1e3/si;%pad length is 100ms
 figure;
 for j=1:clust_num
     subplot(clust_num,1,j)
-    c_xdata=LM(clust_index==j);
-    ISI=diff(c_xdata).*si.*1e-3;
-    histogram(ISI(ISI<20),200)
-    xlim([0 20])
+    c_LM=LM(clust_index==j);
+    ISI=diff(c_LM).*si.*1e-3;
+    %histogram(ISI(ISI<2),20)
+    %xlim([0 2])
+    c_xdata=c_LM([ISI;10]<2);
+    hold on;
+    for i=1:length(c_xdata)
+        x_data=c_xdata(i)+80:c_xdata(i)+100;
+        x_peak=c_xdata(i)+86:c_xdata(i)+87;
+        y_data=s_data(c_xdata(i)+80:c_xdata(i)+100);
+        y_peak=s_data(c_xdata(i)+86:c_xdata(i)+87);
+        plot(x_data,y_data,'k');
+        plot(x_peak,y_peak,'color',map(j,:),'LineWidth',6);
+    end
+    hold off;
 end
-
+samexaxis('ytac','box','off');
+%% Plotting corrolegram
 figure;
 for j=1:clust_num
     cross_corr=zeros(sum(clust_index==j),2*pad+1);
@@ -181,7 +205,7 @@ for j=1:clust_num
     histogram(dist_prox_index,bin,'Normalization','pdf','FaceColor',map(j,:),'EdgeColor','none')
     xlim([-20,20])
     %ylim([0 0.6])
-    AxisFormat;
+    %AxisFormat;
 
 end
 samexaxis('ytac','box','off');
