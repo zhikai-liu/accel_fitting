@@ -8,8 +8,8 @@ load('template2.mat');
 %model_T=-[t(1:75);f(105:1000)]; 
 model_T=t(1:75);
 s_data=smooth(data-mean(data));
-s_data=diff(s_data);
-model_T=diff(model_T);
+% s_data=diff(s_data);
+% model_T=diff(model_T);
 results=deconv_iterative(s_data,model_T);
 count=length(results);
 %% Use the least square root error round (count-1) for later analysis
@@ -36,6 +36,12 @@ for i=1:template_num
 subplot(template_num+1,1,i)
 plot(coeff_pca(:,i),'color',map(i,:))
 end 
+figure;
+for i=1:template_num
+subplot(template_num+1,1,i)
+plot(cumsum([coeff_pca(1,i);coeff_pca(:,i)]),'color',map(i,:))
+end 
+
 samexaxis('ytac','join','box','off');
 
 LM_for_fit=LM;
@@ -168,15 +174,29 @@ for j=1:clust_num
     ISI=diff(c_LM).*si.*1e-3;
     %histogram(ISI(ISI<2),20)
     %xlim([0 2])
-    c_xdata=c_LM([ISI;10]<2);
+    c_xdata_1=c_LM([ISI;10]<2);
+    c_xdata_2=c_LM([10;ISI]<2);
     hold on;
-    for i=1:length(c_xdata)
-        x_data=c_xdata(i)+80:c_xdata(i)+100;
-        x_peak=c_xdata(i)+86:c_xdata(i)+87;
-        y_data=s_data(c_xdata(i)+80:c_xdata(i)+100);
-        y_peak=s_data(c_xdata(i)+86:c_xdata(i)+87);
-        plot(x_data,y_data,'k');
-        plot(x_peak,y_peak,'color',map(j,:),'LineWidth',6);
+%     for i=1:length(c_xdata_1)
+%         x_data=c_xdata_1(i):c_xdata_1(i)+200;
+%         x_peak=c_xdata_1(i)+86:c_xdata_1(i)+87;
+%         y_data=s_data(c_xdata_1(i):c_xdata_1(i)+200);
+%         y_peak=s_data(c_xdata_1(i)+86:c_xdata_1(i)+87);
+%         plot(x_data,y_data,'k');
+%         plot(x_peak,y_peak,'color',map(j,:),'LineWidth',6);
+%     end
+%     for i=1:length(c_xdata_2)
+%         x_data=c_xdata_2(i):c_xdata_2(i)+200;
+%         x_peak=c_xdata_2(i)+86:c_xdata_2(i)+87;
+%         y_data=s_data(c_xdata_2(i):c_xdata_2(i)+200);
+%         y_peak=s_data(c_xdata_2(i)+86:c_xdata_2(i)+87);
+%         plot(x_data,y_data,'k');
+%         plot(x_peak,y_peak,'r','LineWidth',6);
+%     end
+    for i=1:length(c_xdata_1)
+         x_data=c_xdata_1(i):c_xdata_1(i)+200;
+         y_data=s_data(c_xdata_1(i):c_xdata_1(i)+200);
+         plot(y_data,'k');
     end
     hold off;
 end
@@ -187,9 +207,9 @@ for j=1:clust_num
     cross_corr=zeros(sum(clust_index==j),2*pad+1);
     count=1;
     subplot(clust_num,1,j)
-    c_xdata=LM(clust_index==j);
-    spikes=zeros(1,max(c_xdata)+2*pad);
-    spikes(c_xdata+pad)=1;
+    c_xdata_1=LM(clust_index==j);
+    spikes=zeros(1,max(c_xdata_1)+2*pad);
+    spikes(c_xdata_1+pad)=1;
     dist_prox_index=[];
     for k=1:length(spikes)
         if spikes(k)==1
