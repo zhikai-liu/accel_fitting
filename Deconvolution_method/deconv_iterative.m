@@ -40,7 +40,7 @@ results(count).model_T=template;% Use given template for first iteration of deco
 while 1
     [results(count).D,results(count).D_fs]=signal_deconv(s_data,results(count).model_T,5e4,0,2000);
     results(count).LM=get_local_maxima_above_threshold(results(count).D_fs,3.5*std(results(count).D_fs),1);   
-    results(count).LM=results(count).LM(results(count).LM+8<=length(s_data)&results(count).LM-8>=0); %delete events that is at the edge of trace, edge is defined as 8 points away from the start or the end of trace
+    results(count).LM=results(count).LM(results(count).LM+500<=length(s_data)&results(count).LM-500>=0); %delete events that is at the edge of trace, edge is defined as 500 points (10ms) away from the start or the end of trace
 
 %     %% Only use the given template
 %     if count==1
@@ -50,19 +50,19 @@ while 1
 %     
 %% Find single event that is temporally isolated from other events and use their average as the next template
     inter_LM=diff(results(count).LM);
-    long_single_events=results(count).LM(inter_LM>1000&[0;inter_LM(1:end-1)]>200);
-    all_template=zeros(520,length(long_single_events));
-%     figure;
-%     hold on;
+    long_single_events=results(count).LM([inter_LM;0]>400&[0;inter_LM]>400);
+    all_template=zeros(100,length(long_single_events));
+    figure;
+    hold on;
     for i=1:length(long_single_events)
-        all_template(:,i)=s_data(long_single_events(i)-20:long_single_events(i)+499)-mean(s_data(long_single_events(i)-30:long_single_events(i)-20));
-%         plot(all_template(:,i),'color',[0.3,0.3,0.3])
+        all_template(:,i)=s_data(long_single_events(i):long_single_events(i)+99)-mean(s_data(long_single_events(i)-10:long_single_events(i)));
+        plot(all_template(:,i),'color',[0.3,0.3,0.3])
     end
 
     results(count+1).model_T=mean(all_template,2);
     results(count+1).all_template=all_template;
-%     plot(results(count+1).model_T,'k','LineWidth',5)
-%     hold off;
+    plot(results(count+1).model_T,'k','LineWidth',5)
+    hold off;
     
     %% clustering templates
 %     [~,score,~,~,~] = pca(all_template(1:500,:)');

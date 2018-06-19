@@ -21,11 +21,6 @@ LM=results(count-1).LM;
 LM_Y=results(count-1).LM_Y;
 D_re=results(count-1).D_re;
 signal_re=results(count-1).signal_re;
-
-%% Multiple template analysis
-if count-1>1
-    multitemplate_pca_deconv(results(count-1),s_data);
-end
 %% Plot penalty cost for each iteration
 figure;
 plot(penalty)
@@ -43,6 +38,10 @@ opts.isocut_threshold=1;
 clust_index=isosplit5(score(:,1:3)',opts);
 clust_num=max(clust_index);
 map=colormap(jet(clust_num));
+clust=struct();
+for i=1:clust_num
+    clust(i).LM=LM(clust_index==i);
+end
 
 %% Plot the results
 
@@ -73,25 +72,6 @@ for i = 1:clust_num
     scatter3(score(inds,1),score(inds,2),score(inds,3),'MarkerEdgeColor',map(i,:));
 end
 
-
-%Plot clustering results with template deconvolved scores
-figure;
-hold on;
-for i = 1:clust_num
-    inds=LM(clust_index==i);
-    scatter3(multi_template(1).D_fs(inds),multi_template(2).D_fs(inds),multi_template(3).D_fs(inds),'MarkerEdgeColor',map(i,:));
-end
-
-%Plot clustering results with recontruction coefficient
-figure;
-hold on;
-%scatter3(multi_template(1).coeff_delta,multi_template(2).coeff_delta,multi_template(3).coeff_delta,'MarkerEdgeColor','k')
-for i = 1:clust_num
-    inds=find(clust_index==i);
-    scatter3(multi_template(1).coeff_delta(inds),multi_template(2).coeff_delta(inds),multi_template(3).coeff_delta(inds),'MarkerEdgeColor',map(i,:));
-end
-
-
 %Plot each detected event
 figure;
 hold on;
@@ -104,69 +84,84 @@ si=20;
 pad=100*1e3/si;%pad length is 100ms
 figure;
 for j=1:clust_num
-    subplot(clust_num,1,j)
-    c_LM=LM(clust_index==j);
+    subplot(clust_num,2,2*j-1)
+    c_LM=clust(j).LM;
     ISI=diff(c_LM).*si.*1e-3;
-    %histogram(ISI(ISI<2),20)
-    %xlim([0 2])
     c_xdata_1=c_LM([ISI;10]<2);
     c_xdata_2=c_LM([10;ISI]<2);
     c_xdata_3=c_LM([ISI;10]>2&[10;ISI]>2);
     hold on;
-%     for i=1:length(c_xdata_1)
-%         x_data=c_xdata_1(i):c_xdata_1(i)+200;
-%         x_peak=c_xdata_1(i)+86:c_xdata_1(i)+87;
-%         y_data=s_data(c_xdata_1(i):c_xdata_1(i)+200);
-%         y_peak=s_data(c_xdata_1(i)+86:c_xdata_1(i)+87);
-%         plot(x_data,y_data,'k');
-%         plot(x_peak,y_peak,'color',map(j,:),'LineWidth',6);
-%     end
-%     for i=1:length(c_xdata_2)
-%         x_data=c_xdata_2(i):c_xdata_2(i)+200;
-%         x_peak=c_xdata_2(i)+86:c_xdata_2(i)+87;
-%         y_data=s_data(c_xdata_2(i):c_xdata_2(i)+200);
-%         y_peak=s_data(c_xdata_2(i)+86:c_xdata_2(i)+87);
-%         plot(x_data,y_data,'k');
-%         plot(x_peak,y_peak,'r','LineWidth',6);
-%     end
     for i=1:length(c_xdata_1)
-         y_data=s_data(c_xdata_1(i):c_xdata_1(i)+200);
-         plot(y_data,'k');
-    end
-    for i=1:length(c_xdata_3)
-         y_data=s_data(c_xdata_3(i):c_xdata_3(i)+200);
+         y_data=s_data(c_xdata_1(i)-200:c_xdata_1(i)+200);
          plot(y_data,'r');
+         ylim([min(s_data) max(s_data)])
+    end
+    hold off;
+    subplot(clust_num,2,2*j)
+    hold on;
+    for i=1:length(c_xdata_3)
+         y_data=s_data(c_xdata_3(i)-200:c_xdata_3(i)+200);
+         plot(y_data,'k');
+         ylim([min(s_data) max(s_data)])
     end
     hold off;
 end
-samexaxis('ytac','box','off');
+%samexaxis('ytac','box','off');
 
 %Plotting corrolegram
 figure;
+subplot_num=1;
 for j=1:clust_num
-    cross_corr=zeros(sum(clust_index==j),2*pad+1);
-    count=1;
-    subplot(clust_num,1,j)
-    c_xdata_1=LM(clust_index==j);
-    spikes=zeros(1,max(c_xdata_1)+2*pad);
-    spikes(c_xdata_1+pad)=1;
-    dist_prox_index=[];
-    for k=1:length(spikes)
-        if spikes(k)==1
-            bin_train=spikes(k-pad:k+pad);
-            bin_train(pad+1)=0;
-            dist_prox_index=[dist_prox_index,find(bin_train==1)-pad-1];
-            cross_corr(count,:)=bin_train;
-            count=count+1;
+    spikes_j=zeros(1,max(LM)+2*pad);
+    spikes_j(clust(j).LM+pad)=1;
+    for i=1:clust_num 
+        spikes_i=zeros(1,max(LM)+2*pad);
+        spikes_i(clust(i).LM+pad)=1;
+        dist_prox_index=[];
+        for k=1:length(spikes_j)
+            if spikes_j(k)==1
+                bin_train=spikes_i(k-pad:k+pad);
+                bin_train(pad+1)=0;
+                dist_prox_index=[dist_prox_index,find(bin_train==1)-pad-1];
+            end
         end
+        dist_prox_index=dist_prox_index.*si/1e3;
+        bin=-20:1:20;
+        subplot(clust_num,clust_num,subplot_num)
+        if i==j
+            map_color=map(j,:);
+        else
+            map_color=[0.3 0.3 0.3];
+        end
+        histogram(dist_prox_index,bin,'Normalization','pdf','FaceColor',map_color,'EdgeColor','none')
+        xlim([-20,20])
+        subplot_num=subplot_num+1;
     end
-    dist_prox_index=dist_prox_index.*si/1e3;
-    bin=-20:1:20;
-    histogram(dist_prox_index,bin,'Normalization','pdf','FaceColor',map(j,:),'EdgeColor','none')
-    xlim([-20,20])
 end
-samexaxis('ytac','box','off');
+%samexaxis('ytac','box','off');
 xlabel('ms')
 ylabel('Probability')
-AxisFormat;
+%AxisFormat;
+
+
+%% Multiple template analysis
+% if count-1>1
+%     multitemplate_pca_deconv(results(count-1),s_data);
+% end
+
+%Plot clustering results with template deconvolved scores
+% figure;
+% hold on;
+% for i = 1:clust_num
+%     inds=LM(clust_index==i);
+%     scatter3(multi_template(1).D_fs(inds),multi_template(2).D_fs(inds),multi_template(3).D_fs(inds),'MarkerEdgeColor',map(i,:));
+% end
+
+%Plot clustering results with recontruction coefficient
+% figure;
+% hold on;
+% for i = 1:clust_num
+%     inds=find(clust_index==i);
+%     scatter3(multi_template(1).coeff_delta(inds),multi_template(2).coeff_delta(inds),multi_template(3).coeff_delta(inds),'MarkerEdgeColor',map(i,:));
+% end
 
