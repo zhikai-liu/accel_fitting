@@ -4,27 +4,33 @@ load('all_traces_padded.mat');
 data=data_pad';
 %% calculate the template for single EPSC
 load('template2.mat');
+load('EPSC_templates.mat');
 %f=fit([1:length(t)-36]',t(37:end),'exp2'); %model the falling phase with double exponential
 %model_T=-[t(1:75);f(105:1000)]; 
-model_T=t(1:75);
+%% model_T=t(1:75);
+model_T=fast_EPSC';
+%model_T=slow_EPSC';
 s_data=smooth(data-mean(data));
 % s_data=diff(s_data);
 % model_T=diff(model_T);
-results=deconv_iterative(s_data,model_T);
-count=length(results);
+[results,count]=deconv_iterative(s_data,model_T);
 %% Use the least square root error round (count-1) for later analysis
 D=results(count-1).D;
 D_fs=results(count-1).D_fs;
 model_T=results(count-1).model_T;
 penalty=[results(:).penalty];
 LM=results(count-1).LM;
+LM_l=[results(:).LM_l];
 LM_Y=results(count-1).LM_Y;
 D_re=results(count-1).D_re;
 signal_re=results(count-1).signal_re;
 %% Plot penalty cost for each iteration
 figure;
 plot(penalty)
-
+title('Penalty vs iteration');
+figure;
+plot(LM_l)
+title('Event number vs iteration');
 %% Collect a short length of the deconvolved signal at the local maxima
 event_D=D_fs(LM);
 for i=1:10
@@ -52,17 +58,13 @@ plot(s_data)
 hold on;
 plot(signal_re);
 %scatter(LM,LM_Y)
-scatter(LM(1:end-1)+86,s_data(LM(1:end-1)+86))
+scatter(LM,s_data(LM))
 subplot(2,1,2)
 plot(D_fs)
 Q=D_fs(LM);
 hold on;
 scatter(LM,Q)
 samexaxis('ytac','join','box','off');
-
-
-
-
 
 %Plot clustering results
 figure;
