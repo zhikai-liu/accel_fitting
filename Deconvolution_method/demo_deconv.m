@@ -177,22 +177,6 @@ for j=1:clust_num
     dist_prox_index=dist_prox_index.*si/1e3;
     bin=-20:1:20;
     histogram(dist_prox_index,bin,'Normalization','pdf','FaceColor',map(j,:),'EdgeColor','none')
-%     corr=sum(cross_corr);
-%     box=1e3/si;
-%     corr_ms=zeros(1,2*pad/box);
-%     for i=1:length(corr_ms)/2
-%         ms_range=1+box*(i-1):box*i;
-%         corr_ms(i)=sum(corr(ms_range));
-%     end
-%     bar(-pad/box:-1,corr_ms(1:pad/box),'FaceColor',map(j,:),'EdgeColor',map(j,:))
-%     hold on;
-%     for i=1+length(corr_ms)/2:length(corr_ms)
-%         ms_range=2+box*(i-1):1+box*i;
-%         corr_ms(i)=sum(corr(ms_range));
-%     end
-%     bar(1:pad/box,corr_ms(1+pad/box:end),'FaceColor',map(j,:),'EdgeColor',map(j,:))
-%     hold off;
-    %xlim([-pad/box pad/box])
     xlim([-20,20])
     ylim([0 0.6])
     AxisFormat;
