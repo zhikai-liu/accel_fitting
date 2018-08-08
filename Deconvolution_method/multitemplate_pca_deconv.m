@@ -1,10 +1,16 @@
-function [coeff_pca,latent,multi_template]=multitemplate_pca_deconv(S,s_data)
-%% Extract 3 PCA components as 3 templates for deconvolution
-all_template=S.all_template;
-[coeff_pca,~,latent] = pca(all_template(:,:)');
-template_num=3;
+function [coeff_pca,multi_template]=multitemplate_pca_deconv(S,s_data)
+% %% Extract 3 PCA components as 3 templates for deconvolution
+% all_template=S.all_template;
+% [coeff_pca,~,latent] = pca(all_template(:,:)');
+% template_num=3;
+% map=colormap(jet(template_num));
+% multi_template=struct();
+
+%% Use given templates
+template_num=2;
 map=colormap(jet(template_num));
 multi_template=struct();
+coeff_pca=[S.template1,S.template2];
 %% Plot 3 PCA components
 figure;
 for i=1:template_num
@@ -39,22 +45,29 @@ plot(s_data);
 samexaxis('ytac','join','box','off');
 
 %% Reconstruct signal by summing the results of each templates
-multi_signal_re=sum([multi_template(1).signal_re,multi_template(2).signal_re,multi_template(3).signal_re],2);
-%multi_signal_re=sum([multi_template(1).signal_re,multi_template(2).signal_re],2);% Two templates
+% multi_signal_re=sum([multi_template(1).signal_re,multi_template(2).signal_re,multi_template(3).signal_re],2);
+multi_signal_re=sum([multi_template(1).signal_re,multi_template(2).signal_re],2);% Two templates
 
 %% Instead of the whole trace, calculate the signal for each individual event separately
-ind_event=multi_template(1).coeff_delta*multi_template(1).model_T'+multi_template(2).coeff_delta*multi_template(2).model_T'+multi_template(3).coeff_delta.*multi_template(3).model_T';
-%ind_event=multi_template(1).coeff_delta*multi_template(1).model_T'+multi_template(2).coeff_delta*multi_template(2).model_T';
+% ind_event=multi_template(1).coeff_delta*multi_template(1).model_T'+multi_template(2).coeff_delta*multi_template(2).model_T'+multi_template(3).coeff_delta.*multi_template(3).model_T';
+ind_event=multi_template(1).coeff_delta*multi_template(1).model_T'+multi_template(2).coeff_delta*multi_template(2).model_T';
 
 %% Plot to compare real signal/reconstructed signal/each individual reconstructed event
 figure;
+subplot(2,1,1)
 plot(s_data,'k')
 hold on;
-plot(multi_signal_re,'r')
+
 event_l=size(ind_event,2);
 for i=1:length(S.LM)
     plot(S.LM(i):S.LM(i)+event_l-1,ind_event(i,:))
 end
 hold off;
 title('Multi-template reconstructed signal')
+subplot(2,1,2)
+plot(s_data,'k')
+hold on;
+plot(multi_signal_re,'r')
+hold off;
+samexaxis('ytac','join','box','off');
 end

@@ -1,4 +1,4 @@
-function data_pad=pad_multi_mat(filename_h,range)
+function pad_multi_mat(filename_h,range)
 f_mat = dir([filename_h '*.mat']);
 S = load(f_mat(1).name);
 if strcmp(range,'all')
@@ -6,7 +6,8 @@ if strcmp(range,'all')
 end
 x=length(range);
 [y,~]=size(S.Data);
-data_raw=zeros(y,x);
+data_size=[y,x];
+data_raw=zeros(data_size);
 test_pulse_l=35000;
 for i=1:x
     clearvars S
@@ -27,5 +28,5 @@ end
 figure;
 plot(data_pad)
 title(filename_h,'interpreter','none');
-save('all_traces_padded.mat','data_pad')
+save([filename_h '_concate.mat'],'data_pad','f_mat','range','data_size')
 end
