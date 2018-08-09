@@ -19,12 +19,15 @@ for i =1:length(f_mat)
     Xinit=[];
     %% Main fista algorithm
     if parallel.gpu.GPUDevice.isAvailable
-        [fista.X1,fista.X2,fista.cost_iter] = fista_lasso_backtracking_2tems(gpuArray(signal),...
+        [X1_gpu,X2_gpu,cost_iter_gpu] = fista_lasso_backtracking_2tems(gpuArray(signal),...
             gpuArray(fista.template1),gpuArray(fista.template2), gpuArray(Xinit),gpuArray(Xinit), opts);
+        fista.X1=gather(X1_gpu);
+        fista.X2=gather(X2_gpu);
+        fista.cost_iter=gather(cost_iter_gpu);
     else
         [fista.X1,fista.X2,fista.cost_iter] = fista_lasso_backtracking_2tems(signal, fista.template1,fista.template2, Xinit,Xinit, opts);
     end
-    [fista.X1_max,fista.recon_integral,fista.chemical]=fista_local_maxima(signal,fista.X1,fista.X2,fista.template1,fista.template2);
+    [fista.X1_max,fista.recon_integral,fista.chemical]=fista_local_maxima(signal,fista.X1,fista.X2,fista.template1,fista.template2,0);
     fista_autocorrelogram(fista.X1_max,fista.recon_integral,fista.chemical)
     save(f_mat(i).name,'fista','-append');
 end
