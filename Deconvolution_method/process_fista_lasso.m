@@ -30,7 +30,7 @@ if parallel.gpu.GPUDevice.isAvailable
 else
 [fista.X1,fista.X2,fista.cost_iter] = fista_lasso_backtracking_2tems(Y(l,1), fista.template1,fista.template2, Xinit,Xinit, opts);
 end
-fista.X1_max=get_local_maxima_above_threshold(fista.X1,3.5*std(fista.X1),0);
+fista.X1_max=get_local_maxima_above_threshold(fista.X1,3.5*std(fista.X1),1,10);
 fista.opts=opts;
 save(filename,'fista','-append');
 %% The lasso problem is: argmin( 1/2(Y-A*x1-B*x2)^2+lambda1*|x1|+lambda2*|x2|)
