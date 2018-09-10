@@ -1,6 +1,7 @@
 function pad_multi_mat(filename_h,range)
 f_mat = dir([filename_h '*.mat']);
 S = load(f_mat(1).name);
+si=20;
 if strcmp(range,'all')
     range=1:length(f_mat);
 end
@@ -28,5 +29,5 @@ end
 figure;
 plot(data_pad)
 title(filename_h,'interpreter','none');
-save([filename_h '_concate.mat'],'data_pad','f_mat','range','data_size')
+save(['concate_' filename_h '.mat'],'data_pad','f_mat','range','data_size','si')
 end

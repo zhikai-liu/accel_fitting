@@ -19,11 +19,20 @@ for i =1:length(f_mat)
         fit_amp{j} = fit_model{j}.a1;
         fit_freq{j} = fit_model{j}.b1*1e6/S.si/2/pi;
     end
-    if isfield(S,'event_index')
-        [period_index,cycle_num,per_cycle_index] = cycle_fit(S.event_index,S.amps,fit_model,S_period);
-    else
-        [period_index,cycle_num,per_cycle_index] = cycle_fit([],[],fit_model,S_period);
+    if isfield(S,'der')
+        der=S.der;
+        if isfield(der,'event_index')
+            [der.period_index,der.cycle_num,der.per_cycle_index] = cycle_fit(der.event_index,der.amps,fit_model,S_period);
+        else
+            [der.period_index,der.cycle_num,der.per_cycle_index] = cycle_fit([],[],fit_model,S_period);
+        end
+    
+        save(f_mat(i).name,'S_period','fit_model','accel_axis','fit_amp','fit_freq','der','-append')
     end
-        save(f_mat(i).name,'S_period','fit_model','accel_axis','fit_amp','fit_freq','period_index','cycle_num','per_cycle_index','-append')
+    if isfield(S,'fista')
+        fista=S.fista;
+        fista = fista_cycle_fit(fista,fit_model,S_period);
+        save(f_mat(i).name,'S_period','fit_model','accel_axis','fit_amp','fit_freq','fista','-append')
+    end
 end
 end

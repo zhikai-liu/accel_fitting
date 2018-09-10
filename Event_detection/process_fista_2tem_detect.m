@@ -5,7 +5,7 @@ for i =1:length(f_mat)
     %% Initiation
     fista=struct();
     S = load(f_mat(i).name);
-    signal=smooth(S.Data(:,1)-median(S.Data(:,1)));
+    signal=smooth(S.data_pad-median(S.data_pad));
     EPSC_w1=fast_EPSC(1:441)';
     EPSC_w2=slow_EPSC';
     fista.template1=EPSC_w1;
@@ -28,7 +28,7 @@ for i =1:length(f_mat)
         [fista.X1,fista.X2,fista.cost_iter] = fista_lasso_backtracking_2tems(signal, fista.template1,fista.template2, Xinit,Xinit, opts);
     end
     [fista.X1_max,fista.recon_integral,fista.chemical]=fista_local_maxima(signal,fista.X1,fista.X2,fista.template1,fista.template2,0);
-    fista_autocorrelogram(fista.X1_max,fista.recon_integral,fista.chemical)
     save(f_mat(i).name,'fista','-append');
+    %fista_autocorrelogram(fista.X1_max,fista.recon_integral,fista.chemical)
 end
 end

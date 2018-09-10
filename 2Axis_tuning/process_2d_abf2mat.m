@@ -10,7 +10,7 @@ function process_2d_abf2mat(filename_h)
     poi_2d=generate_poi();
     for i=1:length(f_abf)
         [~,abf_name,~] = fileparts(f_abf(i).name);
-        if f_abf(i).bytes>20*1024*1024
+        %if f_abf(i).bytes>20*1024*1024
         [Data_all,si,header] = abfload(f_abf(i).name);
         [~,~,z]=size(Data_all);
             stim_label='2d_accel';
@@ -28,7 +28,7 @@ function process_2d_abf2mat(filename_h)
                 name=[abf_name '_' num2str(j)];
                 save([type{1} '_' stim_label '_' name '.mat'],'name','type','Data','si','header','poi');
             end
-        end
+        %end
     end
 end
 
