@@ -11,7 +11,7 @@ tuning_angle=zeros(length(fNames),1);
 % For each cycle of acceleration, one phase can show up twice, therefore
 % one value of phase can't specify the exact 'phase', additional direction
 % needs to be provided.
-direction_sign=ones(length(fNames),1);
+cos_sign=ones(length(fNames),1);
 % Frequency of stimulation is 2Hz
 stim_freq=2;
 % Lim for plotting axis value
@@ -36,7 +36,8 @@ for i=1:length(fNames)
 end
 % Values between pi/2 to 3pi/2 have negative directions because their
 % value is decreasing.
-direction_sign(tuning_angle>pi/2&tuning_angle<3*pi/2)=-1;
+cos_sign=sign(cos(tuning_angle));
+sin_sign=sign(sin(tuning_angle));
 subplot(1,clust_num,j)
 hold on;
 % Four basis for four axis
@@ -46,10 +47,9 @@ y=zeros(length(fNames),1);
 for i=1:length(fNames)
     x(i)=tuning_r(i).*basis(i,1);
     y(i)=tuning_r(i).*basis(i,2);
-    plot([-x(i) x(i)],[-y(i) y(i)],'k','LineWidth',5);
+    plot([0, sin_sign(i).*x(i)],[0 sin_sign(i).*y(i)],'k','LineWidth',5);
     %scatter(sin(tuning_angle(i)).*x(i),sin(tuning_angle(i)).*y(i),'*k')
-    sin_sign=sin(tuning_angle(i))./abs(sin(tuning_angle(i)));
-    h=quiver(sin(tuning_angle(i)).*x(i),sin(tuning_angle(i)).*y(i),sin_sign.*x(i).*direction_sign(i)*0.25,sin_sign.*y(i).*direction_sign(i)*0.25,...
+    h=quiver(sin(tuning_angle(i)).*x(i),sin(tuning_angle(i)).*y(i),x(i).*cos_sign(i)*0.25,y(i).*cos_sign(i)*0.25,...
         'color','red','LineWidth',4,'MaxHeadSize',2,'Marker','*');
     set(h,'AutoScale','on', 'AutoScaleFactor', 3)
 end
