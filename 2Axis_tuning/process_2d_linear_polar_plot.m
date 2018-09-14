@@ -1,40 +1,55 @@
 function process_2d_linear_polar_plot(filename)
+% This code is used to plot tuning direction on 4 different axis of linear
+% movement
 S=load(filename);
+% X Y are orthogonal, 0 and 90. XpYp is 45, YpYn is 135 degrees
 fNames={'X','Y','XpYp','XpYn'};
-
+% tuning_r is the gain of tuning
 tuning_r=zeros(length(fNames),1);
+% tuning_angle is the phase of tuning
 tuning_angle=zeros(length(fNames),1);
+% For each cycle of acceleration, one phase can show up twice, therefore
+% one value of phase can't specify the exact 'phase', additional direction
+% needs to be provided.
 direction_sign=ones(length(fNames),1);
+% Frequency of stimulation is 2Hz
 stim_freq=2;
+% Lim for plotting axis value
 Lim=40;
 clust_num=S.X.fista.clust_num;
 clust_polar=struct();
 figure('Units','Normal','Position',[0.1,0.2,0.85,0.5]);
 for j=1:clust_num
-% figure;
 for i=1:length(fNames)
-%     subplot(4,1,i)
     phase=S.(fNames{i}).fista.period_index.phase;
     cycle_num=S.(fNames{i}).fista.cycle_num;
     X1_clust=S.(fNames{i}).fista.period_index.X1_clust;
+    % Extract the phases for different clusters
     clust_phase=phase(X1_clust==j);
     phase_sum=sum(exp(1i*clust_phase));
+    % Calculate the gain of tuning
     tuning_r(i)=abs(phase_sum)./cycle_num{1}.*stim_freq;
+    % Calculate the angle of tuning
     tuning_angle(i)=angle(phase_sum);
+    % Convert angle values from +-pi to 0-2pi
     tuning_angle(tuning_angle<0)=tuning_angle(tuning_angle<0)+2*pi;
 end
+% Values between pi/2 to 3pi/2 have negative directions because their
+% value is decreasing.
 direction_sign(tuning_angle>pi/2&tuning_angle<3*pi/2)=-1;
 subplot(1,clust_num,j)
 hold on;
+% Four basis for four axis
 basis=[1,0;0,1;1/sqrt(2),1/sqrt(2);-1/sqrt(2),1/sqrt(2)];
 x=zeros(length(fNames),1);
 y=zeros(length(fNames),1);
 for i=1:length(fNames)
-    x(i)=direction_sign(i).*tuning_r(i).*basis(i,1);
-    y(i)=direction_sign(i).*tuning_r(i).*basis(i,2);
+    x(i)=tuning_r(i).*basis(i,1);
+    y(i)=tuning_r(i).*basis(i,2);
     plot([-x(i) x(i)],[-y(i) y(i)],'k','LineWidth',5);
     %scatter(sin(tuning_angle(i)).*x(i),sin(tuning_angle(i)).*y(i),'*k')
-    h=quiver(sin(tuning_angle(i)).*x(i),sin(tuning_angle(i)).*y(i),3.*x(i)./tuning_r(i),3.*y(i)./tuning_r(i),...
+    sin_sign=sin(tuning_angle(i))./abs(sin(tuning_angle(i)));
+    h=quiver(sin(tuning_angle(i)).*x(i),sin(tuning_angle(i)).*y(i),sin_sign.*x(i).*direction_sign(i)*0.25,sin_sign.*y(i).*direction_sign(i)*0.25,...
         'color','red','LineWidth',4,'MaxHeadSize',2,'Marker','*');
     set(h,'AutoScale','on', 'AutoScaleFactor', 3)
 end
