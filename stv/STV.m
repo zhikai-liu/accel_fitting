@@ -10,7 +10,6 @@ classdef STV
             range=0:360;
             theta=range./180.*pi;
             S=cal_STV_gain(stv,theta);
-            figure;
             plot(S.*cos(theta),S.*sin(theta))
 %             hold on;
 %             S_=cal_STV_circle(stv,theta);
@@ -24,11 +23,12 @@ classdef STV
             theta_=theta-stv.alpha;
             S=sqrt(R.^2-((stv.Smax-R).*sin(theta_)).^2)+(stv.Smax-R).*cos(theta_);
         end
-        
+        % Calculate the gain for a specific axis
         function S=cal_STV_gain(stv,theta)
             theta_=theta-stv.alpha;
             S=sqrt(stv.Smax.^2.*cos(theta_).^2+stv.Smin.^2.*sin(theta_).^2);
         end
+        % Calculate the phase for a specific axis
         function phi=cal_STV_phase(stv,theta)
             phase_diff=+pi/2;
             theta_=theta-stv.alpha;
@@ -36,6 +36,8 @@ classdef STV
                 stv.Smax.*cos(theta_).*sin(stv.phi)+stv.Smin.*sin(theta_).*sin(stv.phi+phase_diff));
             phi=angle(exp_phi);
         end
+        % Plot a 3d representation of the ellipse with phase info, phase is
+        % represented on the Z axis
         function plot_ellipse_phase_3d(stv)
             range=0:360;
             theta=range'./180.*pi;
@@ -50,6 +52,8 @@ classdef STV
             end
             hold off;
         end
+        % Plot a 2d representation of the ellipse with phase info, phase is
+        % represented by the red arrow
         function plot_ellipse_phase_2d(stv)
             range=0:360;
             theta=range'./180.*pi;

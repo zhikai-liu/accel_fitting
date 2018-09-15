@@ -61,6 +61,7 @@ legend('boxoff')
 AxisFormat()
 clust_polar(j).x=x;
 clust_polar(j).y=y;
+clust_polar(j).angle=tuning_angle;
 end
 save('2d_linear_polar_plot.mat','clust_polar');
 print([filename '_polar_plot.jpg'],'-r300','-djpeg');
