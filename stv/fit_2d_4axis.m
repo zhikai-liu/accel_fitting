@@ -5,18 +5,33 @@ function fit_2d_4axis(filename)
     figure;
     for i=1:clust_num
         gain=sqrt(S.clust_polar(i).x.^2+S.clust_polar(i).y.^2);
-        [fitobj,gof,~]=fitting_ellipse(x,gain);
+        phase=S.clust_polar(i).phase;
+        cos_sign=sign(cos(phase));
+        [gain_fitobj,gain_gof,~]=fitting_ellipse(x,gain);
         stv=STV;
-        stv.Smax=fitobj.a;
-        stv.Smin=fitobj.b;
-        stv.alpha=fitobj.c;
+        if gain_fitobj.a>gain_fitobj.b
+            stv.Smax=gain_fitobj.a;
+            stv.Smin=gain_fitobj.b;
+            stv.alpha=gain_fitobj.c;
+        else
+            stv.Smax=gain_fitobj.b;
+            stv.Smin=gain_fitobj.a;
+            stv.alpha=gain_fitobj.c+pi/2;
+        end
+        [phase_fit,phase_gof,~]=fitting_phase(stv,x,phase);
+        stv.phi=phase_fit.phi;
         subplot(1,clust_num,i)
-        plot_ellipse(stv)
+        plot_ellipse_phase_2d(stv)
         hold on;
         for j=1:length(S.clust_polar(i).x)
-            plot([S.clust_polar(i).x(j),-S.clust_polar(i).x(j)],[S.clust_polar(i).y(j),-S.clust_polar(i).y(j)],'k')
+            plot([S.clust_polar(i).x(j),-S.clust_polar(i).x(j)],[S.clust_polar(i).y(j),-S.clust_polar(i).y(j)],'g')
+            
+            quiver(sin(phase(j)).*S.clust_polar(i).x(j),sin(phase(j)).*S.clust_polar(i).y(j),...
+                cos_sign(j).*S.clust_polar(i).x(j)*0.25,cos_sign(j).*S.clust_polar(i).y(j)*0.25,...
+                 'color','blue','LineWidth',4,'MaxHeadSize',2,'Marker','*');
         end
-        title({['Cluster ' num2str(i) ' Ratio: ' num2str(stv.Smin/stv.Smax)],['Rsquare: ' num2str(gof.rsquare)]})
+        title({['Cluster ' num2str(i) ' Ratio: ' num2str(stv.Smin/stv.Smax)],['Gain Rsquare: ' num2str(gain_gof.rsquare)],...
+            ['Phase Rsquare: ' num2str(phase_gof.rsquare)]})
         hold off;
     end
 end

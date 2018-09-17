@@ -8,10 +8,6 @@ fNames={'X','Y','XpYp','XpYn'};
 tuning_r=zeros(length(fNames),1);
 % tuning_angle is the phase of tuning
 tuning_angle=zeros(length(fNames),1);
-% For each cycle of acceleration, one phase can show up twice, therefore
-% one value of phase can't specify the exact 'phase', additional direction
-% needs to be provided.
-cos_sign=ones(length(fNames),1);
 % Frequency of stimulation is 2Hz
 stim_freq=2;
 % Lim for plotting axis value
@@ -32,8 +28,11 @@ for i=1:length(fNames)
     % Calculate the angle of tuning
     tuning_angle(i)=angle(phase_sum);
     % Convert angle values from +-pi to 0-2pi
-    tuning_angle(tuning_angle<0)=tuning_angle(tuning_angle<0)+2*pi;
+    %tuning_angle(tuning_angle<0)=tuning_angle(tuning_angle<0)+2*pi;
 end
+% For each cycle of acceleration, one phase can show up twice, therefore
+% one value of phase can't specify the exact 'phase', additional direction
+% needs to be provided.
 % Values between pi/2 to 3pi/2 have negative directions because their
 % value is decreasing.
 cos_sign=sign(cos(tuning_angle));
@@ -61,7 +60,7 @@ legend('boxoff')
 AxisFormat()
 clust_polar(j).x=x;
 clust_polar(j).y=y;
-clust_polar(j).angle=tuning_angle;
+clust_polar(j).phase=tuning_angle;
 end
 save('2d_linear_polar_plot.mat','clust_polar');
 print([filename '_polar_plot.jpg'],'-r300','-djpeg');

@@ -4,6 +4,7 @@ classdef STV
         Smax
         Smin
         phi
+        Smin_leading
     end
     methods
         function plot_ellipse(stv)
@@ -61,7 +62,6 @@ classdef STV
             S_phi=cal_STV_phase(stv,theta);
             direction_sign=sign(cos(S_phi));
             sin_sign=sign(sin(S_phi));
-            figure;
             X=S.*cos(theta);Y=S.*sin(theta);
             plot(X,Y,'k')
             hold on;
