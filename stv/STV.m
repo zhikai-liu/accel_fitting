@@ -31,7 +31,7 @@ classdef STV
         end
         % Calculate the phase for a specific axis
         function phi=cal_STV_phase(stv,theta)
-            phase_diff=+pi/2;
+            phase_diff=stv.Smin_leading.*pi/2;
             theta_=theta-stv.alpha;
             exp_phi=complex(stv.Smax.*cos(theta_).*cos(stv.phi)+stv.Smin.*sin(theta_).*cos(stv.phi+phase_diff),...
                 stv.Smax.*cos(theta_).*sin(stv.phi)+stv.Smin.*sin(theta_).*sin(stv.phi+phase_diff));
@@ -71,6 +71,25 @@ classdef STV
                 quiver(X(i).*sin(S_phi(i)),Y(i).*sin(S_phi(i)),direction_sign(i).*X(i).*0.25,direction_sign(i).*Y(i).*0.25,'r')
             end
             hold off;
+        end
+        
+        function plot_revolve(stv)
+            if stv.Smin_leading==1
+                theta_CCW=(stv.alpha+(stv.phi-pi/2));
+                CCW_gain=stv.Smax-stv.Smin;
+                theta_CW=(stv.alpha-(stv.phi-pi/2));
+                CW_gain=stv.Smax+stv.Smin;
+            else
+                theta_CCW=(stv.alpha+(stv.phi-pi/2));
+                CCW_gain=stv.Smax+stv.Smin;
+                theta_CW=(stv.alpha-(stv.phi-pi/2));
+                CW_gain=stv.Smax-stv.Smin;
+            end
+            quiver(0,0,CW_gain*cos(theta_CW),CW_gain*sin(theta_CW),'r','LineWidth',3,'MaxHeadSize',2)
+            hold on;
+            quiver(0,0,CCW_gain*cos(theta_CCW),CCW_gain*sin(theta_CCW),'r','LineWidth',3,'MaxHeadSize',2)
+            text(CW_gain*cos(theta_CW),CW_gain*sin(theta_CW),'CW','FontSize',20)
+            text(CCW_gain*cos(theta_CCW),CCW_gain*sin(theta_CCW),'CCW','FontSize',20)
         end
     end
 end

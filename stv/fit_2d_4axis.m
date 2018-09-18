@@ -2,7 +2,7 @@ function fit_2d_4axis(filename)
     S=load(filename);
     clust_num=length(S.clust_polar);
     x=[0;pi/2;pi/4;0.75*pi];
-    figure;
+    figure('Unit','Normal','position',[0 0.3 0.3+0.1*clust_num 0.6]);
     for i=1:clust_num
         gain=sqrt(S.clust_polar(i).x.^2+S.clust_polar(i).y.^2);
         phase=S.clust_polar(i).phase;
@@ -18,9 +18,18 @@ function fit_2d_4axis(filename)
             stv.Smin=gain_fitobj.a;
             stv.alpha=gain_fitobj.c+pi/2;
         end
-        [phase_fit,phase_gof,~]=fitting_phase(stv,x,phase);
-        stv.phi=phase_fit.phi;
-        subplot(1,clust_num,i)
+        [phase_fit,phase_gof]=fitting_phase(stv,x,phase);
+        [phase_fit_al,phase_gof_al]=fitting_phase(stv,-x,phase);
+        
+        if phase_gof_al<phase_gof
+            stv.phi=phase_fit_al;
+            stv.Smin_leading=-1;
+        else
+            stv.phi=phase_fit;
+            stv.Smin_leading=1;
+        end
+        save(filename,'stv','-append')
+        subplot(2,clust_num,i)
         plot_ellipse_phase_2d(stv)
         hold on;
         for j=1:length(S.clust_polar(i).x)
@@ -31,7 +40,17 @@ function fit_2d_4axis(filename)
                  'color','blue','LineWidth',4,'MaxHeadSize',2,'Marker','*');
         end
         title({['Cluster ' num2str(i) ' Ratio: ' num2str(stv.Smin/stv.Smax)],['Gain Rsquare: ' num2str(gain_gof.rsquare)],...
-            ['Phase Rsquare: ' num2str(phase_gof.rsquare)]})
+            ['Phase MSE: ' num2str(min(phase_gof,phase_gof_al))]})
         hold off;
+        Axis_lim=stv.Smax+stv.Smin;
+        xlim([-Axis_lim Axis_lim])
+        ylim([-Axis_lim Axis_lim])
+        axis square
+        subplot(2,clust_num,i+clust_num)
+        plot_revolve(stv)
+        Axis_lim=stv.Smax+stv.Smin;
+        xlim([-Axis_lim Axis_lim])
+        ylim([-Axis_lim Axis_lim])
+        axis square
     end
 end
