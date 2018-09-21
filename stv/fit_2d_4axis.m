@@ -18,15 +18,18 @@ function fit_2d_4axis(filename)
             stv.Smin=gain_fitobj.a;
             stv.alpha=gain_fitobj.c+pi/2;
         end
-        [phase_fit,phase_gof]=fitting_phase(stv,x,phase);
-        [phase_fit_al,phase_gof_al]=fitting_phase(stv,-x,phase);
-        
+        [phase_fit,phase_gof,Rs_e,Rs_w]=fitting_phase(stv,x,phase);
+        [phase_fit_al,phase_gof_al,Rs_e_al,Rs_w_al]=fitting_phase(stv,-x,phase);
         if phase_gof_al<phase_gof
             stv.phi=phase_fit_al;
             stv.Smin_leading=-1;
+            Rs=Rs_e_al;
+            RsW=Rs_w_al;
         else
             stv.phi=phase_fit;
             stv.Smin_leading=1;
+            Rs=Rs_e;
+            RsW=Rs_w;
         end
         save(filename,'stv','-append')
         subplot(2,clust_num,i)
@@ -40,7 +43,7 @@ function fit_2d_4axis(filename)
                  'color','blue','LineWidth',4,'MaxHeadSize',2,'Marker','*');
         end
         title({['Cluster ' num2str(i) ' Ratio: ' num2str(stv.Smin/stv.Smax)],['Gain Rsquare: ' num2str(gain_gof.rsquare)],...
-            ['Phase MSE: ' num2str(min(phase_gof,phase_gof_al))]})
+            ['Phase Rs: ' num2str(Rs)]},'FontSize',20,'FontWeight','bold')
         hold off;
         Axis_lim=stv.Smax+stv.Smin;
         xlim([-Axis_lim Axis_lim])
