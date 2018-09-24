@@ -52,7 +52,7 @@ for i = 1:raw_l
     amp_raw(i)=data_s(raw_index(i))-peak_value;
     peak_index(i)=raw_index(i)+peak_index(i)-1;
     % Calculate the amplitude of each EPSC, here the algorithm is:
-    % max value within the trace - value at the index point
+    % max value within event_duration - value at the index point
 end
 
 %% set amplitudes threshold for EPSC detection

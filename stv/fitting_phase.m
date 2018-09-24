@@ -1,9 +1,9 @@
-function [phi_,MSE,Rsquared,Rs_weighed]=fitting_phase(stv,direction,phase)
+function [phi_,MSE,Rsquared,Rs_weighed]=fitting_phase(stv,direction,phase,Smin_leading)
 % This funciton is used to fit the phase of different angles of tuning, a
 % stv(spatio-temporal vector) model is needed, which is the result of
 % fitting_ellipse. So see that function first before using this one, also
 % see fit_2d_4axis for exmaple usage
-        phase_diff=pi/2.;
+        phase_diff=pi/2.*Smin_leading;
         %This is the equation to calculate phase accroding to Dora's paper
         fit_func=@(phi,direction) complex(stv.Smax.*cos(direction-stv.alpha).*cos(phi)+stv.Smin.*sin(direction-stv.alpha).*cos(phi+phase_diff),...
             stv.Smax.*cos(direction-stv.alpha).*sin(phi)+stv.Smin.*sin(direction-stv.alpha).*sin(phi+phase_diff));

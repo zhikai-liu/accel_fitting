@@ -2,7 +2,7 @@ function process_2d_linear_polar_plot(filename)
 % This code is used to plot tuning direction on 4 different axis of linear
 % movement
 S=load(filename);
-% X Y are orthogonal, 0 and 90. XpYp is 45, YpYn is 135 degrees
+% X Y are orthogonal, 0 and 90. XpYp is 45, XpYn is -45 degrees
 fNames={'X','Y','XpYp','XpYn'};
 % tuning_r is the gain of tuning
 tuning_r=zeros(length(fNames),1);
@@ -40,7 +40,7 @@ sin_sign=sign(sin(tuning_angle));
 subplot(1,clust_num,j)
 hold on;
 % Four basis for four axis
-basis=[1,0;0,1;1/sqrt(2),1/sqrt(2);-1/sqrt(2),1/sqrt(2)];
+basis=[1,0;0,1;1/sqrt(2),1/sqrt(2);1/sqrt(2),-1/sqrt(2)];
 x=zeros(length(fNames),1);
 y=zeros(length(fNames),1);
 for i=1:length(fNames)

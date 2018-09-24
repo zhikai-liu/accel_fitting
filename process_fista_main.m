@@ -13,6 +13,8 @@ process_plot_fista_results(filename);
 process_merge_cluster???
 %% Mark mixed synapses/ chemical EPSCs
 process_fista_IDmixed(fielname,clust)
+%% Calculate the amplitude of events 
+process_fista_get_amps(filename)
 %% Redistribute fista results back to individual recording files
 process_fista_redist(filename)
 
