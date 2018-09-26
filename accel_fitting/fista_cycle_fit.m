@@ -19,6 +19,8 @@ function fista = fista_cycle_fit(fista,fit_model,S_period)
             fista.per_cycle_index(i,j).X1_max_ori_index=fista.X1_max_ori_index(tmp_index);
             fista.per_cycle_index(i,j).X1_prox= fista.X1_prox(tmp_index,:);
             fista.per_cycle_index(i,j).X1_clust=fista.X1_clust(tmp_index);
+            fista.per_cycle_index(i,j).amps=fista.amps(tmp_index);
+            fista.per_cycle_index(i,j).amp_index=fista.amp_index(tmp_index);
             if isfield(fista,'X1_chemical')
             fista.per_cycle_index(i,j).X1_chemical=fista.X1_chemical(tmp_index);
             end
@@ -35,10 +37,11 @@ function fista = fista_cycle_fit(fista,fit_model,S_period)
         fista.period_index(i).phase = mod(fista.period_index(i).angle_raw,2*pi);
         %fourth column is the amplitude of ESPC
         fista.period_index(i).X1_integral = fista.X1_integral(tmp_index);
-        
         fista.period_index(i).X1_max_ori_index=fista.X1_max_ori_index(tmp_index);
         fista.period_index(i).X1_prox= fista.X1_prox(tmp_index,:);
         fista.period_index(i).X1_clust=fista.X1_clust(tmp_index);
+        fista.period_index(i).amps=fista.amps(tmp_index);
+        fista.period_index(i).amp_index=fista.amp_index(tmp_index);
         if isfield(fista,'X1_chemical')
         fista.period_index(i).X1_chemical=fista.X1_chemical(tmp_index);
         end

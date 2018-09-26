@@ -10,7 +10,7 @@ function process_fista_redist(filename)
     X1_max(S.fista.X1_max)=1:length(S.fista.X1_max);
     %% after reshape, each column contains event index for each file
     X1_max_re=reshape(X1_max,S.data_size);
-    for i=S.range
+    for i=1:length(S.range)
         fista=struct();
         fista.X1=X1_re(:,i);
         fista.X2=X2_re(:,i);
@@ -21,12 +21,14 @@ function process_fista_redist(filename)
         fista.X1_clust=S.fista.X1_clust(fista.X1_max_ori_index);
         fista.clust_num=max(S.fista.X1_clust);
         fista.X1_std=S.fista.X1_std(fista.X1_max_ori_index);
+        fista.amps=S.fista.amps(fista.X1_max_ori_index);
+        fista.amp_index=S.fista.amp_index(fista.X1_max_ori_index);
         if isfield(S.fista,'X1_chemical')
             fista.X1_chemical=S.fista.X1_chemical(fista.X1_max_ori_index);
         end
         fista.tempate1=S.fista.template1;
         fista.tempate2=S.fista.template2;
         fista.opts=S.fista.opts;
-        save(S.f_mat(i).name,'fista','-append');
+        save(S.f_mat(S.range(i)).name,'fista','-append');
     end
 end

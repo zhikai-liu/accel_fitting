@@ -23,6 +23,17 @@ function process_plot_fista_results(filename)
         end
         hold off;
         title('Deconvolved signal integral')
+        xlabel('X1_integral')
+        print('cluster_X1_integral_histogram.jpg','-r300','-djpeg');
+        %% Plot amplitudes of events detected
+        figure;
+        hold on;
+        for i=1:clust_num
+            histogram(S.fista.amps(S.fista.X1_clust==i),'FaceColor',map(i,:));
+        end
+        hold off;
+        title('EPSC amps')
+        xlabel('pA')
         print('cluster_amp_histogram.jpg','-r300','-djpeg');
         %% Plot scatter points for integral vs std, color-coded by clusters
         if S.fista.X1_clust~=0
@@ -33,7 +44,9 @@ function process_plot_fista_results(filename)
         figure;
         gscatter(S.fista.X1_integral,S.fista.X1_std,S.fista.X1_clust,g_map);
         title('Deconvolved signal integral VS std')
-        print('cluster_amp_std.jpg','-r300','-djpeg');
+        xlabel('X1_integral')
+        ylabel('X1_std')
+        print('cluster_integral_std.jpg','-r300','-djpeg');
         %% Plot tsne visualization of the X1_prox
         figure;
         rng default;
