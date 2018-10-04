@@ -49,7 +49,7 @@ for j=1:clust_num
     subplot(1,clust_num,j)
     hold on;
     % Four basis for four axis
-    basis=[1,0;0,1;1/sqrt(2),1/sqrt(2);1/sqrt(2),-1/sqrt(2)];
+    basis=[1,0;0,1;1/sqrt(2),1/sqrt(2);-1/sqrt(2),1/sqrt(2)];
     x=zeros(length(fNames),1);
     y=zeros(length(fNames),1);
     for i=1:length(fNames)

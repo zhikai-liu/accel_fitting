@@ -5,6 +5,8 @@ classdef STV
         Smin
         phi
         Smin_leading
+        gain_gof
+        phase_gof
     end
     methods
         function plot_ellipse(stv)

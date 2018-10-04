@@ -11,7 +11,7 @@ XpYp=add_accel_fit(XpYp);
 XpYn=load(f_mat(4).name);
 XpYn.Data(:,2:3)=XpYn.Data(:,2:3)*base;
 XpYn=add_accel_fit(XpYn);
-save(['2d_linear_' fname '.mat'],'X','Y','XpYp','XpYn');
+save(['2d_linear_' fname '.mat'],'X','Y','XpYp','XpYn','-append');
 end
 
 function S=add_accel_fit(S)
@@ -22,7 +22,7 @@ function S=add_accel_fit(S)
         poi{j} = poi_start+1:poi_end;
     end
     if_plot=0;
-    [S_period,fit_model,accel_axis]= fit_auto_accel(S.Data,S.si,S.name,poi,if_plot);
+    [S_period,fit_model,accel_axis,other_axis_fit,other_axis]= fit_man_accel(S.Data,S.si,S.name,poi,if_plot);
     fit_freq = cell(1,length(fit_model)); fit_amp = fit_freq;
     for j = 1:length(fit_model)
         fit_amp{j} = fit_model{j}.a1;
@@ -34,6 +34,8 @@ function S=add_accel_fit(S)
     S.S_period=S_period;
     S.fit_model=fit_model;
     S.accel_axis=accel_axis;
+    S.other_axis_fit=other_axis_fit;
+    S.other_axis=other_axis;
     S.fit_amp=fit_amp;
     S.fit_freq=fit_freq;
     S.cycle_num=S.fista.cycle_num;

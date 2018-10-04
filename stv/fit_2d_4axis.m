@@ -20,20 +20,25 @@ function fit_2d_4axis(filename,if_plot)
             stv(i).Smin=gain_fitobj.a;
             stv(i).alpha=gain_fitobj.c+pi/2;
         end
-        [phase_fit,phase_gof,Rs_e,Rs_w]=fitting_phase(stv(i),x,phase,1);
-        [phase_fit_al,phase_gof_al,Rs_e_al,Rs_w_al]=fitting_phase(stv(i),x,phase,-1);
+        stv(i).gain_gof=gain_gof;
+        [phase_fit,MSE,Rs_e,Rs_w]=fitting_phase(stv(i),x,phase,1);
+        [phase_fit_al,MSE_al,Rs_e_al,Rs_w_al]=fitting_phase(stv(i),x,phase,-1);
         %% Two directions (CCW and CW) are fitted, choose the one fitted better
-        if phase_gof_al<phase_gof
+        if MSE_al<MSE
             stv(i).phi=phase_fit_al;
             stv(i).Smin_leading=-1;
-            Rs=Rs_e_al;
-            RsW=Rs_w_al;
+            phase_gof.Rs=Rs_e_al;
+            phase_gof.RsW=Rs_w_al;
+            phase_gof.MSE=MSE_al;
         else
             stv(i).phi=phase_fit;
             stv(i).Smin_leading=1;
-            Rs=Rs_e;
-            RsW=Rs_w;
+            phase_gof.Rs=Rs_e;
+            phase_gof.RsW=Rs_w;
+            phase_gof.MSE=MSE;
         end
+        phase_gof.gof=1-sqrt(phase_gof.MSE);
+        stv(i).phase_gof=phase_gof;
         %% Make phase always between 0 and pi
         if stv(i).phi<0
             stv(i).phi=stv(i).phi+pi;
@@ -61,8 +66,9 @@ function fit_2d_4axis(filename,if_plot)
                 cos_sign(j).*S.clust_polar(i).x(j)*0.25,cos_sign(j).*S.clust_polar(i).y(j)*0.25,...
                  'color','blue','LineWidth',4,'MaxHeadSize',2,'Marker','*');
         end
-        title({['Cluster ' num2str(i) ' Ratio: ' num2str(stv(i).Smin/stv(i).Smax)],['Gain Rsquare: ' num2str(gain_gof.rsquare)],...
-            ['Phase Rs: ' num2str(Rs)]},'FontSize',20,'FontWeight','bold')
+        title({['Cluster ' num2str(i) ' Ratio: ' num2str(stv(i).Smin/stv(i).Smax)],...
+            ['Gain Rsquare: ' num2str(gain_gof.rsquare)],...
+            ['Phase gof: ',num2str(phase_gof.gof)]},'FontSize',20,'FontWeight','bold')
         hold off;
         Axis_lim=stv(i).Smax+stv(i).Smin;
         xlim([-Axis_lim Axis_lim])

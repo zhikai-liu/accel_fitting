@@ -13,30 +13,35 @@ function [phi_,MSE,Rsquared,Rs_weighed]=fitting_phase(stv,direction,phase,Smin_l
         %direction
         Er=zeros(length(test_range),length(direction));
         %% For each direction, calculate the error between measured and predicted phase
-        SS_y=zeros(length(direction),1);
         for i=1:length(direction)
             fit_angle=fit_func(test_range,direction(i));
             %When no  weight is used for Er calculation, errors on
             %different axis are equally weighted.
-            %But usually measurement for phases on high-gain axis is more
-            %accurate, another way is to weight them based on gain
+            %But usually measurement for phase on high-gain axis is more
+            %accurate/reliable, therefore it could be better to weight the
+            %errors with gain, so that low-gain axis(whose phase is prone
+            %to error) will affect less for the fitting
 %             %% Equally weighted
 %             Er(:,i)=abs(fit_angle./abs(fit_angle)-exp(1i.*phase(i))).^2;
             %% Weighted by gain
             Er(:,i)=abs(fit_angle-abs(fit_angle).*exp(1i.*phase(i))).^2;
-            SS_y(i)=mean(abs(fit_angle)).*exp(1i.*phase(i));
         end
         total_er=sum(Er,2);
         [MSE,index]=min(total_er);
         phi_=test_range(index);
-        predict_phase=angle(fit_func(phi_,direction));
+        fit_complex=fit_func(phi_,direction);
+        predict_phase=angle(fit_complex);
+        predict_gain=abs(fit_complex);
+        MSE=MSE./sum(predict_gain.^2);
         %% Calculate R squared with complex value weighted by gain
-        SS_y_pre=fit_func(phi_,direction);
+        SS_y=predict_gain.*exp(1i.*phase);
         SS_T=sum(abs(SS_y-mean(SS_y)).^2);
-        SS_R=sum(abs(SS_y_pre-mean(SS_y)).^2);
+        SS_R=sum(abs(fit_complex-SS_y).^2);
         Rs_weighed=1-SS_R/SS_T;
         %% Calculate R squared with just angle, equally weighted
-        SS_total=sum((phase-mean(phase)).^2);
-        SS_res=sum((predict_phase-phase).^2);
+        SS_y=exp(1i.*phase);
+        fit_complex=exp(1i.*predict_phase);
+        SS_res=sum(abs(SS_y-mean(SS_y)).^2);
+        SS_total=sum(abs(fit_complex-SS_y).^2);
         Rsquared=1-SS_res/SS_total;
 end
