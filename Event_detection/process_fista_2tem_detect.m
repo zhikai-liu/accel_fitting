@@ -1,5 +1,5 @@
 function process_fista_2tem_detect(filename_h)
-f_mat = dir([filename_h '*.mat']);
+f_mat = dir(filename_h);
 load('EPSC_templates.mat');
 for i =1:length(f_mat)
     %% Initiation
