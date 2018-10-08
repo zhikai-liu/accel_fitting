@@ -28,7 +28,9 @@ function process_fista_redist(filename)
         end
         fista.tempate1=S.fista.template1;
         fista.tempate2=S.fista.template2;
+        if isfield(S.fista,'opts')
         fista.opts=S.fista.opts;
+        end
         save(S.f_mat(S.range(i)).name,'fista','-append');
     end
 end

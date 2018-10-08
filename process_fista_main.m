@@ -7,14 +7,14 @@ pad_multi_mat(filename,range);
 process_fista_lasso(filename);
 %% Clustering events
 process_fista_clust(filename);
+%% Calculate the amplitude of events 
+process_fista_get_amps(filename)
 %% Plot the results from fista and clustering
 process_plot_fista_results(filename);
 %% Merge or remove cluster, also mark the clusters that are clean on autocorrelogram
-process_merge_cluster???
+process_merge_cluster(filename,m_clusters);
 %% Mark mixed synapses/ chemical EPSCs
 process_fista_IDmixed(fielname,clust)
-%% Calculate the amplitude of events 
-process_fista_get_amps(filename)
 %% Redistribute fista results back to individual recording files
 process_fista_redist(filename)
 

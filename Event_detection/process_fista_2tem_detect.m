@@ -30,6 +30,7 @@ for i =1:length(f_mat)
         [fista.X1,fista.X2,fista.cost_iter] = fista_lasso_backtracking_2tems(signal, fista.template1,fista.template2, Xinit,Xinit, opts);
     end
     [fista.X1_max,fista.recon_integral,fista.chemical]=fista_local_maxima(signal,fista.X1,fista.X2,fista.template1,fista.template2,0);
+    fista.opts=opts;
     save(f_mat(i).name,'fista','-append');
     %fista_autocorrelogram(fista.X1_max,fista.recon_integral,fista.chemical)
 end
