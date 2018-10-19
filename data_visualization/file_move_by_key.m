@@ -52,15 +52,25 @@ function [header] = show_data(F1,f_name)
     elseif header.nADCNumChannels==4
         [D_x,D_y,D_z] = size(Data);
         h=struct();
+        y_pA_max=max(max(Data(:,1,:)));
+        y_pA_min=min(min(Data(:,1,:)));
+        y_pA_length=y_pA_max-y_pA_min;
         for j=1:D_z
             if D_z==6
+                if j<3
+                    xlim_range=[0.5 8.5];
+                else
+                    xlim_range=[3 11];
+                end
                 h(j).d=subplot(ceil(D_z/3).*2,3,ceil(j/3).*6-6+j-3.*ceil(j/3)+3);
-                plot([1:D_x]*si*1e-6,Data(:,1,j),'Color',[0.3 0.3 0.3],'LineWidth',1);
-                %ylim([-150 50])
-                xlim([1 10])
+                plot([1:D_x]*si*1e-6,Data(:,1,j),'Color',[0.3 0.3 0.3],'LineWidth',1.2);
+                ylim([y_pA_min-0.01*y_pA_length y_pA_max+0.01*y_pA_length])
+                xlim(xlim_range)
+                set(gca,'visible','off')
                 h(j).a=subplot(ceil(D_z/3).*2,3,ceil(j/3).*6-6+j-3.*ceil(j/3)+6);
                 ylim([-0.04 0.04])
-                xlim([1 10])
+                xlim(xlim_range)
+                set(gca,'visible','off')
             else
                 h(j).d=subplot(D_z*2,1,2*j-1);
                 plot([1:D_x]*si*1e-6,Data(:,1,j),'Color',[0.3 0.3 0.3],'LineWidth',1);
@@ -72,9 +82,15 @@ function [header] = show_data(F1,f_name)
             for i=2:D_y
                 plot([1:D_x]*si*1e-6,Data(:,i,j)-mean(Data(:,i,j)),'Color',color(i-1),'LineWidth',2);
             end
-            hold off;
+            %hold off;
         end
-        if D_z~=6
+        if D_z==6
+            plot([10,11],[-0.04,-0.04],'Color','k','LineWidth',2)
+            plot([11,11],[-0.04,-0.02],'Color','k','LineWidth',2)
+            text(11.1,-0.02,{[num2str(round(y_pA_length/4)) ' ' header.recChUnits{1}],'0.02 g'},...
+                'FontSize',20)
+            text(10,-0.05,'1s','FontSize',20)
+        else
             samexaxis('abc','xmt','on','ytac','join','yld',1);
         end
     end

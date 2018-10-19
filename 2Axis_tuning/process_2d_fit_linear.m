@@ -11,7 +11,11 @@ XpYp=add_accel_fit(XpYp);
 XpYn=load(f_mat(4).name);
 XpYn.Data(:,2:3)=XpYn.Data(:,2:3)*base;
 XpYn=add_accel_fit(XpYn);
-save(['2d_linear_' fname '.mat'],'X','Y','XpYp','XpYn','-append');
+if exist(['2d_linear_' fname '.mat'],'file')
+    save(['2d_linear_' fname '.mat'],'X','Y','XpYp','XpYn','-append');
+else
+    save(['2d_linear_' fname '.mat'],'X','Y','XpYp','XpYn');
+end
 end
 
 function S=add_accel_fit(S)
@@ -30,6 +34,7 @@ function S=add_accel_fit(S)
     end
     if isfield(S,'fista')
         S.fista = fista_cycle_fit(S.fista,fit_model,S_period);
+        S.cycle_num=S.fista.cycle_num;
     end
     S.S_period=S_period;
     S.fit_model=fit_model;
@@ -38,5 +43,5 @@ function S=add_accel_fit(S)
     S.other_axis=other_axis;
     S.fit_amp=fit_amp;
     S.fit_freq=fit_freq;
-    S.cycle_num=S.fista.cycle_num;
+    
 end

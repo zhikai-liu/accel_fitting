@@ -40,14 +40,19 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
         S_period_phase=mod(fit_model.b1.*S_period+fit_model.c1,2*pi);
         % Finding the first phase 0 in the S_period
         zero_phase=find_first_phase_o(S_period_phase);
+        compen_for_zero=0;
+        if zero_phase>t_per_cycle/1.5
+            compen_for_zero=t_per_cycle;
+        end
         subplot(subplot_num,1,1);
             for i = 1:cycle_num
                 hold on;
                 % Make sure that all the data are plotted where they are aligned with 0-2pi
                 % phase, because S_period doesn't always start at phase 0,
                 % so plotting start at a point with zero phase
-               
-                plot(0:t_unit:2*pi,Data(S_period(zero_phase)+(i-1)*t_per_cycle:S_period(zero_phase)+i*t_per_cycle,1))
+                if S_period(zero_phase)+i*t_per_cycle-compen_for_zero<length(Data)
+                plot(0:t_unit:2*pi,Data(S_period(zero_phase)+(i-1)*t_per_cycle-compen_for_zero:S_period(zero_phase)+i*t_per_cycle-compen_for_zero,1))
+                end
                 hold off;
             end
             xlim([0 2*pi]);
@@ -64,7 +69,9 @@ function [cycle_index,amps] = plot_cycle_fit(Data,event_index,amps,poi,fit_model
             for i = 1:cycle_num
                 for j = 2:4
                 hold on;
-                plot(0:t_unit:2*pi,Data(S_period(zero_phase)+(i-1)*t_per_cycle:S_period(zero_phase)+i*t_per_cycle,j)-mean(Data(poi,j)),color{j-1})
+                if S_period(zero_phase)+i*t_per_cycle-compen_for_zero<length(Data)
+                plot(0:t_unit:2*pi,Data(S_period(zero_phase)+(i-1)*t_per_cycle-compen_for_zero:S_period(zero_phase)+i*t_per_cycle-compen_for_zero,j)-mean(Data(poi,j)),color{j-1})
+                end
                 hold off;
                 end
             end

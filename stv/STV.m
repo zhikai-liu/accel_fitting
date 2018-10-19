@@ -75,7 +75,7 @@ classdef STV
             hold off;
         end
         
-        function plot_revolve(stv)
+        function [CW,CCW]=calculate_revovle(stv)
             if stv.Smin_leading==1
                 theta_CCW=(stv.alpha+(stv.phi-pi/2));
                 CCW_gain=stv.Smax-stv.Smin;
@@ -87,11 +87,17 @@ classdef STV
                 theta_CW=(stv.alpha-(stv.phi-pi/2));
                 CW_gain=stv.Smax-stv.Smin;
             end
-            quiver(0,0,CW_gain*cos(theta_CW),CW_gain*sin(theta_CW),'r','LineWidth',3,'MaxHeadSize',2)
+            CW=CW_gain*exp(1i*theta_CW);
+            CCW=CCW_gain*exp(1i*theta_CCW);
+        end
+        
+        function plot_revolve(stv)
+            [CW,CCW]=calculate(stv);
+            quiver(0,0,real(CW),imag(CW),'r','LineWidth',3,'MaxHeadSize',2)
             hold on;
-            quiver(0,0,CCW_gain*cos(theta_CCW),CCW_gain*sin(theta_CCW),'r','LineWidth',3,'MaxHeadSize',2)
-            text(CW_gain*cos(theta_CW),CW_gain*sin(theta_CW),'CW','FontSize',20)
-            text(CCW_gain*cos(theta_CCW),CCW_gain*sin(theta_CCW),'CCW','FontSize',20)
+            quiver(0,0,real(CCW),imag(CCW),'r','LineWidth',3,'MaxHeadSize',2)
+            text(real(CW),imag(CW),'CW','FontSize',20)
+            text(real(CCW),imag(CCW),'CCW','FontSize',20)
         end
     end
 end

@@ -73,14 +73,22 @@ function fit_2d_4axis(filename,if_plot)
         Axis_lim=stv(i).Smax+stv(i).Smin;
         xlim([-Axis_lim Axis_lim])
         ylim([-Axis_lim Axis_lim])
-        axis square
+        AxisFormat
         subplot(2,clust_num,i+clust_num)
         plot_revolve(stv(i))
         Axis_lim=stv(i).Smax+stv(i).Smin;
         xlim([-Axis_lim Axis_lim])
         ylim([-Axis_lim Axis_lim])
-        axis square
+        AxisFormat
         end
     end
     save(filename,'stv','-append')
+end
+
+function AxisFormat()
+    A=gca;
+    set(A,'box','off')
+    set(A.XAxis,'FontSize',20,'FontWeight','bold','LineWidth',1.2,'Color','k');
+    set(A.YAxis,'FontSize',20,'FontWeight','bold','LineWidth',1.2,'Color','k');
+    axis square
 end

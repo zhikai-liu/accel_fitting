@@ -18,7 +18,7 @@ for i =1:length(f_abf)
             [orien{h}]},...
             'interpreter','none','FontSize',20,'FontWeight','bold');
         A1=F1.Children;
-        for k=1:length(A1)
+        for k=length(A1)-3:length(A1)
         set(A1(k).Children,'LineWidth',3)
         set(A1(k).XAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
         set(A1(k).YAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
@@ -51,14 +51,14 @@ for i =1:length(f_abf)
         else
             plot_cycle_fit(S.Data,[],[],poi,S.fit_model{j},S.S_period{j},S.type);
         end
-        title(F3.Children(2),{[S.name ' (Period ' num2str(j) ')'],...
+        title(F3.Children(end-1),{[S.name ' (Period ' num2str(j) ')'],...
             [' Sin: Freq ' num2str(S.fit_freq{j}) '  Integral ' num2str(S.fit_amp{j}) 'g'],...
             [orien{h}]},...
             'interpreter','none','FontSize',20,'FontWeight','bold');
         A3=F3.Children;
         xticks([0 90 180 270 360])
         xticklabels({'0','\pi/2','\pi','3\pi/2','2\pi'});
-        for k=1:length(A3)
+        for k=length(A3)-2:length(A3)
         set(A3(k).Children,'LineWidth',3)
         set(A3(k).XAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
         set(A3(k).YAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
