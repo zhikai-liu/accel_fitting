@@ -9,15 +9,21 @@ classdef STV
         phase_gof
     end
     methods
-        function plot_ellipse(stv)
+        function plot_ellipse(stv,varargin)
             range=0:360;
             theta=range./180.*pi;
             S=cal_STV_gain(stv,theta);
             plot(S.*cos(theta),S.*sin(theta))
-%             hold on;
-%             S_=cal_STV_circle(stv,theta);
-%             plot(S_.*cos(theta),S_.*sin(theta))
-            
+            if ~isempty(varargin)
+                axis_vector=varargin{1};
+                axis_gain=abs(axis_vector);
+                hold on;
+                plot([-axis_gain(1),axis_gain(1)],[0,0]);
+                plot([-axis_gain(2)./sqrt(2),axis_gain(2)./sqrt(2)],[-axis_gain(2)./sqrt(2),axis_gain(2)./sqrt(2)]);
+                plot([0,0],[-axis_gain(3),axis_gain(3)]);
+                plot([axis_gain(4)./sqrt(2),-axis_gain(4)./sqrt(2)],[-axis_gain(4)./sqrt(2),axis_gain(4)./sqrt(2)]);
+                hold off
+            end
         end
         % Plot the ellipse shape based on Smax and Smin,theta determines
         % the rotation angle, phi is not involved
@@ -92,7 +98,7 @@ classdef STV
         end
         
         function plot_revolve(stv)
-            [CW,CCW]=calculate(stv);
+            [CW,CCW]=calculate_revovle(stv);
             quiver(0,0,real(CW),imag(CW),'r','LineWidth',3,'MaxHeadSize',2)
             hold on;
             quiver(0,0,real(CCW),imag(CCW),'r','LineWidth',3,'MaxHeadSize',2)
