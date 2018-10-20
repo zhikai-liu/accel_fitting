@@ -1,4 +1,4 @@
-function result=fitting_ellipse_manual(x,y)
+function min_result=fitting_ellipse_manual(x,y)
 % This function is used to fit the gain of different axis into an ellipse
 % model, which comes from a paper of Dora Angelaki, 1993
 % In the model, 
@@ -9,7 +9,8 @@ function result=fitting_ellipse_manual(x,y)
 % y, as the output, is the gain of the input vector
 testing_orien=(1:180)./180*pi;
 Y_input=y.^2;
-result=struct();
+results=struct();
+errors=zeros(length(testing_orien),1);
 for i=1:length(testing_orien)
     X_input=cos(testing_orien(i)-x).^2;
     fo=fitoptions('Method','NonLinearLeastSquares',...
@@ -17,6 +18,9 @@ for i=1:length(testing_orien)
         'Upper',[Inf,Inf],...
         'StartPoint',[0,0]);
     F=fittype('a.*x+b-b.*x','independent','x','options',fo);
-    [result(i).fitobj,result(i).gof,result(i).op]=fit(X_input,Y_input,F);
+    [results(i).fitobj,results(i).gof,results(i).op]=fit(X_input,Y_input,F);
+    errors(i)=results(i).gof.sse;
 end
+[~,index]=min(errors);
+min_result=results(index);
 end
