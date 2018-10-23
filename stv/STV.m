@@ -19,8 +19,8 @@ classdef STV
                 axis_gain=abs(axis_vector);
                 hold on;
                 plot([-axis_gain(1),axis_gain(1)],[0,0]);
-                plot([-axis_gain(2)./sqrt(2),axis_gain(2)./sqrt(2)],[-axis_gain(2)./sqrt(2),axis_gain(2)./sqrt(2)]);
-                plot([0,0],[-axis_gain(3),axis_gain(3)]);
+                plot([0,0],[-axis_gain(2),axis_gain(2)]);
+                plot([-axis_gain(3)./sqrt(2),axis_gain(3)./sqrt(2)],[-axis_gain(3)./sqrt(2),axis_gain(3)./sqrt(2)]);
                 plot([axis_gain(4)./sqrt(2),-axis_gain(4)./sqrt(2)],[-axis_gain(4)./sqrt(2),axis_gain(4)./sqrt(2)]);
                 hold off
             end
@@ -104,6 +104,11 @@ classdef STV
             quiver(0,0,real(CCW),imag(CCW),'r','LineWidth',3,'MaxHeadSize',2)
             text(real(CW),imag(CW),'CW','FontSize',20)
             text(real(CCW),imag(CCW),'CCW','FontSize',20)
+        end
+        
+        function Err=compare_stv_real_gain(stv,orien,gain)
+            predict_gain=cal_STV_gain(stv,orien);
+            Err=sum((predict_gain-gain).^2);
         end
     end
 end

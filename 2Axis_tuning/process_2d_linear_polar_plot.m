@@ -58,7 +58,7 @@ for j=1:clust_num
         plot([0, sin_sign(i).*x(i)],[0 sin_sign(i).*y(i)],'k','LineWidth',5);
         %scatter(sin(tuning_angle(i)).*x(i),sin(tuning_angle(i)).*y(i),'*k')
         h=quiver(sin(tuning_angle(i)).*x(i),sin(tuning_angle(i)).*y(i),x(i).*cos_sign(i)*0.25,y(i).*cos_sign(i)*0.25,...
-            'color','red','LineWidth',4,'MaxHeadSize',2,'Marker','*');
+           'color','red','LineWidth',4,'MaxHeadSize',2,'Marker','*');
         set(h,'AutoScale','on', 'AutoScaleFactor', 3)
     end
     xlim([-Lim Lim])

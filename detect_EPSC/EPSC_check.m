@@ -13,7 +13,7 @@ S = load(datafile);
 Data = S.Data; si = S.si;
 %%  if no extra input is recieved, use event_index; User can also specify to check only missing_events, for example.
 if isempty(varargin)
-    event_index = S.event_index;
+    event_index = S.der.event_index;
 else 
     event_index =S.(varargin{1});
 end

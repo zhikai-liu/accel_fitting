@@ -10,6 +10,7 @@ function fit_2d_4axis(filename,if_plot)
         gain=sqrt(S.clust_polar(i).x.^2+S.clust_polar(i).y.^2);
         phase=S.clust_polar(i).phase;
         cos_sign=sign(cos(phase));
+        %% Using the fitting_ellipse to find the max vector and its orientation
         [gain_fitobj,gain_gof,~]=fitting_ellipse(x,gain);
         if gain_fitobj.a>gain_fitobj.b
             stv(i).Smax=gain_fitobj.a;
@@ -21,6 +22,8 @@ function fit_2d_4axis(filename,if_plot)
             stv(i).alpha=gain_fitobj.c+pi/2;
         end
         stv(i).gain_gof=gain_gof;
+        
+        
         [phase_fit,MSE,Rs_e,Rs_w]=fitting_phase(stv(i),x,phase,1);
         [phase_fit_al,MSE_al,Rs_e_al,Rs_w_al]=fitting_phase(stv(i),x,phase,-1);
         %% Two directions (CCW and CW) are fitted, choose the one fitted better
@@ -67,7 +70,7 @@ function fit_2d_4axis(filename,if_plot)
                  'color','blue','LineWidth',4,'MaxHeadSize',2,'Marker','*');
         end
         title({['Cluster ' num2str(i) ' Ratio: ' num2str(stv(i).Smin/stv(i).Smax)],...
-            ['Gain Rsquare: ' num2str(gain_gof.rsquare)],...
+            ['Gain Rsquare: ' num2str(stv(i).gain_gof.rsquare)],...
             ['Phase gof: ',num2str(phase_gof.gof)]},'FontSize',20,'FontWeight','bold')
         hold off;
         Axis_lim=stv(i).Smax+stv(i).Smin;

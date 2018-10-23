@@ -29,7 +29,8 @@ if if_2der
             exist_der2(i)=1;
         end
     end
-    
+    % To distinguish event types, events detected at 2der (extra_index) are labeled as '2' in the second column
+    % of all_index, whereas 1der (regular_index) events are labeled '1'
     der2_index = [r_index(exist_der2==1);extra_index];
     regular_index=r_index(exist_der2==0);
     all_index=[regular_index;der2_index];
@@ -58,6 +59,7 @@ end
 %% set amplitudes threshold for EPSC detection
 amps = amp_raw(amp_raw>amp_thre);
 event_index = all_index(amp_raw>amp_thre,1);
+% der_index is the second column of all_index, which keeps track of the event types (1der or 2der) 
 der_index=all_index(amp_raw>amp_thre,2);
 event_peak=peak_index(amp_raw>amp_thre);
 end
