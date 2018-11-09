@@ -60,7 +60,6 @@ ylabel('pA')
 legend({'post-NBQX'},'TextColor','r','box','off')
 set(A2,'fontsize',20,'fontweight','bold')
 samexaxis('abc','xmt','on','ytac','join','yld',1,'box','off');
-%xlim([-1 9])
 title(f_header(1:end-3),'interpreter','none')
 print([f_header(1:end-3) '_all_traces.jpg'],'-r300','-djpeg');
 %% Cluster all events with PCA and kmeans

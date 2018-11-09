@@ -38,12 +38,13 @@ function [s_trials,f_trials,aligned_succ_EPSC]=stim_detector(data,si,color)
         X(i)=X(i)+delay;
         trials(i,:)=v_d(X(i)-500:X(i)+500)-mean(v_d(X(i)-50:X(i)-10));
     end
-    threshold=-100;
-    if strcmp(color,'g')
-        low_thre=-100;
-    else
-        low_thre=-100;
-    end
+    threshold=-28;
+    low_thre=0;
+%     if strcmp(color,'g')
+%         low_thre=-100;
+%     else
+%         low_thre=-100;
+%     end
     failures=find_failures(trials,threshold,low_thre);
     
 %     %% Cluster all events with PCA and kmeans
