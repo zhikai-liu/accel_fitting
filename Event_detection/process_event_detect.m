@@ -10,8 +10,8 @@ for i =1:length(f_mat)
         save(f_mat(i).name,'der','-append');
     end
     if strcmp(S.type{1},'EPSP')
-        amp_thre = 3; diff_gap = 140; diff_thre =6;if_2der=1;event_duration =1200;
-        [der.event_index,der.event_peak,der.amps,der.der_index] = EPSC_detection(S.Data(:,1),S.si,amp_thre,if_2der,diff_gap,diff_thre,event_duration);
+        amp_thre = 0; diff_gap = 480; diff_thre =6;event_duration =1200;
+        [der.event_index,der.event_peak,der.amps] = EPSP_detection(S.Data(:,1),S.si,amp_thre,diff_gap,diff_thre,event_duration);
         save(f_mat(i).name,'der','-append');
     end
 end

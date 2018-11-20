@@ -46,9 +46,9 @@ for i =1:length(f_abf)
         F3 = figure('units','normal','position',[0.1 0 0.7 1]);
         if isfield(S,'fista')
             plot_cycle_fit(S.Data,S.fista.X1_max,S.fista.amps,poi,S.fit_model{j},S.S_period{j},S.type);
-        else
-            plot_cycle_fit(S.Data,[],[],poi,S.fit_model{j},S.S_period{j},S.type);
-        end
+%         else
+%             plot_cycle_fit(S.Data,[],[],poi,S.fit_model{j},S.S_period{j},S.type);
+%         end
         title(F3.Children(end-1),{[S.name ' (Period ' num2str(j) ')'], ...
             [' Sin: Freq ' num2str(S.fit_freq{j}) '  Amp ' num2str(S.fit_amp{j}) 'g'],...
             ['FISTA']},...
@@ -63,6 +63,7 @@ for i =1:length(f_abf)
             set(A3(k).YAxis.Label,'Units','normalized','Position',[-0.08 0.5 0])
         end
         print([S.name '_period_' num2str(j) '_cycle_fit_fista.jpg'],'-r300','-djpeg');
+        end
         close all;
     end
 end
