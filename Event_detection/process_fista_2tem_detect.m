@@ -9,10 +9,14 @@ for i =1:length(f_mat)
     EPSC_w1=fast_EPSC(1:441)';
     EPSC_w2=slow_EPSC';
     fista.template1=EPSC_w1;
+    % template1 is the fast EPSC wave form, template2 is the part of slow
+    % EPSC that is orthogonal to template1, orthogonal components sometimes
+    % can be separated better (like PCA)
     alpha=EPSC_w1'*EPSC_w1/(EPSC_w1'*EPSC_w2);
     fista.template2=EPSC_w1-alpha.*EPSC_w2;
     opts.backtracking=true;
     opts.verbose=true;
+    % Sparsity is defined by the rms of signal and template max amplitude
     opts.lambda1=rms(signal).*max(abs(fista.template1)).*norminv(0.99);
     opts.lambda2=rms(signal).*max(abs(fista.template2)).*norminv(0.99);
     opts.pos=false;
