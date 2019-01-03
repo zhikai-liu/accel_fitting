@@ -23,6 +23,7 @@ function process_fista_redist(filename)
         fista.X1_std=S.fista.X1_std(fista.X1_max_ori_index);
         fista.amps=S.fista.amps(fista.X1_max_ori_index);
         fista.amp_index=S.fista.amp_index(fista.X1_max_ori_index);
+        fista.corr_sum=S.fista.corr_sum;
         if isfield(S.fista,'X1_chemical')
             fista.X1_chemical=S.fista.X1_chemical(fista.X1_max_ori_index);
         end

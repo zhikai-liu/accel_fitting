@@ -35,7 +35,7 @@ end
 
 function [header] = show_data(F1,f_name)
     [Data,si,header] = abfload(f_name);
-    [D_x,D_y] = size(Data);   
+    [D_x,D_y,D_z] = size(Data); 
     %% smoothing data
     for i = 1:D_y
         Data(:,i) = smooth(Data(:,i));
@@ -44,13 +44,27 @@ function [header] = show_data(F1,f_name)
     clf;
     
     if header.nADCNumChannels==1
-        for i=1:D_y
+        for i=1:D_z
         hold on;
-        plot([1:D_x]*si*1e-6,Data(:,i));
+        plot([1:D_x]*si*1e-6,Data(:,1,i));
         end
         hold off;
+        
+    elseif header.nADCNumChannels==2
+        subplot(2,1,1)
+        hold on;
+        for i=1:D_z
+            plot([1:D_x]*si*1e-6,Data(:,1,i));
+        end
+        hold off;
+        subplot(2,1,2)
+        hold on;
+        for i=1:D_z
+            plot([1:D_x]*si*1e-6,Data(:,2,i));
+        end
+        hold off;
+        samexaxis('abc','xmt','on','ytac','join','yld',1);
     elseif header.nADCNumChannels==4
-        [D_x,D_y,D_z] = size(Data);
         h=struct();
         y_pA_max=max(max(Data(:,1,:)));
         y_pA_min=min(min(Data(:,1,:)));

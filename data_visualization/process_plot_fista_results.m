@@ -1,6 +1,8 @@
 function process_plot_fista_results(filename)
         S=load(filename);
         clust_num=max(S.fista.X1_clust);
+        folder_name=[filename(1:end-4) '_figs'];
+      mkdir(folder_name);
         map=colormap(jet(clust_num));% Colormap for different clusters
         %% Plot the raw deconvolved signals for all clusters, color-coded by clusters, reflecting waveforms
         figure;
@@ -14,7 +16,7 @@ function process_plot_fista_results(filename)
         end
         hold off
         title('Raw deconvolved signals')
-        print('cluster_amp_waveforms.jpg','-r300','-djpeg');
+        print([folder_name '/cluster_amp_waveforms.jpg'],'-r300','-djpeg');
         %% Plot integral of deconvolved signals for all events, color-coded by clusters, reflecting amplitudes
         figure;
         hold on;
@@ -24,7 +26,7 @@ function process_plot_fista_results(filename)
         hold off;
         title('Deconvolved signal integral')
         xlabel('X1_integral')
-        print('cluster_X1_integral_histogram.jpg','-r300','-djpeg');
+        print([folder_name '/cluster_X1_integral_histogram.jpg'],'-r300','-djpeg');
         %% Plot amplitudes of events detected
         figure;
         hold on;
@@ -34,7 +36,7 @@ function process_plot_fista_results(filename)
         hold off;
         title('EPSC amps')
         xlabel('pA')
-        print('cluster_amp_histogram.jpg','-r300','-djpeg');
+        print([folder_name '/cluster_amp_histogram.jpg'],'-r300','-djpeg');
         %% Plot scatter points for integral vs std, color-coded by clusters
         if S.fista.X1_clust~=0
             g_map=map;
@@ -46,18 +48,20 @@ function process_plot_fista_results(filename)
         title('Deconvolved signal integral VS std')
         xlabel('X1_integral')
         ylabel('X1_std')
-        print('cluster_integral_std.jpg','-r300','-djpeg');
+        print([folder_name '/cluster_integral_std.jpg'],'-r300','-djpeg');
         %% Plot tsne visualization of the X1_prox
         figure;
         rng default;
         Y=tsne(S.fista.X1_prox);
         gscatter(Y(:,1),Y(:,2),S.fista.X1_clust,g_map)
         title('tsne')
-        print('cluster_tsne.jpg','-r300','-djpeg');
+        print([folder_name '/cluster_tsne.jpg'],'-r300','-djpeg');
         %% Plot autocorrelogram within a cluster and cross-correlogram between clusters
-        fista_autocorrelogram(S.fista.X1_max,S.fista.X1_clust)
+        fista=S.fista;
+        fista.corr_sum=fista_autocorrelogram(S.fista.X1_max,S.fista.X1_clust);
         %fista_autocorrelogram(S.fista.X1_max(~S.fista.X1_chemical),S.fista.X1_clust(~S.fista.X1_chemical))
-        print('cluster_autocorrelogram.jpg','-r300','-djpeg');
+        print([folder_name '/cluster_autocorrelogram.jpg'],'-r300','-djpeg');
+        save(filename, 'fista','-append');
         %% Plot reconstructed signals from deconvolution
         plot_fista_reconstruct(filename)
 end
