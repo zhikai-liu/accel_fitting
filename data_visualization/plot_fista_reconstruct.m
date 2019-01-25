@@ -13,13 +13,14 @@ function plot_fista_reconstruct(filename)
     recons_data=Y1_data+Y2_data;
     subplot(3,1,2)
     x_data=(1:length(S.data_pad))*S.si*1e-6;
-    plot(x_data,S.data_pad,'k')
+    Y=smooth(S.data_pad'-median(S.data_pad));
+    plot(x_data,Y,'k')
     hold on
     plot(x_data,recons_data,'g')
-    plot(x_data,recons_data'-S.data_pad,'r')
+    plot(x_data,recons_data'-Y','r')
     for i=1:clust_num
         x_data=S.fista.X1_max(S.fista.X1_clust==i);
-        scatter(x_data*S.si*1e-6,S.data_pad(x_data),[],map(i,:),'*');
+        scatter(x_data*S.si*1e-6,Y(x_data),[],map(i,:),'*');
     end
     hold off
 

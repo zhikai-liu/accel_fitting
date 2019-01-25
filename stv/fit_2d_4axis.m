@@ -2,6 +2,7 @@ function fit_2d_4axis(filename,if_plot)
     S=load(filename);
     clust_num=length(S.clust_polar);
     x=[0;pi/2;pi/4;3*pi/4];
+    x=x(1:S.num_rec);
     if if_plot
     figure('Unit','Normal','position',[0 0.3 0.3+0.1*clust_num 0.6]);
     end

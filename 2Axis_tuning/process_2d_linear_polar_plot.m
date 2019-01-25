@@ -3,7 +3,9 @@ function process_2d_linear_polar_plot(filename)
 % movement
 S=load(filename);
 % X Y are orthogonal, 0 and 90. XpYp is 45, XpYn is -45 degrees
+num_rec=S.num_rec;
 fNames={'X','Y','XpYp','XpYn'};
+fNames=fNames(1:num_rec);
 % tuning_r is the gain of tuning
 tuning_r=zeros(length(fNames),1);
 % tuning_angle is the phase of tuning

@@ -50,12 +50,13 @@ function process_plot_fista_results(filename)
         ylabel('X1_std')
         print([folder_name '/cluster_integral_std.jpg'],'-r300','-djpeg');
         %% Plot tsne visualization of the X1_prox
-        figure;
-        rng default;
-        Y=tsne(S.fista.X1_prox);
-        gscatter(Y(:,1),Y(:,2),S.fista.X1_clust,g_map)
-        title('tsne')
-        print([folder_name '/cluster_tsne.jpg'],'-r300','-djpeg');
+        %optional
+%         figure;
+%         rng default;
+%         Y=tsne(S.fista.X1_prox);
+%         gscatter(Y(:,1),Y(:,2),S.fista.X1_clust,g_map)
+%         title('tsne')
+%         print([folder_name '/cluster_tsne.jpg'],'-r300','-djpeg');
         %% Plot autocorrelogram within a cluster and cross-correlogram between clusters
         fista=S.fista;
         fista.corr_sum=fista_autocorrelogram(S.fista.X1_max,S.fista.X1_clust);
