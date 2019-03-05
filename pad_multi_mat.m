@@ -25,9 +25,10 @@ for j=1:x-1
     right_pad=mean(data_pad(j*y+test_pulse_l:j*y+test_pulse_l+100));
     data_pad(j*y+1:j*y+test_pulse_l)=linspace(left_pad,right_pad,test_pulse_l);
 end
+
+save(['concate_' filename_h '.mat'],'data_pad','f_mat','range','data_size','si')
 %% plot concatenated data to see the results
 figure;
 plot(data_pad)
 title(filename_h,'interpreter','none');
-save(['concate_' filename_h '.mat'],'data_pad','f_mat','range','data_size','si')
 end
