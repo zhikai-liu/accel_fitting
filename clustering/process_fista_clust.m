@@ -9,6 +9,7 @@ function process_fista_clust(filename)
     fista.X1_waveform=zeros(length(fista.X1_max),71);
     fista.X1_integral=zeros(length(fista.X1_max),1);
     fista.X1_std=zeros(length(fista.X1_max),1);
+    fista.X12_ratio=sum(abs(fista.X1))./sum(abs(fista.X2));
     for i=1:length(fista.X1_max)
         fista.X1_prox(i,:)=fista.X1(fista.X1_max(i)-5:fista.X1_max(i)+5)';
         fista.X1_waveform(i,:)=data_s(fista.X1_max(i):fista.X1_max(i)+70)'-data_s(fista.X1_max(i));
@@ -17,6 +18,7 @@ function process_fista_clust(filename)
     end
     opts.isocut_threshold=1;% setting threshold for clustering, see isosplit5 for specifics
     fista.X1_clust=isosplit5(fista.X1_prox',opts)';
+    %fista.X1_clust=isosplit5(fista.X1_waveform',opts)';
     %fista.X1_clust=isosplit5([fista.X1_integral]',opts)';
     save(filename,'fista','-append')
 end

@@ -45,7 +45,7 @@ function process_plot_fista_results(filename)
         end
         figure;
         gscatter(S.fista.X1_integral,S.fista.X1_std,S.fista.X1_clust,g_map);
-        title('Deconvolved signal integral VS std')
+        title({'Deconvolved signal integral VS std',num2str(round(S.fista.X12_ratio,2))})
         xlabel('X1_integral')
         ylabel('X1_std')
         print([folder_name '/cluster_integral_std.jpg'],'-r300','-djpeg');
@@ -60,6 +60,7 @@ function process_plot_fista_results(filename)
         %% Plot autocorrelogram within a cluster and cross-correlogram between clusters
         fista=S.fista;
         fista.corr_sum=fista_autocorrelogram(S.fista.X1_max,S.fista.X1_clust);
+        
         %fista_autocorrelogram(S.fista.X1_max(~S.fista.X1_chemical),S.fista.X1_clust(~S.fista.X1_chemical))
         print([folder_name '/cluster_autocorrelogram.jpg'],'-r300','-djpeg');
         save(filename, 'fista','-append');

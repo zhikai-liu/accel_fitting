@@ -13,13 +13,13 @@ for i =1:length(f_mat)
     % EPSC that is orthogonal to template1, orthogonal components sometimes
     % can be separated better (like PCA)
     alpha=EPSC_w1'*EPSC_w1/(EPSC_w1'*EPSC_w2);
-    fista.template2=EPSC_w1-alpha.*EPSC_w2;
+    fista.template2=EPSC_w2;
     opts.backtracking=true;
     opts.verbose=true;
     % Sparsity is defined by the rms of signal and template max amplitude
     opts.lambda1=rms(signal).*max(abs(fista.template1)).*norminv(0.99);
     opts.lambda2=rms(signal).*max(abs(fista.template2)).*norminv(0.99);
-    opts.pos=false;
+    opts.pos=true;
     Xinit=[];
     %% Main fista algorithm
     if parallel.gpu.GPUDevice.isAvailable
@@ -35,6 +35,7 @@ for i =1:length(f_mat)
     end
     [fista.X1_max,fista.recon_integral,fista.chemical]=fista_local_maxima(signal,fista.X1,fista.X2,fista.template1,fista.template2,0);
     fista.opts=opts;
+    fista.X12_ratio=sum(abs(fista.X1))./sum(abs(fista.X2));
     save(f_mat(i).name,'fista','-append');
     %fista_autocorrelogram(fista.X1_max,fista.recon_integral,fista.chemical)
 end
