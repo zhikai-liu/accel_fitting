@@ -1,14 +1,14 @@
 function file_move_by_key(varargin)
     F1 = gcf;
-    f_abf = varargin{3};
+    f_name = varargin{3};
     if_fit = varargin{4};
-    [f_size,~] = size(f_abf);
+    [f_size,~] = size(f_name);
     update_file_index(varargin{2}.Key,f_size);
     f_num = getappdata(F1,'f_num');
-    header = show_data(F1,f_abf(f_num).name);
+    header = show_data(F1,f_name(f_num).name);
     if if_fit && header.nADCNumChannels~=1
         poi_x = varargin{5};
-        fit_accel(f_abf(f_num).name,poi_x{f_num});
+        fit_accel(f_name(f_num).name,poi_x{f_num});
     end
 end
 
@@ -34,7 +34,15 @@ function update_file_index(key,f_size)
 end
 
 function [header] = show_data(F1,f_name)
+[~,~,ext] = fileparts(f_name);
+if strcmp('.abf',ext)
     [Data,si,header] = abfload(f_name);
+elseif strcmp('.mat',ext)
+    S=load(f_name);
+    Data=S.Data;
+    header=S.header;
+    si=S.si;
+end
     [D_x,D_y,D_z] = size(Data); 
     %% smoothing data
     for i = 1:D_y

@@ -2,7 +2,7 @@ function process_plot_fista_results(filename)
         S=load(filename);
         clust_num=max(S.fista.X1_clust);
         folder_name=[filename(1:end-4) '_figs'];
-      mkdir(folder_name);
+        mkdir(folder_name);
         map=colormap(jet(clust_num));% Colormap for different clusters
         %% Plot the raw deconvolved signals for all clusters, color-coded by clusters, reflecting waveforms
         figure;
@@ -49,6 +49,26 @@ function process_plot_fista_results(filename)
         xlabel('X1_integral')
         ylabel('X1_std')
         print([folder_name '/cluster_integral_std.jpg'],'-r300','-djpeg');
+        figure;
+        gscatter(S.fista.X1_integral,S.fista.X1_std,S.fista.X1_clust,g_map);
+        hold on
+        for i=1:clust_num
+            clust_index=S.fista.X1_max(S.fista.X1_clust==i);
+            clust_integral=S.fista.X1_integral(S.fista.X1_clust==i);
+            clust_std=S.fista.X1_std(S.fista.X1_clust==i);
+            diff_index=diff(clust_index);
+            violater_index=find(diff_index<50);
+            violater_partner=violater_index+1;
+            for j=1:length(violater_index)
+            plot([clust_integral(violater_index(j)),clust_integral(violater_partner(j))],...
+                [clust_std(violater_index(j)),clust_std(violater_partner(j))],'k')
+            end
+        end
+        hold off
+        title({'Deconvolved signal integral VS std, filled with violaters',num2str(round(S.fista.X12_ratio,2))})
+        xlabel('X1_integral')
+        ylabel('X1_std')
+        print([folder_name '/cluster_filled_violaters.jpg'],'-r300','-djpeg');
         %% Plot tsne visualization of the X1_prox
         %optional
 %         figure;
@@ -65,5 +85,5 @@ function process_plot_fista_results(filename)
         print([folder_name '/cluster_autocorrelogram.jpg'],'-r300','-djpeg');
         save(filename, 'fista','-append');
         %% Plot reconstructed signals from deconvolution
-        plot_fista_reconstruct(filename)
+        %plot_fista_reconstruct(filename)
 end

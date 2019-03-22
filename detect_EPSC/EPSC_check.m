@@ -10,7 +10,12 @@
 %% plot the data and detection results
 function EPSC_check(datafile,event_num,varargin)
 S = load(datafile);
-Data = S.Data; si = S.si;
+if isfield(S,'Data')
+    Data = S.Data(:,1); 
+elseif isfield(S,'data_pad')
+    Data=S.data_pad;
+end
+si = S.si;
 %%  if no extra input is recieved, use event_index; User can also specify to check only missing_events, for example.
 if isempty(varargin)
     event_index = S.der.event_index;
@@ -48,11 +53,14 @@ save_UI = uicontrol('Style','pushbutton',...
     'Callback',@saveTag);
 addlistener(slider,'Value','PostSet',@traceScroll); % add a listener to the slider to enable real-time slider control
 %addlistener(unit_UI,'Value','PreSet',@(source,event)setTime(source,event,si));
-data_s = smooth(Data(:,1));
+data_s = smooth(Data);
 plot(data_s); % plot the original trace
 counter = getappdata(F,'counter');    
 hold on
 scatter(event_index,data_s(event_index),20,'filled'); % plot the start point of each event
+if isfield(S,'fista')
+scatter(S.fista.X1_max,data_s(S.fista.X1_max),20,'filled');
+end
 scatter(event_index(counter),data_s(event_index(counter)),20,'*','g'); % plot a '*' on the graph for knowing which event is being checked
 
 end

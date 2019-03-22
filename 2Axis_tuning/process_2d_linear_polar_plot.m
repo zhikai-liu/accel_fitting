@@ -15,6 +15,7 @@ stim_freq=2;
 % Lim for plotting axis value
 Lim=40;
 clust_num=S.X.fista.clust_num;
+clean_clust=str2num(S.X.fista.clean_clust);
 clust_polar=struct();
 figure('Units','Normal','Position',[0.1,0.2,0.85,0.5]);
 for j=1:clust_num
@@ -66,7 +67,9 @@ for j=1:clust_num
     xlim([-Lim Lim])
     ylim([-Lim Lim])
     legend({['Cluster ' num2str(j)]},'FontSize',24)
+    if ~ismember(j,clean_clust)
     legend('boxoff')
+    end
     %set(gca,'Units','inches','position',[1+8.*(j-1),1,6,6])
     AxisFormat()
     clust_polar(j).x=x;

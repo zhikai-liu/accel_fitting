@@ -53,7 +53,7 @@ for i = 1:raw_l
         duration = min(raw_index(i+1)-raw_index(i),32);% Duration of EPSC is the smaller one of either 640us or before next EPSC comes
     end
     [peak_value,peak_index(i)] = min(data_s(raw_index(i):raw_index(i)+duration));
-    amp_raw(i)=data_s(raw_index(i))-peak_value;
+    amp_raw(i)=data_s(raw_index(i))-peak_value;% amplitude is compensated for diff_thre
     peak_index(i)=raw_index(i)+peak_index(i)-1;
     % Calculate the amplitude of each EPSC, here the algorithm is:
     % max value within event_duration - value at the index point

@@ -22,7 +22,7 @@ function process_batch_abf2mat(filename_h)
             end
             for j=1:size(Data_all,3)
                 Data=Data_all(:,:,j);
-                name=[abf_name '_' num2str(j)];
+                name=[abf_name '_' num2str(j,'%.2d')];
                 save([name '.mat'],'name','type','Data','si','header');
             end
     end

@@ -8,20 +8,22 @@ function process_concate_EPSC(filename)
 %% Load the filename, which contains info about f_mat and range
 F=load(filename);
 n_f=length(F.mat_fhead);
-x=0;
-for i=1:n_f
-    x=x+length(F.range{i});
-end
+
 
 % Load the first file to get parameters
-filename_h=F.mat_fhead{1};
-range=F.range{1};
-f_mat = dir([filename_h '*.mat']);
-if strcmp(range,'all')
-    range=1:length(f_mat);
-end
-S = load(f_mat(range(1)).name);
 
+x=0;
+for i=1:n_f
+    filename_h=F.mat_fhead{i};
+    range=F.range{i};
+    f_mat = dir([filename_h '*.mat']);
+    if strcmp(range,'all')
+        range=1:length(f_mat);
+    end
+    S = load(f_mat(range(i)).name);
+
+    x=x+length(range);
+end
 % set or initiate all the variables
 si=20;
 f_name=cell(x,1);
@@ -36,6 +38,9 @@ for i=1:n_f
     clearvars S
     filename_h=F.mat_fhead{i};
     range=F.range{i};
+    if strcmp(range,'all')
+        range=1:length(f_mat);
+    end
     f_mat = dir([filename_h '*.mat']);
     for j=1:length(range)
         k=k+1;
