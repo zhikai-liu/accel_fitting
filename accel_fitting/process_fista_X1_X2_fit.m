@@ -17,7 +17,7 @@ for l=1:length(fieldnames)
             poi_c = poi_c_start+1:poi_c_end;
             poi_p = poi_p_start+1:poi_p_end;
             %% Plotting the raw traces of different periods stacking on each other
-            F1 = figure('units','normal','position',[0 0 0.5 0.5]);
+            F1 = figure('units','normal','position',[0.3 0 0.6 1]);
             plot_cycle_fit(S_c.Data,S_c.fista,poi_c,S_c.fit_model{j},S_c.S_period{j},S_c.type,...
                 S_p.Data,poi_p,S_p.fit_model{j},S_p.S_period{j},S_p.type);
             title(F1.Children(end),{[S_c.name ' (Period ' num2str(j) ')'], ...
@@ -98,7 +98,7 @@ for i = 1:cycle_num_p
     end
     
 end
-plot(0:t_unit_p:2*pi,sum(signal_all_cycles,2))
+plot(0:t_unit_p:2*pi,mean(signal_all_cycles,2))
 hold off;
 xlim([0 2*pi]);
 A=gca;
@@ -132,7 +132,7 @@ for j=1:3
         end
         
     end
-    plot(0:t_unit:2*pi,sum(signal_all_cycles,2))
+    plot(0:t_unit:2*pi,mean(signal_all_cycles,2))
     hold off;
     xlim([0 2*pi]);
     A=gca;

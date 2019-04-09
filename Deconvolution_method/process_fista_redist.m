@@ -15,6 +15,8 @@ function process_fista_redist(filename)
     X1_max(S.fista.X1_max)=1:length(S.fista.X1_max);
     %% after reshape, each column contains event index for each file
     X1_max_re=reshape(X1_max,S.data_size);
+    
+    
     for i=1:length(range)
         fista=struct();
         fista.X1=X1_re(:,i);
