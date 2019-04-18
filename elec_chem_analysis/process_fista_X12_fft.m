@@ -62,10 +62,10 @@ for i=1:4
         [sum(P1(3,index2-1:index2+1))./sum(P1(2,index2-1:index2+1)),...
         sum(P1(3,index4-1:index4+1))./sum(P1(2,index4-1:index4+1))])
     ylabel('X2/X1')
-    ylim([0 3])
+    %ylim([0 3])
     xlabel('f (Hz)')
     samexaxis('ytac','join','box','off');
-    xlim([0 20])
+    xlim([0.5 20])
     AxisFormat;
 end
 end

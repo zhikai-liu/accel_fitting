@@ -20,7 +20,7 @@ for i=1:n_f
     if strcmp(range,'all')
         range=1:length(f_mat);
     end
-    S = load(f_mat(range(i)).name);
+    S = load(f_mat(range(1)).name);
 
     x=x+length(range);
 end

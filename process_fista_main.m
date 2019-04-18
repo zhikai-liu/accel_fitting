@@ -4,7 +4,7 @@ process_cell_opening(filename);
 %% Concatenate recordings together for events detection
 pad_multi_mat(filename,range);
 %% Events detection using a two-template sparse deconvolution method(fista_2tem)
-process_fista_lasso(filename);
+process_fista_2tem_detect(filename);
 %% Clustering events
 process_fista_clust(filename);
 %% Calculate the amplitude of events 
