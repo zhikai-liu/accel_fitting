@@ -3,11 +3,12 @@ f_EPSC = dir([filename_h 'EPSC*.mat']);
 f_EPSP = dir([filename_h 'EPSP*.mat']);
 C = load(f_EPSC(1).name);
 P = load(f_EPSP(1).name);
-fieldnames={'X','Y','XpYp','XpYn'};
-for l=1:length(fieldnames)
-    if isfield(C,fieldnames{l})&&isfield(P,fieldnames{l})
-        S_c=C.(fieldnames{l});
-        S_p=P.(fieldnames{l});
+field_names={'X','Y','XpYp','XpYn'};
+for l=1:length(field_names)
+    if isfield(C,field_names{l})&&isfield(P,field_names{l})
+        S_c=C.(field_names{l});
+        S_p=P.(field_names{l});
+        if ~isempty(fieldnames(S_c))&&~isempty(fieldnames(S_p))
         for j =1:length(S_c.poi)
             clearvars poi_c poi_p
             poi_c_start = S_c.poi{j}(1)*1e6/S_c.si;
@@ -34,6 +35,7 @@ for l=1:length(fieldnames)
                 set(A1(k).YAxis.Label,'Units','normalized','Position',[-0.08 0.5 0])
             end
             print([S_c.name '_period_' num2str(j) '_cycle_fit_fista.jpg'],'-r300','-djpeg');
+        end
         end
     end
 end

@@ -1,5 +1,6 @@
-function fname_h=process_2d_fit_linear(fname,range)
-
+function fname_h=process_2d_fit_linear(fheader,range)
+f_=dir([fheader '*']);
+fname={f_.name};
 X=struct();
 Y=struct();
 XpYp=struct();
@@ -8,17 +9,21 @@ num_rec=length(range);
 base=[1/sqrt(2),-1/sqrt(2);1/sqrt(2),1/sqrt(2)];
 if length(range)>=1
     X=load(fname{range(1)});
+    X.der=event_detect(X);
     X=add_accel_fit(X);
     if length(range)>=2
         Y=load(fname{range(2)});
+        Y.der=event_detect(Y);
         Y=add_accel_fit(Y);
         if length(range)>=3
             XpYp=load(fname{range(3)});
             XpYp.Data(:,2:3)=XpYp.Data(:,2:3)*base;
+            XpYp.der=event_detect(XpYp);
             XpYp=add_accel_fit(XpYp);
             if length(range)>=4
                 XpYn=load(fname{range(4)});
                 XpYn.Data(:,2:3)=XpYn.Data(:,2:3)*base;
+                XpYn.der=event_detect(XpYn);
                 XpYn=add_accel_fit(XpYn);
             end
         end
@@ -32,6 +37,28 @@ else
     save(fname_h,'X','Y','XpYp','XpYn','num_rec');
 end
 
+end
+
+function der=event_detect(S)
+     der=struct();
+     if isfield(S,'type')
+         istype_EPSC=strcmp(S.type{1},'EPSC');
+         istype_EPSP=strcmp(S.type{1},'EPSP');
+     end
+    if istype_EPSC
+        amp_thre = 6; diff_gap = 240; diff_thre =-8;if_2der=1;event_duration = 640;
+        if isfield(S,'Data')
+            [der.event_index,der.event_peak,der.amps,der.der_index] = EPSC_detection(S.Data(:,1),S.si,amp_thre,if_2der,diff_gap,diff_thre,event_duration);
+        elseif isfield(S,'data_pad')
+            [der.event_index,der.event_peak,der.amps,der.der_index] = EPSC_detection(S.data_pad,S.si,amp_thre,if_2der,diff_gap,diff_thre,event_duration);
+        else
+            warning('No data in the file. ')
+        end
+    end
+    if istype_EPSP
+        amp_thre = 0; diff_gap = 480; diff_thre =6;event_duration =1200;
+        [der.event_index,der.event_peak,der.amps] = EPSP_detection(S.Data(:,1),S.si,amp_thre,diff_gap,diff_thre,event_duration);
+    end
 end
 
 function S=add_accel_fit(S)

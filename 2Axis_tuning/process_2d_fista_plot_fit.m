@@ -1,4 +1,4 @@
-function process_2d_plot_fit(filename_h)
+function process_2d_fista_plot_fit(filename_h)
 f_abf = dir([filename_h '*.mat']);
 orien={'X','Y','XpYp','XpYn'};
 for i =1:length(f_abf)
