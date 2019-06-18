@@ -1,48 +1,48 @@
-function process_fista_X1_X2_fit(filename_h)
-f_EPSC = dir([filename_h 'EPSC*.mat']);
+function process_1d_fista_X1_X2_fit(filename_h)
+f_EPSC = dir([filename_h '*.mat']);
 %f_EPSP = dir([filename_h 'EPSP*.mat']);
 for m=1:length(f_EPSC)
-C = load(f_EPSC(m).name);
-%P = load(f_EPSP(1).name);
-field_names={'X','Y','XpYp','XpYn'};
-for l=1:length(field_names)
-    %if isfield(C,field_names{l})&&isfield(P,field_names{l})
-    if isfield(C,field_names{l})
-        S_c=C.(field_names{l});
+    C = load(f_EPSC(m).name);
+    %P = load(f_EPSP(1).name);
+    %field_names={'X','Y','XpYp','XpYn'};
+    if isfield(C,'fista')
+        %         for l=1:length(C.Trials)
+        %if isfield(C,field_names{l})&&isfield(P,field_names{l})
+        S_c=C;
         %if ~isempty(fieldnames(S_c))&&~isempty(fieldnames(S_p))
         if ~isempty(fieldnames(S_c))
-        for j =1:length(S_c.poi)
-            clearvars poi_c poi_p
-            poi_c_start = S_c.poi{j}(1)*1e6/S_c.si;
-            poi_c_end = S_c.poi{j}(end)*1e6/S_c.si;
-%             poi_p_start = S_p.poi{j}(1)*1e6/S_p.si;
-%             poi_p_end = S_p.poi{j}(end)*1e6/S_p.si;
-            poi_c = poi_c_start+1:poi_c_end;
-%             poi_p = poi_p_start+1:poi_p_end;
-            %% Plotting the raw traces of different periods stacking on each other
-            F1 = figure('units','normal','position',[0.3 0 0.6 1]);
-            plot_cycle_fit(S_c.Data,S_c.fista,poi_c,S_c.fit_model{j},S_c.S_period{j},S_c.type);
-            title(F1.Children(end),{[S_c.name ' (Period ' num2str(j) ')'], ...
-                [' Sin: Freq ' num2str(S_c.fit_freq{j}) '  Amp ' num2str(S_c.fit_amp{j}) 'g'],...
-                ['FISTA']},...
-                'interpreter','none','FontSize',20,'FontWeight','bold');
-            A1=F1.Children;
-            for k=1:length(A1)
-                set(A1(k),'box','off')
-                set(A1(k).Children,'LineWidth',3)
-                set(A1(k).XAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
-                set(A1(k).YAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
-                set(A1(k).YAxis.Label,'Units','normalized','Position',[-0.08 0.5 0])
+            for j =1:length(S_c.poi)
+                clearvars poi_c poi_p
+                poi_c_start = S_c.poi{j}(1)*1e6/S_c.si;
+                poi_c_end = S_c.poi{j}(end)*1e6/S_c.si;
+                %             poi_p_start = S_p.poi{j}(1)*1e6/S_p.si;
+                %             poi_p_end = S_p.poi{j}(end)*1e6/S_p.si;
+                poi_c = poi_c_start+1:poi_c_end;
+                %             poi_p = poi_p_start+1:poi_p_end;
+                %% Plotting the raw traces of different periods stacking on each other
+                F1 = figure('units','normal','position',[0.3 0 0.6 1]);
+                plot_cycle_fit(S_c.Data,S_c.fista,poi_c,S_c.fit_model{j},S_c.S_period{j},S_c.type);
+                title(F1.Children(end),{[S_c.name ' (Period ' num2str(j) ')'], ...
+                    [' Sin: Freq ' num2str(S_c.fit_freq{j}) '  Amp ' num2str(S_c.fit_amp{j}) 'g'],...
+                    ['FISTA']},...
+                    'interpreter','none','FontSize',20,'FontWeight','bold');
+                A1=F1.Children;
+                for k=1:length(A1)
+                    set(A1(k),'box','off')
+                    set(A1(k).Children,'LineWidth',3)
+                    set(A1(k).XAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
+                    set(A1(k).YAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
+                    set(A1(k).YAxis.Label,'Units','normalized','Position',[-0.08 0.5 0])
+                end
+                print([S_c.name '_period_' num2str(j) '_cycle_fit_X12.jpg'],'-r300','-djpeg');
+                close all
+                
             end
-            print(['./X12_fit/' S_c.name '_period_' num2str(j) '_cycle_fit_X12.jpg'],'-r300','-djpeg');
-            close all
-            
-        end
         end
     end
 end
 end
-end
+
 
 
 function plot_cycle_fit(Data_c,fista,poi_c,fit_model_c,S_period_c,type_c)
@@ -58,10 +58,10 @@ cycle_num = round(length(S_period_c)/t_per_cycle);
 % t_unit is the amount per data point
 t_unit = 2*pi/t_per_cycle;
 
-X1_reconstruct=conv(fista.X1,fista.template1);
-X1_reconstruct=X1_reconstruct(1:end-length(fista.template1)+1);
-X2_reconstruct=conv(fista.X2,fista.template2);
-X2_reconstruct=X2_reconstruct(1:end-length(fista.template2)+1);
+X1_reconstruct=conv(fista.X1,fista.tempate1);
+X1_reconstruct=X1_reconstruct(1:end-length(fista.tempate1)+1);
+X2_reconstruct=conv(fista.X2,fista.tempate2);
+X2_reconstruct=X2_reconstruct(1:end-length(fista.tempate2)+1);
 EPSC_reconstruct=X1_reconstruct+X2_reconstruct;
 % Subplot numbers
 subplot_num =4;
@@ -105,7 +105,7 @@ for j=[1,4,2,3]
     end
     mean_trace{j}=mean(signal_all_cycles,2);
     plot(0:t_unit:2*pi,mean_trace{j},color_M{j})
-%     hold off;
+    %     hold off;
     xlim([0 2*pi]);
     A=gca;
     set(A.XAxis,'visible','off')
@@ -133,7 +133,7 @@ for i = 1:cycle_num
     end
 end
 for j=1:3
-mean_g(:,j)=mean(g_all_cycles(:,:,j),2);
+    mean_g(:,j)=mean(g_all_cycles(:,:,j),2);
 end
 xlim([0 2*pi]);
 ylabel('EPSC-g','Rotation',0);

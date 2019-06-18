@@ -1,12 +1,22 @@
 function process_fista_2vs4Hz_scatter(filename)
 D=dir([filename '*.mat']);
-figure('units','normal','position',[0.3 0 0.5 1]);
-hold on
+% figure('units','normal','position',[0.3 0 0.5 1]);
+% hold on
 fft_results=struct();
+cross_corr=struct();
+%% Design a low pass filter
+nfilt=34;
+Fst=5;
+F_s=5e4;
+lp_filter=designfilt('lowpassfir','FilterOrder',nfilt,'CutoffFrequency',Fst,'SampleRate',F_s);
+%grpdelay(d,N,Fs);
+delay = mean(grpdelay(lp_filter));
+
+%% fft analysis
 for d=1:length(D)
     S=load(D(d).name);
     fieldnames={'X','Y','XpYp','XpYn'};
-    color={'r','g','b','k'};
+%     color={'r','g','b','k'};
     for i=1:4
         if isfield(S.(fieldnames{i}),'fista')
             fista=S.(fieldnames{i}).fista;
@@ -30,6 +40,15 @@ for d=1:length(D)
             raw_fft=fft(data_c(poi_c));
             X1_fft=fft(X1_reconstruct(poi_c));
             X2_fft=fft(X2_reconstruct(poi_c));
+
+%             X1_lp=filter(lp_filter,X1_reconstruct(poi_c));
+%             X2_lp=filter(lp_filter,X2_reconstruct(poi_c));
+            
+            X1_lp=X1_reconstruct(poi_c);
+            X2_lp=X2_reconstruct(poi_c);
+            [cross_corr(d,i).corr,cross_corr(d,i).lag]=xcorr(X1_lp,X2_lp);
+            
+            
             switch mod(L,2)
                 case 0
                     f=Fs*(0:(L/2))/L;
@@ -37,6 +56,7 @@ for d=1:length(D)
                     f=Fs*(0:((L-1)/2))/(L-1);
             end
             P1=zeros(3,length(f));
+            P1_phase=zeros(3,length(f));
             [~,index2]=min(abs(f-2));
             [~,index4]=min(abs(f-4));
             for k=1:3
@@ -51,17 +71,17 @@ for d=1:length(D)
                         Y=X2_fft;
                         %Y_label='chem. EPSC';
                 end
-                P2=abs(Y/L);
-                switch mod(L,2)
-                    case 0
-                        P1(k,:)=P2(1:L/2+1);
-                    case 1
-                        P1(k,:)=P2(1:L/2+1/2);
-                end
+                P2=Y/L;
+                P1(k,:)=abs(P2(1:fix(L/2)+1));
+                P1_phase(k,:)=angle(P2(1:fix(L/2)+1));
                 P1(k,2:end-1)=2*P1(k,2:end-1);
                 fft_results(d,i,k).fft=P1(k,:);
-                fft_results(d,i,k).index2=sum(P1(k,index2-1:index2+1));
-                fft_results(d,i,k).index4=sum(P1(k,index4-1:index4+1));
+                fft_results(d,i,k).index2a=P1(k,index2);
+                fft_results(d,i,k).index2=index2;
+                fft_results(d,i,k).index4a=P1(k,index4);
+                fft_results(d,i,k).index2p=P1_phase(k,index2);
+                fft_results(d,i,k).index4=index4;
+                fft_results(d,i,k).index4p=P1_phase(k,index4);
                 %         subplot(4,1,k)
                 %         plot(f,P1(k,:),'k','LineWidth',2.5)
                 %         ylabel(Y_label)
@@ -69,8 +89,8 @@ for d=1:length(D)
             end
             
             
-            scatter(fft_results(d,i,3).index2./fft_results(d,i,2).index2,...
-                fft_results(d,i,3).index4./fft_results(d,i,2).index4,28,color{i})
+%             scatter(fft_results(d,i,3).index2a./fft_results(d,i,2).index2a,...
+%                 fft_results(d,i,3).index4a./fft_results(d,i,2).index4a,28,color{i})
             %     ylabel('X2/X1')
             %     ylim([0 3])
             %     xlabel('f (Hz)')
@@ -78,13 +98,22 @@ for d=1:length(D)
             %     xlim([0 20])
         else
             warning(['No fista: ' D(d).name fieldnames{i}])
+            for k=1:3
+                fft_results(d,i,k).fft=nan;
+                fft_results(d,i,k).index2a=nan;
+                fft_results(d,i,k).index2=nan;
+                fft_results(d,i,k).index4a=nan;
+                fft_results(d,i,k).index2p=nan;
+                fft_results(d,i,k).index4=nan;
+                fft_results(d,i,k).index4p=nan;
+            end
         end
     end
 end
-AxisFormat;
-xlabel('2 Hz')
-ylabel('4 Hz')
-axis square
-title('chem./elec.')
-save('fft_results.mat','fft_results')
+% AxisFormat;
+% xlabel('2 Hz')
+% ylabel('4 Hz')
+% axis square
+% title('chem./elec.')
+save('fft_results.mat','fft_results','cross_corr')
 end

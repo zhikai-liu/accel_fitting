@@ -9,7 +9,8 @@ fNames=fNames(1:num_rec);
 all_tuning_r=zeros(1,num_rec);
 for i=1:num_rec
     phase_all=S.(fNames{i}).period_index.phase;
-    phase_sum=sum(exp(1i*phase_all));
+    amp_all=S.(fNames{i}).period_index.amp;
+    phase_sum=sum(amp_all.*exp(1i*phase_all))./sum(abs(amp_all));
     all_tuning_r(i)=abs(phase_sum)./S.(fNames{i}).cycle_num{1}.*S.(fNames{i}).fit_freq{1};
 end
 save(filename,'all_tuning_r','-append')

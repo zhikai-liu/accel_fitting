@@ -1,51 +1,50 @@
-function process_fista_X1_X2_fit(filename_h)
+function process_fista_X12_EPSP_fit(filename_h)
 f_EPSC = dir([filename_h 'EPSC*.mat']);
-%f_EPSP = dir([filename_h 'EPSP*.mat']);
-for m=1:length(f_EPSC)
-C = load(f_EPSC(m).name);
-%P = load(f_EPSP(1).name);
+f_EPSP = dir([filename_h 'EPSP*.mat']);
+C = load(f_EPSC(1).name);
+P = load(f_EPSP(1).name);
 field_names={'X','Y','XpYp','XpYn'};
 for l=1:length(field_names)
-    %if isfield(C,field_names{l})&&isfield(P,field_names{l})
-    if isfield(C,field_names{l})
+    if isfield(C,field_names{l})&&isfield(P,field_names{l})
+    
         S_c=C.(field_names{l});
-        %if ~isempty(fieldnames(S_c))&&~isempty(fieldnames(S_p))
-        if ~isempty(fieldnames(S_c))
+        S_p=P.(field_names{l});
+        if ~isempty(fieldnames(S_c))&&~isempty(fieldnames(S_p))
+        
         for j =1:length(S_c.poi)
             clearvars poi_c poi_p
             poi_c_start = S_c.poi{j}(1)*1e6/S_c.si;
             poi_c_end = S_c.poi{j}(end)*1e6/S_c.si;
-%             poi_p_start = S_p.poi{j}(1)*1e6/S_p.si;
-%             poi_p_end = S_p.poi{j}(end)*1e6/S_p.si;
+             poi_p_start = S_p.poi{j}(1)*1e6/S_p.si;
+             poi_p_end = S_p.poi{j}(end)*1e6/S_p.si;
             poi_c = poi_c_start+1:poi_c_end;
-%             poi_p = poi_p_start+1:poi_p_end;
+             poi_p = poi_p_start+1:poi_p_end;
             %% Plotting the raw traces of different periods stacking on each other
             F1 = figure('units','normal','position',[0.3 0 0.6 1]);
-            plot_cycle_fit(S_c.Data,S_c.fista,poi_c,S_c.fit_model{j},S_c.S_period{j},S_c.type);
+            plot_cycle_fit(S_c.Data,S_c.fista,S_c.der,poi_c,S_c.fit_model{j},S_c.S_period{j},S_c.type,...
+                S_p.Data,poi_p,S_p.fit_model{j},S_p.S_period{j},S_p.type);
             title(F1.Children(end),{[S_c.name ' (Period ' num2str(j) ')'], ...
                 [' Sin: Freq ' num2str(S_c.fit_freq{j}) '  Amp ' num2str(S_c.fit_amp{j}) 'g'],...
                 ['FISTA']},...
                 'interpreter','none','FontSize',20,'FontWeight','bold');
             A1=F1.Children;
+            xticks([0 90 180 270 360])
+            xticklabels({'0','\pi/2','\pi','3\pi/2','2\pi'});
             for k=1:length(A1)
-                set(A1(k),'box','off')
                 set(A1(k).Children,'LineWidth',3)
                 set(A1(k).XAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
                 set(A1(k).YAxis,'FontSize',20,'LineWidth',3,'FontWeight','bold');
                 set(A1(k).YAxis.Label,'Units','normalized','Position',[-0.08 0.5 0])
             end
-            print(['./X12_fit/' S_c.name '_period_' num2str(j) '_cycle_fit_X12.jpg'],'-r300','-djpeg');
-            close all
-            
+            print([S_c.name '_period_' num2str(j) '_cycle_fit_fista.jpg'],'-r300','-djpeg');
         end
         end
     end
 end
 end
-end
 
 
-function plot_cycle_fit(Data_c,fista,poi_c,fit_model_c,S_period_c,type_c)
+function plot_cycle_fit(Data_c,fista,der,poi_c,fit_model_c,S_period_c,type_c,Data_p,poi_p,fit_model_p,S_period_p,type_p)
 
 
 % This function is used to plot the fitted traces of all cycles overlaying
@@ -62,9 +61,8 @@ X1_reconstruct=conv(fista.X1,fista.template1);
 X1_reconstruct=X1_reconstruct(1:end-length(fista.template1)+1);
 X2_reconstruct=conv(fista.X2,fista.template2);
 X2_reconstruct=X2_reconstruct(1:end-length(fista.template2)+1);
-EPSC_reconstruct=X1_reconstruct+X2_reconstruct;
 % Subplot numbers
-subplot_num =4;
+subplot_num =6;
 %% Plot as following:
 % First subplot is the overlay of EPSC trace for each cycle
 S_period_phase=mod(fit_model_c.b1.*S_period_c+fit_model_c.c1,2*pi);
@@ -74,23 +72,58 @@ compen_for_zero=0;
 if zero_phase>t_per_cycle/1.5
     compen_for_zero=t_per_cycle;
 end
-signal_names={'Data','X1','X1/2','EPSC-Rs'};
-color_M={'k','r','g','b'};
-mean_trace=cell(4,1);
-for j=[1,4,2,3]
+signal_names={'Data','X1','X2'};
+color={'k','r','g'};
+
+subplot(subplot_num,1,1)
+t_per_cycle_p = round(2*pi/fit_model_p.b1);
+
+cycle_num_p = round(length(S_period_p)/t_per_cycle_p);
+
+t_unit_p = 2*pi/t_per_cycle_p;
+signal_all_cycles=zeros(t_per_cycle_p+1,cycle_num_p);
+trace=Data_p(:,1);
+S_period_phase_p=mod(fit_model_p.b1.*S_period_p+fit_model_p.c1,2*pi);
+% Finding the first phase 0 in the S_period
+zero_phase_p=find_first_phase_o(S_period_phase_p);
+compen_for_zero_p=0;
+if zero_phase_p>t_per_cycle_p/1.5
+    compen_for_zero_p=t_per_cycle_p;
+end
+
+for i = 1:cycle_num_p
+    hold on;
+    % Make sure that all the data are plotted where they are aligned with 0-2pi
+    % phase, because S_period doesn't always start at phase 0,
+    % so plotting start at a point with zero phase
+    if S_period_p(zero_phase)+i*t_per_cycle_p-compen_for_zero_p<length(trace)
+        signal_all_cycles(:,i)=trace(S_period_p(zero_phase)+(i-1)*t_per_cycle_p-compen_for_zero_p:S_period_p(zero_phase)+i*t_per_cycle_p-compen_for_zero_p);
+        %plot(0:t_unit:2*pi,signal_all_cycles(i,:),color{j})
+    end
+    
+end
+plot(0:t_unit_p:2*pi,mean(signal_all_cycles,2))
+hold off;
+xlim([0 2*pi]);
+A=gca;
+set(A.XAxis,'visible','off')
+if strcmp(type_p{1},'EPSC')||strcmp(type_p{1},'IPSC')
+    ylabel('pA','Rotation',0);
+elseif strcmp(type_p{1},'EPSP')||strcmp(type_p{1},'IPSP')
+    ylabel('mV','Rotation',0);
+end
+
+
+for j=1:3
     switch j
         case 1
-            trace=smooth(Data_c(:,1)-median(Data_c(:,1)));
-            subplot(subplot_num,1,j);
-        case 4
-            trace=EPSC_reconstruct;
+            trace=Data_c(:,1);
         case 2
             trace=X1_reconstruct;
-            subplot(subplot_num,1,j);
         case 3
             trace=X2_reconstruct;
     end
-    
+    subplot(subplot_num,1,j+1);
     signal_all_cycles=zeros(t_per_cycle+1,cycle_num);
     for i = 1:cycle_num
         hold on;
@@ -103,9 +136,8 @@ for j=[1,4,2,3]
         end
         
     end
-    mean_trace{j}=mean(signal_all_cycles,2);
-    plot(0:t_unit:2*pi,mean_trace{j},color_M{j})
-%     hold off;
+    plot(0:t_unit:2*pi,mean(signal_all_cycles,2))
+    hold off;
     xlim([0 2*pi]);
     A=gca;
     set(A.XAxis,'visible','off')
@@ -119,49 +151,38 @@ end
 
 % Last subplot is the overlay of the acceleration trace for each cycle
 subplot(subplot_num,1,subplot_num-1);
+% color = {'r','g','b'};
+% for i = 1:cycle_num
+%     for j = 2:4
+%         hold on;
+%         if S_period_c(zero_phase)+i*t_per_cycle-compen_for_zero<length(Data_c)
+%             plot(0:t_unit:2*pi,Data_c(S_period_c(zero_phase)+(i-1)*t_per_cycle-compen_for_zero:S_period_c(zero_phase)+i*t_per_cycle-compen_for_zero,j)-mean(Data_c(poi_c,j)),color{j-1})
+%         end
+%         hold off;
+%     end
+% end
+% xlim([0 2*pi]);
+% ylabel('EPSC-g','Rotation',0);
+
+scatter(der.period_index.phase,der.period_index.amp,28,'r','filled')
+ylabel('EPSC (pA)','Rotation',0);
+
+
+subplot(subplot_num,1,subplot_num);
 color = {'r','g','b'};
-g_all_cycles=zeros(t_per_cycle+1,cycle_num,3);
-mean_g=zeros(t_per_cycle+1,3);
-for i = 1:cycle_num
+for i = 1:cycle_num_p
     for j = 2:4
         hold on;
-        if S_period_c(zero_phase)+i*t_per_cycle-compen_for_zero<length(Data_c)
-            g_all_cycles(:,i,j-1)=Data_c(S_period_c(zero_phase)+(i-1)*t_per_cycle-compen_for_zero:S_period_c(zero_phase)+i*t_per_cycle-compen_for_zero,j)-mean(Data_c(poi_c,j));
-            plot(0:t_unit:2*pi,Data_c(S_period_c(zero_phase)+(i-1)*t_per_cycle-compen_for_zero:S_period_c(zero_phase)+i*t_per_cycle-compen_for_zero,j)-mean(Data_c(poi_c,j)),color{j-1})
+        if S_period_p(zero_phase_p)+i*t_per_cycle_p-compen_for_zero_p<length(Data_p)
+            plot(0:t_unit_p:2*pi,Data_p(S_period_p(zero_phase_p)+(i-1)*t_per_cycle_p-compen_for_zero_p:S_period_p(zero_phase_p)+i*t_per_cycle_p-compen_for_zero_p,j)-mean(Data_p(poi_p,j)),color{j-1})
         end
         hold off;
     end
 end
-for j=1:3
-mean_g(:,j)=mean(g_all_cycles(:,:,j),2);
-end
 xlim([0 2*pi]);
-ylabel('EPSC-g','Rotation',0);
+ylabel('EPSP-g','Rotation',0);
 
 samexaxis('ytac','join','box','off');
-xticks([0 90 180 270 360])
-xticklabels({'0','\pi/2','\pi','3\pi/2','2\pi'});
-
-[~,g_index]=max(std(mean_g,1));
-subplot(subplot_num,1,subplot_num);
-hold on;
-si=20;
-[cross_corr_X1,lag_X1]=xcorr(mean_g(:,g_index),-mean_trace{2});
-[cross_corr_X2,lag_X2]=xcorr(mean_g(:,g_index),-mean_trace{3});
-
-lag_X1_ms=lag_X1*si*1e-3;
-plot(lag_X1_ms,cross_corr_X1,'r')
-[~,max_X1_index]=max(cross_corr_X1);
-plot([lag_X1_ms(max_X1_index),lag_X1_ms(max_X1_index)],[0,cross_corr_X1(max_X1_index)],'r:')
-
-lag_X2_ms=lag_X2*si*1e-3;
-plot(lag_X2_ms,cross_corr_X2,'g')
-[~,max_X2_index]=max(cross_corr_X2);
-plot([lag_X2_ms(max_X2_index),lag_X2_ms(max_X2_index)],[0,cross_corr_X2(max_X2_index)],'g:')
-hold off
-%xlim([-100,100])
-xlabel(['Lag X1-X2: ',num2str(lag_X1_ms(max_X1_index)-lag_X2_ms(max_X2_index),2) ' ms'])
-ylabel({'cross corr','X1/X2'},'Rotation',0)
 end
 
 

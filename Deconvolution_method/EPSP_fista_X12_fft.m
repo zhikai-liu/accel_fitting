@@ -31,10 +31,10 @@ for i=1:4
     L_p=length(poi_p);
     %t=(0:L-1)*T;
     
-    fft_results(i).EPSC_fft=fft(data_c(poi_c));
+    fft_results(i).EPSC_fft=fft(-data_c(poi_c));
     fft_results(i).EPSP_fft=fft(data_p(poi_p));
-    fft_results(i).X1_fft=fft(X1_reconstruct(poi_c));
-    fft_results(i).X2_fft=fft(X2_reconstruct(poi_c));
+    fft_results(i).X1_fft=fft(-X1_reconstruct(poi_c));
+    fft_results(i).X2_fft=fft(-X2_reconstruct(poi_c));
     switch mod(L_c,2)
         case 0
             f_c=Fs_c*(0:(L_c/2))/L_c;
@@ -56,20 +56,23 @@ for i=1:4
     [~,index2_p]=min(abs(f_p-2));
     [~,index4_c]=min(abs(f_c-4));% find x index near 4 Hz
     [~,index4_p]=min(abs(f_p-4));% find x index near 4 Hz
+    range_f_c=(f_c>0.2&f_c<20);
+    range_f_p=(f_p>0.2&f_p<20);
     figure('units','normal','position',[0.3 0 0.5 1]);
     for k=1:4
         
         if k<2
             Y_p=fft_results(i).EPSP_fft;
             Y_label='EPSP';
-            P2_p=abs(Y_p/L_p);
+            P2_p=Y_p/L_p;
             fftA_p(1,:)=abs(P2_p(1:fix(L_p/2)+1));
             fftP_p(1,:)=angle(P2_p(1:fix(L_p/2)+1));
             fftA_p(1,2:end-1)=2*fftA_p(1,2:end-1);
-            fft_results(i).power2Hz.EPSP=sum(fftA_p(1,index2_p-1:index2_p+1));
-            fft_results(i).phase2Hz.EPSP=fftP_p(1,index2_p);
-            fft_results(i).power4Hz.EPSP=sum(fftA_p(1,index4_p-1:index4_p+1));
-            fft_results(i).phase4Hz.EPSP=fftP_p(1,index4_p);
+            fft_results(i).EPSP.power_std=std(fftA_p(1,range_f_p));
+            fft_results(i).EPSP.power2Hz=fftA_p(1,index2_p);
+            fft_results(i).EPSP.phase2Hz=fftP_p(1,index2_p);
+            fft_results(i).EPSP.power4Hz=fftA_p(1,index4_p);
+            fft_results(i).EPSP.phase4Hz=fftP_p(1,index4_p);
             
             subplot(5,1,k)
             plot(f_p,fftA_p(k,:),color{k},'LineWidth',2.5)
@@ -96,20 +99,23 @@ for i=1:4
         switch k
                 
             case 2
-                fft_results(i).power2Hz.EPSC=sum(fftA_c(1,index2_c-1:index2_c+1));
-                fft_results(i).phase2Hz.EPSC=fftP_c(1,index2_c);
-                fft_results(i).power4Hz.EPSC=sum(fftA_c(1,index4_c-1:index4_c+1));
-                fft_results(i).phase4Hz.EPSC=fftP_c(1,index4_c);
+                fft_results(i).EPSC.power_std=std(fftA_c(1,range_f_c));
+                fft_results(i).EPSC.power2Hz=fftA_c(1,index2_c);
+                fft_results(i).EPSC.phase2Hz=fftP_c(1,index2_c);
+                fft_results(i).EPSC.power4Hz=fftA_c(1,index4_c);
+                fft_results(i).EPSC.phase4Hz=fftP_c(1,index4_c);
             case 3
-                fft_results(i).power2Hz.X1=sum(fftA_c(2,index2_c-1:index2_c+1));
-                fft_results(i).phase2Hz.X1=fftP_c(2,index2_c);
-                fft_results(i).power4Hz.X1=sum(fftA_c(2,index4_c-1:index4_c+1));
-                fft_results(i).phase4Hz.X1=fftP_c(2,index4_c);
+                fft_results(i).X1.power_std=std(fftA_c(2,range_f_c));
+                fft_results(i).X1.power2Hz=fftA_c(2,index2_c);
+                fft_results(i).X1.phase2Hz=fftP_c(2,index2_c);
+                fft_results(i).X1.power4Hz=fftA_c(2,index4_c);
+                fft_results(i).X1.phase4Hz=fftP_c(2,index4_c);
             case 4
-                fft_results(i).power2Hz.X2=sum(fftA_c(3,index2_c-1:index2_c+1));
-                fft_results(i).phase2Hz.X2=fftP_c(3,index2_c);
-                fft_results(i).power4Hz.X2=sum(fftA_c(3,index4_c-1:index4_c+1));
-                fft_results(i).phase4Hz.X2=fftP_c(3,index4_c);
+                fft_results(i).X2.power_std=std(fftA_c(3,range_f_c));
+                fft_results(i).X2.power2Hz=fftA_c(3,index2_c);
+                fft_results(i).X2.phase2Hz=fftP_c(3,index2_c);
+                fft_results(i).X2.power4Hz=fftA_c(3,index4_c);
+                fft_results(i).X2.phase4Hz=fftP_c(3,index4_c);
         end
         subplot(5,1,k)
         plot(f_c,fftA_c(k-1,:),color{k},'LineWidth',2.5)
@@ -118,11 +124,11 @@ for i=1:4
         end
     end
     subplot(5,1,5)
-    scatter(f_p([index2_p,index4_p]),[fft_results(i).phase2Hz.EPSP,fft_results(i).phase4Hz.EPSP],28,color{1},'filled')
+    scatter(f_p([index2_p,index4_p]),[fft_results(i).EPSP.phase2Hz,fft_results(i).EPSP.phase4Hz],28,color{1},'filled')
     hold on;
-    scatter(f_c([index2_c,index4_c]),[fft_results(i).phase2Hz.EPSC,fft_results(i).phase4Hz.EPSC],28,color{2},'filled')
-    scatter(f_c([index2_c,index4_c]),[fft_results(i).phase2Hz.X1,fft_results(i).phase4Hz.X1],28,color{3},'filled')
-    scatter(f_c([index2_c,index4_c]),[fft_results(i).phase2Hz.X2,fft_results(i).phase4Hz.X2],28,color{4},'filled')
+    scatter(f_c([index2_c,index4_c]),[fft_results(i).EPSC.phase2Hz,fft_results(i).EPSC.phase4Hz],28,color{2},'filled')
+    scatter(f_c([index2_c,index4_c]),[fft_results(i).X1.phase2Hz,fft_results(i).X1.phase4Hz],28,color{3},'filled')
+    scatter(f_c([index2_c,index4_c]),[fft_results(i).X2.phase2Hz,fft_results(i).X2.phase4Hz],28,color{4},'filled')
     hold off;
     ylim([-pi pi])
     ylabel('Phase')
